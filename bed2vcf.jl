@@ -19,6 +19,21 @@ VCF.pos(record)
 header = reader.header
 print(header)
 
+# iterate over header using metainfo indices
+print(header.metainfo[6])
+for i in header.metainfo
+    println(i)
+end
+
+
+# make new metainfo entry like this (requires dummy metainfo to overwrite)
+metainfo = VCF.MetaInfo(header.metainfo[1])
+metainfo = VCF.MetaInfo(metainfo, tag="date", value="2022-08-17")
+print(metainfo)
+# add another line to the header like this:
+push!(header, metainfo) 
+
+
 writer = VCF.Writer(open("/home/annebusch/Documents/anne/PhD/test_vcf.vcf", "w"))
 VCF.write(writer, header)
 VCF.write(writer, record)
@@ -31,4 +46,5 @@ VCF.write(writer, new_records)
 close(writer)
 
 # calling new_records.chrom returns the UnitRange{Int} in the new_records.data which describe the chromosome 
+# this returns the name of the chromosome
 print(VCF.chrom(new_records))
