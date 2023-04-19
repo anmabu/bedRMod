@@ -1,0 +1,81 @@
+
+# I/O
+# Parent directory where to write output files 
+destination_output: ./m6aSACseq
+# Text files to convert to EUF
+# the "key" will be used as "id" (basename of newly created files)
+input_files:
+ GSE198246_2ng: ./m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz
+ GSE198246_50ng: ./m6aSACseq/GSE198246/GSE198246_50ng_sites.tsv.gz
+
+# Settings: **file-specific options have precedence**, fallback to options if undefined!
+# Options/definitions that are common to all files - all possible options are listed below!
+# Undefined options will be replaced by None
+# meta_options are used to fill the header and json 
+# fmt_options are used to process the txt files into EUF
+meta_options:
+ modification_type: "RNA"
+ organism: 9606 # NCBI taxid
+ assembly: "GRCh38"
+ annotation_source: null
+ annotation_version: null
+ sequencing_platform: "Illumina NovaSeq 6000"
+ basecalling: null
+ bioinformatics_workflow: "https://github.com/y9c/m6A-sacseq"
+ experiment: "2-50 ng of poly-A enriched or ribosome RNA-depleted RNAs were fragmented and ligated, then divided in a 2:1 ratio. 2/3 of the starting materials are labeled by MjDim1, while the remaining 1/3 serve as the untreated control. After reverse transcription with HIV reverse transcriptase (Worthington Biochemical Corp), the cyclic allyl m6A sites are converted to mismatches, while unconverted m6A sites in the control group are read as A."
+ methods: "m6A-SAC-seq"
+ references: 
+  pubmed_id: ["36434097"]
+  geo_accession: ["GSE198246"]
+  
+fmt_options:
+ # field/column names mapping to BED fields
+ # RHS must be a valid header (TXT), if not, the value will be used to fill the LHS column (EUF),
+ # unless undefined (see comments below)
+ chrom: "chr" 
+ chromStart: "pos"  
+ chromEnd: "pos" # same as chromStart if single site
+ name: "m6A" # valid header, or MODOMICS short name
+ score: "1000" # valid header or fixed value if undefined
+ strand: "strand"
+ thickStart: null # ** currently undefined - default to chromStart
+ thickEnd: null # ** currently undefined - default to chromEnd
+ itemRgb: null # if undefined, use default colour scheme 
+ coverage: "NA" # valid header or fixed if undefined
+ frequency: "frac"
+ refBase: "A" # valid header, or assume reference base given modification
+ # reading - header is inferred unless [--header] is used
+ # delimiter to use, see the pandas.read_csv documentation - use double-quote
+ # ignored if excel: True
+ delimiter: "\t"
+ # use pandas.read_excel instead
+ # only reads the first tab - split multi-tab files into different files
+ excel: False
+ # skip lines starting with
+ comment: null
+ # skip rows
+ skiprows: null
+ # processing
+ # is the frequency given as percent? If False, convert to percent, else True.
+ freq_pc: False 
+ # are coordinates 0- (BED-like excl. End) or 1-based? 
+ coords_idx: 1
+ # what to do with the score? 
+ # current valid options are "pvalue" (convert to -log10 and scale to [0-1000]), "probability" (multiply by 1000), 
+ # or "no" (leave as is, filling value)
+ score_transformation: "no"
+
+# File-specific options/definitions
+file_meta_options:
+ GSE198246_2ng: 
+  title: "HeLa WT 2ng polyA RNA"
+  description: "HeLa WT polyA RNA 2ng Input and Treated 2 replicates"
+  cell_tissue: "HeLa"
+  tags: "Homo sapiens, HeLa, m6A"
+ GSE198246_50ng: 
+  title: "HeLa WT 50ng polyA RNA"
+  description: "HeLa WT polyA RNA 50ng Input and Treated 2 replicates"
+  cell_tissue: "HeLa"
+  tags: "Homo sapiens, HeLa, m6A"
+  
+file_fmt_options:
