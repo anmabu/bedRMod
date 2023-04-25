@@ -10,5 +10,5 @@ options:
   experiment: "2-50 ng of poly-A enriched or ribosome RNA-depleted RNAs were fragmented and ligated, then divided in a 2:1 ratio. 2/3 of the starting materials are labeled by MjDim1, while the remaining 1/3 serve as the untreated control. After reverse transcription with HIV reverse transcriptase (Worthington Biochemical Corp), the cyclic allyl m6A sites are converted to mismatches, while unconverted m6A sites in the control group are read as A."
   methods: "m6A-SAC-seq"
   references:
-    pubmed_id: ["36434097"]
-    geo_accession: ["GSE198246"]
+    pubmed_id: "36434097"
+    geo_accession: "GSE198246"

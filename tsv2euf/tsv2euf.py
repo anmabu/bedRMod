@@ -22,18 +22,35 @@ def write_header(file):
         "experiment",
     ]
 
-    # metadata
+    # build the header from metadata
     euf_header = dict()
     for key in euf_header_keys:
         euf_header[key] = config["options"].get(key, None)
     euf_header["fileformat"] = EUF_VERSION
+
+    # check for additional keys and append them to the header
+    additional_keys = []
+    for key in config["options"].keys():
+        if key not in euf_header_keys:
+            additional_keys.append(key)
+    # append additional keys
+    if len(additional_keys) > 0:
+        for key in additional_keys:
+            # if there are nested dictionaries, they get appended here
+            if isinstance(config["options"].get(key, None), dict):
+                npairs = ""
+                for nkey, nvalue in config["options"].get(key, None).items():
+                    npairs += f"{nkey}:{nvalue};"
+                npairs = npairs[:-1]
+                euf_header[key] = npairs
+            else:
+                euf_header[key] = config["options"].get(key, None)
     for k, v in euf_header.items():
         file.write(f"#{k}={v}\n")
 
 
 def tsv2euf():
-    tsv = pd.read_csv("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", delimiter="\t")#,
-                      #names=['chrom', 'pos', 'strand', 'motif', 'frac'])
+    tsv = pd.read_csv("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", delimiter="\t")
     tsv['score'] = tsv['frac'] * 100
 
     # Set thickStart and thickEnd to pos and pos+1, respectively
@@ -73,4 +90,5 @@ def tsv2euf():
 
 if __name__ == "__main__":
     tsv2euf()
-    # write_header()
+    # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
+    #     write_header(output)
