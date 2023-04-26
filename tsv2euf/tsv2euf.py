@@ -7,8 +7,15 @@ import yaml
 EUF_VERSION = "bedModv1.2"
 
 
-def write_header(file):
-    config = yaml.load(open("config.yaml"), Loader=yaml.FullLoader)
+def write_header(config_yaml, output_file):
+    """
+    reads information from the config yaml and writes it to the header of the bedMod file.
+    the structure of the config file is quite rigid as of now.
+    :param config_yaml: this .yaml file contains the options to write to the header.
+    :param output_file: this is the file where the header is written into. File already has to be open for this to work! T
+    :return:
+    """
+    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
     euf_header_keys = [
         "fileformat",
         "organism",
@@ -46,31 +53,36 @@ def write_header(file):
             else:
                 euf_header[key] = config["options"].get(key, None)
     for k, v in euf_header.items():
-        file.write(f"#{k}={v}\n")
+        output_file.write(f"#{k}={v}\n")
 
 
-def tsv2euf():
-    tsv = pd.read_csv("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", delimiter="\t")
+def tsv2euf(input_file, config_yaml, output_file):
+    """
+    converts tab-seperated files into bedMod format. only works with special columns as of now.
+    These columns are: "chr", "pos", "strand", "motif", "frac"
+    :param config_yaml: path/to/config.yaml, containing the header information for the new bedMod file.
+    :param input_file: path/to/input_file.tsv(.gz)
+    :param output_file: path/to/output_file.bed
+    :return:
+    """
+    tsv = pd.read_csv(input_file, delimiter="\t")
     tsv['score'] = tsv['frac'] * 100
 
     # Set thickStart and thickEnd to pos and pos+1, respectively
     tsv['thickStart'] = tsv['pos']
     # convert dtype of columns
-    # print(tsv.convert_dtypes().info())
     tsv["pos"] = pd.to_numeric(tsv["pos"], errors="coerce")
-    # print(tsv["pos"])
     tsv['thickEnd'] = tsv["pos"] + 1
 
     # Drop the original frac column
     tsv = tsv.drop(columns=['frac'])
 
     # Write output file in BED format
-    with open('../flat2euf/m6aSACseq/euf/output_file.bed', 'w') as f:
-        write_header(f)
+    with open(output_file, 'w') as f:
+        write_header(config_yaml, f)
         f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
                 "\trefBase\n")
         for _, row in tsv.iterrows():
-            #print(row)
             chrom = row['chr']
             start = row['pos']
             end = start + 1
@@ -89,6 +101,7 @@ def tsv2euf():
 
 
 if __name__ == "__main__":
-    tsv2euf()
+    tsv2euf("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", "config.yaml",
+            "../flat2euf/m6aSACseq/euf/output_file.bed")
     # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
     #     write_header(output)
