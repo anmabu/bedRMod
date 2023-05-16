@@ -12,3 +12,5 @@ options:
   references:
     pubmed_id: "36434097"
     geo_accession: "GSE198246"
+
+modifications_file: "/home/annebusch/Documents/PyCharmProjects/EUF/flat2euf/m6aSACseq/euf/mod_indices.csv"

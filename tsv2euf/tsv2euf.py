@@ -7,15 +7,15 @@ import yaml
 EUF_VERSION = "bedModv1.2"
 
 
-def write_header(config_yaml, output_file):
+def write_header(config, output_file):
     """
     reads information from the config yaml and writes it to the header of the bedMod file.
     the structure of the config file is quite rigid as of now.
-    :param config_yaml: this .yaml file contains the options to write to the header.
+    :param config: this .yaml file contains the options to write to the header.
     :param output_file: this is the file where the header is written into. File already has to be open for this to work! T
     :return:
     """
-    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+    # config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
     euf_header_keys = [
         "fileformat",
         "organism",
@@ -79,7 +79,8 @@ def tsv2euf(input_file, config_yaml, output_file):
 
     # Write output file in BED format
     with open(output_file, 'w') as f:
-        write_header(config_yaml, f)
+        config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+        write_header(config, f)
         f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
                 "\trefBase\n")
         for _, row in tsv.iterrows():
@@ -109,35 +110,62 @@ def proEUF2euf(input_file, config_yaml, output_file):
     :return:
     """
 
-    profile = pd.read_csv(input_file, delimiter="\t")
+    proEUF = pd.read_csv(input_file, delimiter="\t")
 
     # Set thickStart and thickEnd to pos and pos+1, respectively
-    profile['thickStart'] = profile['pos']
+    proEUF['thickStart'] = proEUF['pos']
     # convert dtype of columns
-    profile["pos"] = pd.to_numeric(profile["pos"])
-    profile['thickEnd'] = profile["pos"] + 1
+    proEUF["pos"] = pd.to_numeric(proEUF["pos"])
+    proEUF['thickEnd'] = proEUF["pos"] + 1
 
-    # Write output file in BED format
-    with open(output_file, 'w') as f:
-        write_header(config_yaml, f)
-        f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
-                "\trefBase\n")
-        for _, row in profile.iterrows():
-            chrom = row["ref_seg"]
-            start = row['pos']
-            end = start + 1
-            # name = row['motif']
-            name = "."
-            score = 0
-            strand = row['strand']
-            thick_start = row['thickStart']
-            thick_end = row['thickEnd']
-            item_rgb = '0,0,0'
-            coverage = row["cov"]
-            frequency = 0
-            refBase = row["ref_base"]
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+    if config["modifications_file"]:
+        mod_file = pd.read_csv(config["modifications_file"])
+        with open(output_file, 'w') as f:
+            write_header(config, f)
+            f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
+                    "\trefBase\n")
+            for _, row in proEUF.iterrows():
+                chrom = row["ref_seg"]
+                start = row['pos']
+                end = start + 1
+                score = 0
+                strand = row['strand']
+                selected_row = mod_file[(mod_file["ref_seg"] == chrom) & (mod_file["mod_index"] == start)]
+                if selected_row.empty:
+                    name = "."
+                else:
+                    name = selected_row.iloc[0]["mod_type"]
+                thick_start = row['thickStart']
+                thick_end = row['thickEnd']
+                item_rgb = '0,0,0'
+                coverage = row["cov"]
+                frequency = 0
+                refBase = row["ref_base"]
+                f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                        f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+
+    else:
+        # Write output file in BED format without modifications
+        with open(output_file, 'w') as f:
+            write_header(config, f)
+            f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
+                    "\trefBase\n")
+            for _, row in proEUF.iterrows():
+                chrom = row["ref_seg"]
+                start = row['pos']
+                end = start + 1
+                name = "."
+                score = 0
+                strand = row['strand']
+                thick_start = row['thickStart']
+                thick_end = row['thickEnd']
+                item_rgb = '0,0,0'
+                coverage = row["cov"]
+                frequency = 0
+                refBase = row["ref_base"]
+                f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                        f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
 
 
 if __name__ == "__main__":
@@ -146,4 +174,4 @@ if __name__ == "__main__":
     # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
     #     write_header(output)
     proEUF2euf("../flat2euf/m6aSACseq/euf/MH1601_GCA.proEUF", "config.yaml",
-                "../flat2euf/m6aSACseq/euf/output_file.bed")
+               "../flat2euf/m6aSACseq/euf/output_file.bed")
