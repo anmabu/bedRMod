@@ -100,8 +100,50 @@ def tsv2euf(input_file, config_yaml, output_file):
                     f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
 
 
+def proEUF2euf(input_file, config_yaml, output_file):
+    """
+    converts profile into EUF. needed second file to show at which positions are which modifications
+    :param input_file:
+    :param config_yaml:
+    :param output_file:
+    :return:
+    """
+
+    profile = pd.read_csv(input_file, delimiter="\t")
+
+    # Set thickStart and thickEnd to pos and pos+1, respectively
+    profile['thickStart'] = profile['pos']
+    # convert dtype of columns
+    profile["pos"] = pd.to_numeric(profile["pos"])
+    profile['thickEnd'] = profile["pos"] + 1
+
+    # Write output file in BED format
+    with open(output_file, 'w') as f:
+        write_header(config_yaml, f)
+        f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
+                "\trefBase\n")
+        for _, row in profile.iterrows():
+            chrom = row["ref_seg"]
+            start = row['pos']
+            end = start + 1
+            # name = row['motif']
+            name = "."
+            score = 0
+            strand = row['strand']
+            thick_start = row['thickStart']
+            thick_end = row['thickEnd']
+            item_rgb = '0,0,0'
+            coverage = row["cov"]
+            frequency = 0
+            refBase = row["ref_base"]
+            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                    f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+
+
 if __name__ == "__main__":
-    tsv2euf("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", "config.yaml",
-            "../flat2euf/m6aSACseq/euf/output_file.bed")
+    # tsv2euf("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", "config.yaml",
+    #         "../flat2euf/m6aSACseq/euf/output_file.bed")
     # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
     #     write_header(output)
+    proEUF2euf("../flat2euf/m6aSACseq/euf/MH1601_GCA.profile", "config.yaml",
+                "../flat2euf/m6aSACseq/euf/output_file.bed")
