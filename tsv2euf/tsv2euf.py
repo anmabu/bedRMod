@@ -145,5 +145,5 @@ if __name__ == "__main__":
     #         "../flat2euf/m6aSACseq/euf/output_file.bed")
     # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
     #     write_header(output)
-    proEUF2euf("../flat2euf/m6aSACseq/euf/MH1601_GCA.profile", "config.yaml",
+    proEUF2euf("../flat2euf/m6aSACseq/euf/MH1601_GCA.proEUF", "config.yaml",
                 "../flat2euf/m6aSACseq/euf/output_file.bed")
