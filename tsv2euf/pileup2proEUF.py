@@ -1,17 +1,16 @@
 # this is modified compared to modA_ML!!
 
 import sys
-import pandas as pd
 
 
-def parse_pileline(aligned_nts: str, ref_nt: str, count_dict_current: dict):
+def parse_pileup_line(aligned_nts: str, ref_nt: str, count_dict: dict):
     """
     Counts the number of occurences for each base given the pileup data. Also, counts the number of reference skips in
     the pile, since '<' and '>' are included in the coverage and have to be removed.
     :param aligned_nts: The 5th column of the pileup-line. Bases at that position from aligned reads
     :param ref_nt: The reference nucleotide of the line. This is done to calculate the arrest rate of the
     RT in respect to the nt.
-    :param count_dict_current: Dictionary to count instances of bases at that position in the current line
+    :param count_dict: Dictionary to count instances of bases at that position in the current line
     :return:
     """
     skip_counter = 0
@@ -30,7 +29,7 @@ def parse_pileline(aligned_nts: str, ref_nt: str, count_dict_current: dict):
             number_indels -= 1
             continue
         if elem in 'aAcCtTgG.,*':  # i.e. is [aAcCtTgG.,*]
-            count_dict_current[elem] += 1  # Counts all aligned bases within the line
+            count_dict[elem] += 1  # Counts all aligned bases within the line
         if elem in '+-<>':
             if elem in '+-':  # If indel, count jumps in jump_dict
                 number_indels = int(aligned_nts[index + 1])
@@ -44,36 +43,38 @@ def parse_pileline(aligned_nts: str, ref_nt: str, count_dict_current: dict):
             elif elem in ['<', '>']:
                 skip_counter += 1
 
-    count_dict_current[ref_nt] = count_dict_current["."] + count_dict_current[","]
-    return skip_counter, count_dict_current
+    count_dict[ref_nt] = count_dict["."] + count_dict[","]
+    return skip_counter, count_dict
 
 
-def calculate_features(splitted_line: list):
+def get_proEUF_features(line):
     """
-
-    :param splitted_line:
-    :return:
+    this function gets the features from a pileup line for the proEUF format. 
+    :param line: line from a pileup file.
+    :return: ref_segment, position, ref_base, coverage, strand
     """
-    char_string = 'agtcnAGTCNXRKS.,*_'
-    # Initialize count-dict with zeroes
-    count_dict_current = {char_x: 0 for char_x in char_string}
-
-    aligned_bases = splitted_line[4]
+    splitted_line = line.split("\t")
+    # don't split directly into vars because pileup contains up to 6 columns
+    ref_segment = splitted_line[0]
+    position = splitted_line[1]
     ref_nucleotide = splitted_line[2]
     num_aligned_reads = float(splitted_line[3])
+    aligned_bases = splitted_line[4]
 
-    skips, count_dict_current = parse_pileline(aligned_bases, ref_nucleotide, count_dict_current)
+    char_string = 'agtcnAGTCNXRKS.,*_'
+    # Initialize count-dict with zeroes
+    count_dict = {char_x: 0 for char_x in char_string}
+
+    skips, count_dict = parse_pileup_line(aligned_bases, ref_nucleotide, count_dict)
     coverage = num_aligned_reads - float(skips)  # aka sequence coverage or depth
     if coverage != num_aligned_reads:
         print(num_aligned_reads)
         print(coverage)
-    # coverage -= count_dict_current["*"]  # * is a placeholder for a deleted base.
-    # this does not make sense! the coverage is already calulated properly!!!
 
     # select strandedness depending on coverage at this position
-    strand = "+" if count_dict_current["."] >= count_dict_current[","] else "-"
+    strand = "+" if count_dict["."] >= count_dict[","] else "-"
 
-    return splitted_line[0], splitted_line[1], ref_nucleotide, coverage, strand
+    return ref_segment, position, ref_nucleotide, coverage, strand
 
 
 def pileup2proEUF(input_file, output_file):
@@ -81,31 +82,14 @@ def pileup2proEUF(input_file, output_file):
     converts input file in pileup format into a proEUF.
     The output file contains the following columns:
     reference_segment/chromosome  position  reference_base  coverage  strand
-    Features needed to convert into euf:
-    all lines starting with # will not be worked on in this function
-    chrom: chromosome number
-    chromStart: position of base
-    # chromEnd: position of base +1
-    # name: modification name (".") if no modification
-    # score: modification confidence at this position
-    strand: strand orientation at that position
-    # thickStart: = chromStart
-    # thickEnd: = chromEnd
-    # (itemRgb): color value for displaying modification, leave blank here
-    coverage: number of reads at that position
-    # frequency: percentage of modified reads at that position, read from modification file
-    refBase: reference base at this position.
     :param input_file: (path to) input file
     :param output_file: (path to) output file
     """
-    features_list = []
-    with open(input_file, "r") as infile:
+    with open(input_file, "r") as infile, open(output_file, "w") as outfile:
+        outfile.write("ref_seg\tpos\tref_base\tcov\tstrand\n")
         for index, line in enumerate(infile):
-            prev_line = line.split("\t")
-            features = calculate_features(prev_line)
-            features_list.append(features)
-    df = pd.DataFrame(features_list, columns=["ref_seg", "pos", "ref_base", "cov", "strand"])
-    df.to_csv(output_file, index=False, sep="\t")
+            ref_seg, pos, ref_base, cov, strand = get_proEUF_features(line)
+            outfile.write(f"{ref_seg}\t{pos}\t{ref_base}\t{cov}\t{strand}\n")
     print(f"{input_file} converted to {output_file}!")
 
 
