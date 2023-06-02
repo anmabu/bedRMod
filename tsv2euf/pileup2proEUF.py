@@ -1,5 +1,6 @@
 # this is modified compared to modA_ML!!
-
+import multiprocessing
+import os
 import sys
 
 
@@ -93,7 +94,22 @@ def pileup2proEUF(input_file, output_file):
     print(f"{input_file} converted to {output_file}!")
 
 
+def pileup2proEUF_dir(input_dir, output_dir):
+    os.chdir(input_dir)
+    if not output_dir.endswith("/"):
+        output_dir += "/"
+    file_list = [file for file in os.listdir(input_dir) if file.endswith("pileup")]
+    output_list = [output_dir + file for file in file_list]
+    paired_list = list(zip(file_list, output_list))
+    num_processes = multiprocessing.cpu_count() - 2  # don't use all threads to not disable use of computer
+    with multiprocessing.Pool(num_processes) as p:
+        p.starmap(pileup2proEUF, paired_list)
+
+
 if __name__ == "__main__":
-    infile = sys.argv[1]
-    outfile = sys.argv[2]
-    pileup2proEUF(infile, outfile)
+    # infile = sys.argv[1]
+    # outfile = sys.argv[2]
+    # pileup2proEUF(infile, outfile)
+    in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files"
+    out_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/proEUF_files"
+    pileup2proEUF_dir(in_dir, out_dir)

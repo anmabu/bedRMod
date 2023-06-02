@@ -138,6 +138,6 @@ if __name__ == "__main__":
     #              threads=12, paired=False, bowtie2_dir=bowtie_dir)
     # print(os.environ.get("BT2_HOME"))
     # mp_bowtie2(ref_sequence_path, "GCA_ref", fastq_sequence, test_output_dir, "--local", threads=3, paired=False)
-    run_mp_bowtie2_dir(ref_sequence_path, "GCA_ref", fastq_input_dir, test_output_dir,
-                       bowtie_args=["--local", "-N 1", "-L 6", "--nofw", "-i S,1,0.50", "-D 20", "-R 3", "-k 1"],
+    run_mp_bowtie2_dir(ref_sequence_path, "GCF_ref", fastq_input_dir, test_output_dir,
+                       bowtie_args=["--local", "-N 1", "-L 10", "--nofw", "-i S,1,0.50", "-D 20", "-R 3"],
                        threads=7, paired=False, bowtie2_dir=bowtie_dir)
