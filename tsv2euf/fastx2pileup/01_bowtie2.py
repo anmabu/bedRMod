@@ -61,13 +61,6 @@ def mp_bowtie2(ref_sequence_dir, ref_sequence, fastq_sequence_path, output_dir, 
     os.chdir(ref_sequence_dir)
     fastq_filename = os.path.basename(fastq_sequence_path)
 
-    if bowtie_args is None:
-        bowtie_args_filename = "no_args"
-    else:
-        bowtie_args_filename = " ".join(bowtie_args)
-        bowtie_args_filename = bowtie_args_filename.replace(" ", "")
-        bowtie_args_filename = bowtie_args_filename.replace("-", "")
-
     run_number = "undefined"
     if paired and ("R1" in fastq_filename):
         run_number = "R1_R2"
@@ -76,6 +69,19 @@ def mp_bowtie2(ref_sequence_dir, ref_sequence, fastq_sequence_path, output_dir, 
             run_number = "R1"
         if "R2" in fastq_filename:
             run_number = "R2"
+            if "--nofw" in bowtie_args:
+                replace_index = bowtie_args.index("--nofw")
+                bowtie_args[replace_index] = "--norc"
+
+    # print(bowtie_args)
+    if bowtie_args is None:
+        bowtie_args_filename = "no_args"
+    else:
+        bowtie_args_filename = " ".join(bowtie_args)
+        bowtie_args_filename = bowtie_args_filename.replace(" ", "")
+        bowtie_args_filename = bowtie_args_filename.replace("-", "")
+
+
     # this condition is redundant when only files to be converted are in the directory
     if fastq_filename.endswith("001.fastq"):
         print(fastq_filename)
@@ -122,9 +128,9 @@ def run_mp_bowtie2_dir(ref_dir, ref_sequence, fastq_dir, output_dir, bowtie_args
 if __name__ == "__main__":
     ref_sequence_path = "/home/annebusch/anne02/m1A_Marco/S_cerv_R64"
     os.chdir(ref_sequence_path)
-    fastq_input_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/input_fastx"
-    fastq_sequence = fastq_input_dir + "/MH1714_S14_L001_R1_001.fastq"
-    sam_file_name = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1701_R1_GCA_N1L6nofwD20R3k1.sam"
+    fastq_input_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/other_input"
+    # fastq_sequence = fastq_input_dir + "/MH1714_S14_L001_R1_001.fastq"
+    # sam_file_name = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1701_R1_GCA_N1L6nofwD20R3k1.sam"
     test_output_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files"
     bowtie_dir = "BT2_HOME"
 
@@ -132,5 +138,6 @@ if __name__ == "__main__":
     #              threads=12, paired=False, bowtie2_dir=bowtie_dir)
     # print(os.environ.get("BT2_HOME"))
     # mp_bowtie2(ref_sequence_path, "GCA_ref", fastq_sequence, test_output_dir, "--local", threads=3, paired=False)
-    run_mp_bowtie2_dir(ref_sequence_path, "GCA_ref", fastq_input_dir, test_output_dir, bowtie_args=["--very-sensitive-local"],
+    run_mp_bowtie2_dir(ref_sequence_path, "GCA_ref", fastq_input_dir, test_output_dir,
+                       bowtie_args=["--local", "-N 1", "-L 6", "--nofw", "-i S,1,0.50", "-D 20", "-R 3", "-k 1"],
                        threads=7, paired=False, bowtie2_dir=bowtie_dir)
