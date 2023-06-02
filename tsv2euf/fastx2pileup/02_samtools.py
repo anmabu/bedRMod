@@ -78,8 +78,13 @@ def bam2pileup(bamfile, fastafile):
     :param bamfile: file in bam format
     :param fastafile: file in fasta format (or fasta derivative) with the reference sequence
     """
-    output_file = bamfile[:-3] + "pileup"
-    subprocess.call(f"samtools mpileup -f {fastafile} -o {output_file} {bamfile}", shell=True)
+    p1, sep, p2 = bamfile.partition("sorted")
+    output_file = p1 + "pileup"
+    # https://github.com/samtools/samtools/issues/910
+    # enabling -s returns 7th column in pileup which contains the Mapping Quality in a Phred+33 Score
+    # instead: using output-extra MAPQ returns value of MAPQ between 0 and 255. Maybe use as display color?
+    # https://github.com/samtools/samtools/issues/1129#issuecomment-585172313
+    subprocess.call(f"samtools mpileup -A -Q 0 -x -f {fastafile} -o {output_file} {bamfile}", shell=True)
 
 
 def bam2pileup_dir(input_dir, ref_sequence, ref_sequence_path):
@@ -87,6 +92,7 @@ def bam2pileup_dir(input_dir, ref_sequence, ref_sequence_path):
     file_list = [file for file in os.listdir() if "both" in file and file.endswith(".sorted.bam") and (ref_sequence in file)]
     ref_file_list = [ref_sequence_path for file in file_list]
     paired_files = list(zip(file_list, ref_file_list))
+    print(paired_files)
     num_processes = multiprocessing.cpu_count() - 2  # don't use all threads to not disable use of computer
     with multiprocessing.Pool(num_processes) as p:
         p.starmap(bam2pileup, paired_files)
@@ -116,9 +122,13 @@ def bam2pileup_MT_dir(input_dir):
 
 
 if __name__ == "__main__":
-    in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files"
-    sam2bam_dir(in_dir)
-    merge_bams_dir(in_dir)
-    sort_bam_dir(in_dir)
-    index_bam_dir(in_dir)
-    bam2pileup_MT_dir(in_dir)
+    in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/"
+    # sam2bam_dir(in_dir)
+    # merge_bams_dir(in_dir)
+    # sort_bam_dir(in_dir)
+    # index_bam_dir(in_dir)
+    # bam2pileup_MT_dir(in_dir)
+    # bam2pileup_dir(in_dir, "GCF_new_ref", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
+    os.chdir(in_dir)
+    bam2pileup("MH1601_both_GCF_ref_localN1L10nofwD20R3k1.sorted.bam", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data"
+                                              "/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
