@@ -1,6 +1,5 @@
 import os
 import multiprocessing
-# from multiprocessing import Pool
 import subprocess
 
 
@@ -84,7 +83,10 @@ def bam2pileup(bamfile, fastafile):
     # enabling -s returns 7th column in pileup which contains the Mapping Quality in a Phred+33 Score
     # instead: using output-extra MAPQ returns value of MAPQ between 0 and 255. Maybe use as display color?
     # https://github.com/samtools/samtools/issues/1129#issuecomment-585172313
-    subprocess.call(f"samtools mpileup -A -Q 0 -x -f {fastafile} -o {output_file} {bamfile}", shell=True)
+    # -A displays orphans as well. I.e. Bases marked as pairs where no partner was found
+    # -Q 0 sets minimum base quality to be considered to 0
+    # -x does not remove overlaps.
+    subprocess.call(f"samtools mpileup -A -Q 0 -d 1000000 -x -f {fastafile} -o {output_file} {bamfile}", shell=True)
 
 
 def bam2pileup_dir(input_dir, ref_sequence, ref_sequence_path):
@@ -109,6 +111,9 @@ def bam2pileup_MT(bamfile):
     output_file = p1 + "pileup"
     # the -B option disables the calculation of the Base Alignment Quality which would be calulated
     # if a reference i.e. GCA or GCF was supplied
+    # -B removes the quality scores of the called bases
+    # -d sets the maximum depth of the current position. default is 8000
+    # -Q 0 sets minimum base quality to be considered to 0
     subprocess.call(f"samtools mpileup -B -d 1000000 -Q 0 -o {output_file} {bamfile}", shell=True)
     print(f"converted {bamfile} to {output_file}")
 
