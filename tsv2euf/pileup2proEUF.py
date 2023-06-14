@@ -89,7 +89,27 @@ def pileup2proEUF(input_file, output_file):
     with open(input_file, "r") as infile, open(output_file, "w") as outfile:
         outfile.write("ref_seg\tpos\tref_base\tcov\tstrand\n")
         for index, line in enumerate(infile):
+            nc_to_chromosome = {
+                'NC_001133.9': 'I',
+                'NC_001134.8': 'II',
+                'NC_001135.5': 'III',
+                'NC_001136.10': 'IV',
+                'NC_001137.3': 'V',
+                'NC_001138.5': 'VI',
+                'NC_001139.9': 'VII',
+                'NC_001140.6': 'VIII',
+                'NC_001141.2': 'IX',
+                'NC_001142.9': 'X',
+                'NC_001143.9': 'XI',
+                'NC_001144.5': 'XII',
+                'NC_001145.3': 'XIII',
+                'NC_001146.8': 'XIV',
+                'NC_001147.6': 'XV',
+                'NC_001148.4': 'XVI',
+                'NC_001224.1': 'mitochondrion'
+            }
             ref_seg, pos, ref_base, cov, strand = get_proEUF_features(line)
+            ref_seg = nc_to_chromosome[ref_seg]
             outfile.write(f"{ref_seg}\t{pos}\t{ref_base}\t{cov}\t{strand}\n")
     print(f"{input_file} converted to {output_file}!")
 
@@ -107,9 +127,9 @@ def pileup2proEUF_dir(input_dir, output_dir):
 
 
 if __name__ == "__main__":
-    # infile = sys.argv[1]
-    # outfile = sys.argv[2]
-    # pileup2proEUF(infile, outfile)
-    in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files"
-    out_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/proEUF_files"
-    pileup2proEUF_dir(in_dir, out_dir)
+    infile = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.pileup"
+    outfile = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF"
+    pileup2proEUF(infile, outfile)
+    # in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files"
+    # out_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/proEUF_files"
+    # pileup2proEUF_dir(in_dir, out_dir)
