@@ -46,7 +46,7 @@ def tsv2euf(input_file, config_yaml, output_file):
             frequency = row['score']
             refBase = ""
             f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+                    f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
 def proEUF2euf(input_file, config_yaml, output_file):
@@ -90,9 +90,9 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 thick_end = row['thickEnd']
                 item_rgb = '0,0,0'
                 coverage = row["cov"]
-                refBase = row["ref_base"]
+                refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+                        f'\t{coverage}\t{frequency}\t{refBase}\n')
 
     else:
         # Write output file in BED format without modifications
@@ -112,9 +112,9 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 item_rgb = '0,0,0'
                 coverage = row["cov"]
                 frequency = 0
-                refBase = row["ref_base"]
+                refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
+                        f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
 if __name__ == "__main__":
