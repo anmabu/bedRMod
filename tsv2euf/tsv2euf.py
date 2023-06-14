@@ -82,13 +82,14 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 selected_row = mod_file[(mod_file["ref_seg"] == chrom) & (mod_file["mod_index"] == start)]
                 if selected_row.empty:
                     name = "."
+                    frequency = 0
                 else:
                     name = selected_row.iloc[0]["mod_type"]
+                    frequency = 100
                 thick_start = row['thickStart']
                 thick_end = row['thickEnd']
                 item_rgb = '0,0,0'
                 coverage = row["cov"]
-                frequency = 0
                 refBase = row["ref_base"]
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
                         f'\t{coverage}\t{frequency:.5f}\t{refBase}\n')
@@ -121,5 +122,5 @@ if __name__ == "__main__":
     #         "../flat2euf/m6aSACseq/euf/output_file.bed")
     # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
     #     write_header(output)
-    proEUF2euf("../flat2euf/m6aSACseq/euf/MH1601_GCA.proEUF", "config.yaml",
-               "../flat2euf/m6aSACseq/euf/output_file_2.bed")
+    proEUF2euf("/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+               "../flat2euf/m6aSACseq/euf/MH1601_GCF_local.bed")
