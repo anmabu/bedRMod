@@ -1,0 +1,24 @@
+[
+  {
+    "id": "GSE198246_50ng",
+    "title": "HeLa WT 50ng polyA RNA",
+    "experiment": "HeLa WT 50ng polyA RNA",
+    "summary": "HeLa WT 50ng polyA RNA",
+    "description": "HeLa WT polyA RNA 50ng Input and Treated 2 replicates",
+    "organism": 9606,
+    "assembly": "GRCh38",
+    "annotation_source": null,
+    "annotation_version": null,
+    "methods": "m6A-SAC-seq",
+    "cell_tissue": "HeLa",
+    "references": {
+      "pubmed_id": [
+        "36434097"
+      ],
+      "geo_accession": [
+        "GSE198246"
+      ]
+    },
+    "tags": "Homo sapiens, HeLa, m6A"
+  }
+]
