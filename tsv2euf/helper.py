@@ -50,3 +50,4 @@ def write_header(config, output_file):
                 euf_header[key] = config["options"].get(key, None)
     for k, v in euf_header.items():
         output_file.write(f"#{k}={v}\n")
+

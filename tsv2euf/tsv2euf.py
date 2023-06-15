@@ -118,9 +118,5 @@ def proEUF2euf(input_file, config_yaml, output_file):
 
 
 if __name__ == "__main__":
-    # tsv2euf("../flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz", "config.yaml",
-    #         "../flat2euf/m6aSACseq/euf/output_file.bed")
-    # with open("../flat2euf/m6aSACseq/euf/output_header_file.bed", "w") as output:
-    #     write_header(output)
-    proEUF2euf("/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "../flat2euf/m6aSACseq/euf/MH1601_GCF_local.bed")
+    proEUF2euf("/example_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+               "/example_files/test_frankenstein.bed")

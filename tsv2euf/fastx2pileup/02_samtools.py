@@ -94,7 +94,6 @@ def bam2pileup_dir(input_dir, ref_sequence, ref_sequence_path):
     file_list = [file for file in os.listdir() if "both" in file and file.endswith(".sorted.bam") and (ref_sequence in file)]
     ref_file_list = [ref_sequence_path for file in file_list]
     paired_files = list(zip(file_list, ref_file_list))
-    print(paired_files)
     num_processes = multiprocessing.cpu_count() - 2  # don't use all threads to not disable use of computer
     with multiprocessing.Pool(num_processes) as p:
         p.starmap(bam2pileup, paired_files)
@@ -133,7 +132,7 @@ if __name__ == "__main__":
     # sort_bam_dir(in_dir)
     # index_bam_dir(in_dir)
     # bam2pileup_MT_dir(in_dir)
-    # bam2pileup_dir(in_dir, "GCF_new_ref", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
     os.chdir(in_dir)
-    bam2pileup("MH1601_both_GCF_ref_localN1L10nofwD20R3k1.sorted.bam", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data"
-                                              "/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
+    bam2pileup_dir(in_dir, "GCF_new_ref", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
+    # bam2pileup("MH1601_both_GCF_ref_localN1L10nofwD20R3k1.sorted.bam", "/home/annebusch/anne02/m1A_Marco/S_cerv_R64/ncbi_dataset/data"
+    #                                           "/GCF_000146045.2/GCF_000146045.2_R64_genomic.fna")
