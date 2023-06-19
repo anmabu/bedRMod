@@ -1,0 +1,762 @@
+{
+    "50": {
+        "anticodon": "AGC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGGCGUGUKGCGUAGDCGGDAGCGCRCUCCCUUIGCOPGGGAGAGGDCUCCGGTPCGAUUCCGGACUCGUCCACCA",
+        "subtype": "Ala",
+        "type": "tRNA"
+    },
+    "54": {
+        "anticodon": "UCU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUCGCGUKLCGUAADGGCAACGCRPCUGACU1CU6APCAGAAGADUAUGGGTPCG\"CCCCCAUCGUGAGUGCCA",
+        "subtype": "Arg",
+        "type": "tRNA"
+    },
+    "56": {
+        "anticodon": "ICG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "PUCCUCGUKLCCCAADGGDCACGGCRPCUGGCUICGAACCAGAAGADU?CAGGTPCA\"GUCCUGGCGGGGAAGCCA",
+        "subtype": "Arg",
+        "type": "tRNA"
+    },
+    "60": {
+        "anticodon": "GUU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GACUCCAUGLCCAAGDDGGDDAAGGCRUGCGACUGUU6APCGCAAGAD?GUGAGTPCA\"CCCUCACUGGGGUCGCCA",
+        "subtype": "Asn",
+        "type": "tRNA"
+    },
+    "62": {
+        "anticodon": "GUC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UCCGUGAUAGUUPAADGGDCAGAAUGGGCGCPUGUCKCGUGCCAGAU?GGGGTPCAAUUCCCCGUCGCGGAGCCA",
+        "subtype": "Asp",
+        "type": "tRNA"
+    },
+    "64": {
+        "anticodon": "GCA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUCGUAUGGCGCAGDGGDAGCGCAGCAGAPUGCA+APCUGUUG7D?CUUAGTPCG\"UCCUGAGUGCGAGCUCCA",
+        "subtype": "Cys",
+        "type": "tRNA"
+    },
+    "70": {
+        "anticodon": "UUC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UCCGAUAUAGUGPAACGGCDAUCACAPCACGCU3UCACCGUGGAGAC?GGGGTPCGACUCCCCGUAUCGGAGCCA",
+        "subtype": "Glu",
+        "type": "tRNA"
+    },
+    "74": {
+        "anticodon": "GCC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGBAAGUKGUUPAGDGGDAAAAUCCAACGPUGCCAPCGUUGGGC?CCGGTPCGAUUCCGGGCUUGCGCACCA",
+        "subtype": "Gly",
+        "type": "tRNA"
+    },
+    "76": {
+        "anticodon": "UCC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGGCGGUUAGUGPAGDGGDDAUCAUCCCACCCUNCCAAGGUGGGGACACGGGTPCGAUUCUCGUACCGCUCACCA",
+        "subtype": "Gly",
+        "type": "tRNA"
+    },
+    "78": {
+        "anticodon": "GUG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCC:UCUUAGUAPAGD#GDDAGUACACAACAPUGUGKCPGUUGAAAC?CUGGTPCGAUUCUAGGAGGUGGCACCA",
+        "subtype": "His",
+        "type": "tRNA"
+    },
+    "80": {
+        "anticodon": "GUG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCC:UCUUAGUAPAGD#GDDAGUACACAUCGPUGUGKCCGAUGAAAC?CUGGTPCGAUUCUAGGAGAUGGCACCA",
+        "subtype": "His",
+        "type": "tRNA"
+    },
+    "82": {
+        "anticodon": "AAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGUCUCUUKLCCCAGDDGGDDAAGGCACCGUGCUIAU6ACGCGGGGAD?AGCGGTPCG\"UCCCGCUAGAGACCACCA",
+        "subtype": "Ile",
+        "type": "tRNA"
+    },
+    "84": {
+        "anticodon": "UAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUCGUGUALCUCAGDGGDDAGAGCUPCGUGCUPAP6ACGCGACC7D?GUGGGTPCA\"UCCCCACCPCGAGCACCA",
+        "subtype": "Ile",
+        "type": "tRNA"
+    },
+    "89": {
+        "anticodon": "UAG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGGAGUUUGLCMGAGD#GDDDAAGGCRPCAGAPUUAGKCPCUGAUAUCUUCGGAUG?AAGGGTPCG\"AUCCCUUAGCUCUCACCA",
+        "subtype": "Leu",
+        "type": "tRNA"
+    },
+    "91": {
+        "anticodon": "CAA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGUUGUUUGLCMGAGC#GDCDAAGGCRCCUGAPU?AAKCPCAGGUAUCGUAAGAUG?AAGAGTPCGAAUCUCUUAGCAACCACCA",
+        "subtype": "Leu",
+        "type": "tRNA"
+    },
+    "93": {
+        "anticodon": "UAA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGAGGGUUGLCMGAGD#GDCDAAGGCRGCAGABUNAAKAPCUGUUGGACGGUUGUCCG?GCGAGTPCG\"ACCUCGCAUCCUUCACCA",
+        "subtype": "Leu",
+        "type": "tRNA"
+    },
+    "95": {
+        "anticodon": "CUU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCCUUGUUKLCGCAADCGGDAGCGCRPAUGACUCUU6APCAUAAG7UUAGGGGTPCG\"GCCCCCUACAGGGCUCCA",
+        "subtype": "Lys",
+        "type": "tRNA"
+    },
+    "97": {
+        "anticodon": "3UU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "PCCUUGUUALCUCAGDDGGDAGAGCRPPCGGCU3UU6ACCGAAAU7D?AGGGGTPCG\"GCCCCCUAPGAGGAGCCA",
+        "subtype": "Lys",
+        "type": "tRNA"
+    },
+    "99": {
+        "anticodon": "CAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUUCAGUALCUCAGDAGGAAGAGCRPCAGPCUCAU6APCUGAAG7D?GAGAGTPCG\"ACCUCUCCUGGAGCACCA",
+        "subtype": "Met",
+        "type": "tRNA"
+    },
+    "101": {
+        "anticodon": "GAA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"UCCACAGAAUUCGCACCA",
+        "subtype": "Phe",
+        "type": "tRNA"
+    },
+    "103": {
+        "anticodon": "GAA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGACUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"UCCACAGAGUUCGCACCA",
+        "subtype": "Phe",
+        "type": "tRNA"
+    },
+    "105": {
+        "anticodon": "UGG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGGBGUGUKGUCPAGDGGDAUGAUUCUCGCPUNGGKPGCGAGAG7CCCUGGGTPCA\"UUCCCAGCUCGCCCCCCA",
+        "subtype": "Pro",
+        "type": "tRNA"
+    },
+    "108": {
+        "anticodon": "CGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCACUAUGGCMGAGD#GDDAAGGCRAGAGA'UCGA+APCUCUJGGGCUCUGCCCG?GCUGGTPCAAAUCCUGCUGGUGUCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "110": {
+        "anticodon": "UGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCACUAUGGCMGAGD#GDDAAGGCRACAGA'U&GA+APCUGUJGGGCUCUGCCCG?GCUGGTPCAAAUCCUGCUGGUGUCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "112": {
+        "anticodon": "IGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCAACUUGGCMGAGD#GDDAAGGCRAAAGAPUIGA+APCUUUJGGGCUCUGCCCG?GCAGGTPCAAAUCCUGCAGUUGUCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "114": {
+        "anticodon": "IGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGCAACUUGGCMGAGD#GDDAAGGCRAAAGAPUIGA+APCUUUJGGGCUUUGCCCG?GCAGGTPCGAGUCCUGCAGUUGUCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "116": {
+        "anticodon": "GCU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GUCCCAGUGGCMGAGD#GDDAAGGCRAUGCCCUGCU6AGGCAUJGGGUUUUACCUG?GCAGGTPCG\"AUCCUGUCUGUGACGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "118": {
+        "anticodon": "AGU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUUCUAUGLCCAAGDDGGDAAGGCRCCACA'UIGU6APGUGGAGAD?AUCGGTPCA\"AUCCGAUUGGAAGCACCA",
+        "subtype": "Thr",
+        "type": "tRNA"
+    },
+    "120": {
+        "anticodon": "AGU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUUCUAUGLCCAAGDDGGDAAGGCRCCACA'UIGU6APGUGGAGAD?GUCGGTPCA\"AUCCGACUGGAAGCACCA",
+        "subtype": "Thr",
+        "type": "tRNA"
+    },
+    "122": {
+        "anticodon": "CCA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GAAGCGGUKLCUCAAD#GDAGAGCPPPCGABUBCAAAPCGAAGG7DUGCAGGTPCA\"UUCCUGPCCGUUUCACCA",
+        "subtype": "Trp",
+        "type": "tRNA"
+    },
+    "124": {
+        "anticodon": "GUA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "CUCUCGGUALCCAAGDD#GDDDAAGGCRCAAGACUGPA+APCUUGAGAD?GGGCGTPCG\"CUCGCCCCCGGGAGACCA",
+        "subtype": "Tyr",
+        "type": "tRNA"
+    },
+    "126": {
+        "anticodon": "UAC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGUCCAAUGLUCCAGDGGDDCAAGACRPCGCCPU&ACACGGCGAAGADC?CGAGTPCG\"ACCUCGGUUGGAUCACCA",
+        "subtype": "Val",
+        "type": "tRNA"
+    },
+    "128": {
+        "anticodon": "CAC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GUUCCAAUALUGPAGCGGCDAUCACLPPGCCPUCACACGGCAAAG7DC?CGAGTPCG\"UCCUCGGUUGGAACACCA",
+        "subtype": "Val",
+        "type": "tRNA"
+    },
+    "130": {
+        "anticodon": "AAC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGUUUCGUKGUCPAGDCGGDDAUGGCAPCUGCPUIACACGCAGAAC7DC?CCAGTPCG\"UCCUGGGCGAAAUCACCA",
+        "subtype": "Val",
+        "type": "tRNA"
+    },
+    "132": {
+        "anticodon": "CAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "eukaryotic cytosol ",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AGCGCCGUKLCGCAGDGGAAGCGCRCAGGGCUCAU6ACCCUGAU7D??UCGGAUCG\"AACCG^GCGGCGCUACCA",
+        "subtype": "Ini",
+        "type": "tRNA"
+    },
+    "146": {
+        "anticodon": "GAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GAAACUAUAAUUCAADDGGDUAGAAUAGUAUPUUGAU6AGGUACAAAUAUAGGTPCAAUCCCUGUUAGUUUCACCA",
+        "subtype": "Ile",
+        "type": "tRNA"
+    },
+    "147": {
+        "anticodon": "!AA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUAUUUUGGUGGAADUGGDAGACACRAUACPCU!AAKAPGUAUUACUUUACAGUAUGAAGGTPCAAGUCCUUUAAAUAGCACCA",
+        "subtype": "Leu",
+        "type": "tRNA"
+    },
+    "148": {
+        "anticodon": "$UU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GAGAAUAUUGUUUAADGGDAAAACAGPUGPCU$UU6AGCAACCCAUGCUUGGTPCAACUCCAGCUAUUCUCACCA",
+        "subtype": "Lys",
+        "type": "tRNA"
+    },
+    "149": {
+        "anticodon": "CAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUUGUAUAGUUUAADDGGDUAAAACAUUUGPCUCAU6AAUAAAUAAUGUAAGGTPCAAUUCCUUCUACAAGUACCA",
+        "subtype": "Met",
+        "type": "tRNA"
+    },
+    "153": {
+        "anticodon": "GCU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGAAAAUUAACUADAGGDAAAGUGGAUUAPPUGCUAAGUAAUUGAAUUGUAAAUUCUUAUGAGTPCGAAUCUCAUAUUUUCCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "157": {
+        "anticodon": "GUA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGAGGGAUUUUCAAUGUDGGDAGUUGGALPUGAGCUGUA+ACUCAAUGACUUAGGUCUUCAUAGGTPCAAUUCCUAUUCCCUUCACCA",
+        "subtype": "Tyr",
+        "type": "tRNA"
+    },
+    "159": {
+        "anticodon": "CAU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UGCAAUAUGAUGUAADUGGDUAACAUUUUAGGGUCAUKACCUAAUUAUAUACGTPCAAAUCGUAUUAUUGCPACCA",
+        "subtype": "Ini",
+        "type": "tRNA"
+    },
+    "727": {
+        "anticodon": "GAA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUUUUAUAGCUUAGDGGDAAAGCRAUAAAPUGAAKAPUUAUUUACAUGUAGUPCGAUUCUCAUUAAGGGCACCA",
+        "subtype": "Phe",
+        "type": "tRNA"
+    },
+    "734": {
+        "anticodon": "NCC",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AUAGAUAUAAGUUAAUDGGDAAACURGAUGPCUNCC+AACAUUGAAUGCGAGTPCGAUUCUCGCUAUCUAUACCA",
+        "subtype": "Gly",
+        "type": "tRNA"
+    },
+    "740": {
+        "anticodon": "GUG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGUGAAUAUAUUUCAADGGDAGAAAAPACGCPUGUGKPGCGUUAAAUCUGAGTPCGAUUCUCAGUAUUCACCCCA",
+        "subtype": "His",
+        "type": "tRNA"
+    },
+    "792": {
+        "anticodon": "UGG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "CAGAUAGAAGCCAAAAGGDCAGGCLCUUUCPUUGGKAGAAAGACCUAGUUAGTPCGAGUCUAUCCUAUCUGACCA",
+        "subtype": "Pro",
+        "type": "tRNA"
+    },
+    "798": {
+        "anticodon": "ACG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AUAUCUUUAAUUUAADGGDAAAAUAPUAGAAUACGAAPCUAAUUAUAUAGGTPCAAAUCCUAUAAGAUAUUCCA",
+        "subtype": "Arg",
+        "type": "tRNA"
+    },
+    "799": {
+        "anticodon": "NCU",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCUCUCUUAGCUUAADGGDUAAAGCAPAAUACUNCU6APAUUAAUAUUCCAUGTPCAAAUCAUGGAGAGAGUACCA",
+        "subtype": "Arg",
+        "type": "tRNA"
+    },
+    "806": {
+        "anticodon": "UGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGAUGGUUGACUGAGDGGDUUAAAGULPGAUAPUUGAKCPAUCAUUAGUCUUUAUUGGCUACGUAGGTPCAAAUCCUACAUCAUCCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "807": {
+        "anticodon": "UGA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GGAUGGUUGACUGAGDGGDUUAAAGULUGAUAPUUGAKCPAUCAUUAGUCUUUAUUGGCUACGUAGGTPCAAAUCCUACAUCAUCCGCCA",
+        "subtype": "Ser",
+        "type": "tRNA"
+    },
+    "818": {
+        "anticodon": "UAG",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GUAAAUAUAAUUUAADGGDAAAAULPAUGPUUUUAGKPGCAUAUUAUCUAAGTPCAAAUCUUAGUAUUUACACCA",
+        "subtype": "Thr",
+        "type": "tRNA"
+    },
+    "831": {
+        "anticodon": "!CA",
+        "genebank": "",
+        "mintbase": null,
+        "organellum": "mitochondrion",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AAGGAUAUAGUUUAADGGDAAAACAGUUGAPU!CAHAPCAAUCAUUAGGAGTPCGAAUCUCUUUAUCCUUGCCA",
+        "subtype": "Trp",
+        "type": "tRNA"
+    },
+    "1132": {
+        "anticodon": "",
+        "genebank": "1IL2_C",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UCCGUGAUAGUUPAADGGDCAGAAUGGGCGCPUGUCKCGUGCCAGAU?GGGGTPCAAUUCCCCGUCGCGGAGCCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1133": {
+        "anticodon": "",
+        "genebank": "1IL2_D",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "CCGUGAUAGUUPAADGGDCAGAAUGGGCGCPUGUCKCGUGCCAGAU?GGGGTPCAAUUCCCCGUCGCGGA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1139": {
+        "anticodon": "",
+        "genebank": "2TRA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UCCGUGAUAGUUPAADGGDCAGAAUGGGCGCPUGUCKCGUGCCAGAU?GGGGTPCAAUUCCCCGUCGCGGAGC",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1140": {
+        "anticodon": "",
+        "genebank": "3TRA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "UCCGUGAUAGUUPAADGGDCAGAAUGGGCGCPUGUCKCGUGCCAGAU?GGGGTPCAAUUCCCCGUCGCGGAG",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1152": {
+        "anticodon": "",
+        "genebank": " 3JAQ_1",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AGCGCCGUKLCGCAGDGGAAGCGCRCAGGGCUCAU6ACCCUGAU7D??UCGGAUCG\"\"AACCG^GCGGCGCUACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1158": {
+        "anticodon": "",
+        "genebank": "1YFG_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AGCGCCGUKLCGCAGDGGAAGCGCRCAGGGCUCAU6ACCCUGAU7D??UCGGAUCG\"\"AACCG^GCGGCGCUACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1161": {
+        "anticodon": "",
+        "genebank": "1I9V_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUAGCUCAGUUGGGAGAGCGCCAGACUGAAYAUCUGGAGGUCCUGUGTUCGAUCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1164": {
+        "anticodon": "",
+        "genebank": "1EHZ_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1165": {
+        "anticodon": "",
+        "genebank": " 1EVV_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1166": {
+        "anticodon": "",
+        "genebank": " 1FCW_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1167": {
+        "anticodon": "",
+        "genebank": " 1FCW_B",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1168": {
+        "anticodon": "",
+        "genebank": " 1FCW_C",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1169": {
+        "anticodon": "",
+        "genebank": " 1FCW_D",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1170": {
+        "anticodon": "",
+        "genebank": " 1FCW_E",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1180": {
+        "anticodon": "",
+        "genebank": " 1TN1_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1181": {
+        "anticodon": "",
+        "genebank": " 1TN2_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1182": {
+        "anticodon": "",
+        "genebank": " 1TRA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1184": {
+        "anticodon": "",
+        "genebank": "4TNA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1185": {
+        "anticodon": "",
+        "genebank": "4TRA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1186": {
+        "anticodon": "",
+        "genebank": "6TNA_A",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGCACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1189": {
+        "anticodon": "",
+        "genebank": "6LVR_B",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGC",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1190": {
+        "anticodon": "",
+        "genebank": "6LVR_D",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCAGABU#AAYAP?UGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGC",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1196": {
+        "anticodon": "",
+        "genebank": " 486D_C",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "GCGGAUUUALCUCAGDDGGGAGAGCRCCCGCPUGUCKCGUGGGAG7UC?UGUGTPCG\"\"UCCACAGAAUUCGC",
+        "subtype": "None",
+        "type": "tRNA"
+    },
+    "1203": {
+        "anticodon": "",
+        "genebank": " 6ZU9_1",
+        "mintbase": null,
+        "organellum": "",
+        "organism": "Saccharomyces cerevisiae",
+        "seq": "AGCGCCGUKLCGCAGDGGAAGCGCRCAGGGCUCAU6ACCCUGAU7D??UCGGAUCG\"\"AACCG^GCGGCGCUACCA",
+        "subtype": "None",
+        "type": "tRNA"
+    }
+}
