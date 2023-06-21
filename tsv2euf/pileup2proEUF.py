@@ -89,6 +89,7 @@ def pileup2proEUF(input_file, output_file):
     with open(input_file, "r") as infile, open(output_file, "w") as outfile:
         outfile.write("ref_seg\tpos\tref_base\tcov\tstrand\n")
         for index, line in enumerate(infile):
+            # maybe change this later to "chrX"
             nc_to_chromosome = {
                 'NC_001133.9': 'I',
                 'NC_001134.8': 'II',

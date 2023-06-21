@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import yaml
 
@@ -29,7 +31,7 @@ def tsv2euf(input_file, config_yaml, output_file):
     with open(output_file, 'w') as f:
         config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
         write_header(config, f)
-        f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
+        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
                 "\trefBase\n")
         for _, row in tsv.iterrows():
             chrom = row['chr']
@@ -71,7 +73,7 @@ def proEUF2euf(input_file, config_yaml, output_file):
         mod_file = pd.read_csv(config["modifications_file"])
         with open(output_file, 'w') as f:
             write_header(config, f)
-            f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
+            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
                     "\trefBase\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
@@ -98,8 +100,8 @@ def proEUF2euf(input_file, config_yaml, output_file):
         # Write output file in BED format without modifications
         with open(output_file, 'w') as f:
             write_header(config, f)
-            f.write("chrom\tchromStart\tchromEnd\tname\tscore\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
-                    "\trefBase\n")
+            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                    "\tfrequency\trefBase\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -118,5 +120,6 @@ def proEUF2euf(input_file, config_yaml, output_file):
 
 
 if __name__ == "__main__":
-    proEUF2euf("/example_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "/example_files/test_frankenstein.bed")
+    print(os.getcwd())
+    proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+               "example_files/test_frankenstein.bed")
