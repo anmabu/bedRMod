@@ -39,3 +39,5 @@ This function `proEUF2euf` takes also 3 arguments:
 - path to config.yaml file, optional: with path to file containing modification indices. 
 - path to output file 
 
+## Known Issues
+- It is not possible to open the file "as is" in IGV. This is due to the file having too many column for IGV. If only the first 11 columns are used, IGV can open them without problems
