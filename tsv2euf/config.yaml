@@ -12,5 +12,6 @@ options:
   references:
     pubmed_id: "36434097"
     geo_accession: "GSE198246"
+  rawScore: p-value
 
-modifications_file: "/home/annebusch/Documents/PyCharmProjects/EUF/flat2euf/m6aSACseq/euf/mod_indices.csv"
+modifications_file: "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/example_files/mod_indices.csv"

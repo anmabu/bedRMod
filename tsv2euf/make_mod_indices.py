@@ -2,9 +2,10 @@
 create mod indices file.
 """
 
-import pandas as pd
 from Bio import SeqIO
 
+import pandas as pd
+from random import random
 
 # reads in the file containing the modomics abbrevations and one-letter codes
 def get_modomics_shortvalues_df(input_file):
@@ -79,7 +80,6 @@ def select_modification(all_tRNA_df, mod_symbol):
     del select_mod_df["genebank"]
     del select_mod_df["mintbase"]
     select_mod_df = select_mod_df.reset_index(drop=True)
-    print(select_mod_df.columns)
     return select_mod_df
 
 
@@ -197,18 +197,22 @@ def create_mod_indices_file(output_file="../tsv2euf/example_files/mod_indices.cs
     # http://trnadb.bioinf.uni-leipzig.de/DataOutput/images/mod.pdf
     # the input file is this pdf, converted to txt format
     mods = get_modomics_shortvalues_df("../tsv2euf/example_files/modomics_shortvalues.txt")
-    # read in ref sequences obtained from: https://www.genesilico.pl/modomics/api/sequences?RNAtype=tRNA&organism=saccharomyces+cerevisiae&format=json
+    # read in ref sequences obtained from:
+    # https://www.genesilico.pl/modomics/api/sequences?RNAtype=tRNA&organism=saccharomyces+cerevisiae&format=json
     tRNA_s_cerv = pd.read_json("../tsv2euf/example_files/tRNA_sequences.json")
+    # this file is needed to extract the possible modification indices on the tRNA
     tRNA_s_cerv = tRNA_s_cerv.transpose().reset_index(drop=True)
     tRNA_s_cerv.sort_values("anticodon")
     # ensembl search of S.cerv tRNA (R64-1-1) sequences, containing the values mentioned in the filename
     tRNA_df = get_all_tRNA_genes(
         "example_files/alltRNA_sequences_chrom_start_stop_transstart_strand_exonstart_exonend.fasta")
+    # this file is needed to get information on chromosome and strand of tRNA sequences.
     reference_indices = get_reference_indices_sequences(tRNA_s_cerv, mods, tRNA_df, mod_symbol, mod_name)
     mod_indices = pd.DataFrame(reference_indices[["ref_seg", 'mod_index', "strand"]])
     strand_dict = {1: "+", -1: "-"}
     mod_indices["strand"] = mod_indices["strand"].replace(strand_dict)
     mod_indices["mod_type"] = [mod_name for i in mod_indices.index]
+    mod_indices["rawScore"] = [random() for i in mod_indices.index]
     mod_indices.to_csv(output_file, index=False)
 
 
