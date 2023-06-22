@@ -1,6 +1,6 @@
 import yaml
 
-EUF_VERSION = "bedRModv1.4"
+EUF_VERSION = "bedModv1.3"
 
 
 def write_header(config, output_file):
@@ -51,3 +51,70 @@ def write_header(config, output_file):
     for k, v in euf_header.items():
         output_file.write(f"#{k}={v}\n")
 
+
+def get_modification_color(modi):
+    """
+    looks up the color of the modification in the rgb dictionary and returns the assiciated rgb value
+    :param modi:
+    :return:
+    """
+    rgb_colors = {'?A': "255,0,0",
+                  'm1A': "0,255,0",
+                  'm2A': "0,0,255",
+                  'i6A': "255,255,0",
+                  'ms2i6A': "255,0,255",
+                  'm6A': "0,255,255",
+                  't6A': "128,0,0",
+                  'm6t6A': "0,128,0",
+                  'ms2t6A': "0,0,128",
+                  'Am': "128,128,0",
+                  'I': "128,0,128",
+                  'm1I': "0,128,128",
+                  'Ar(p)': "255,128,0",
+                  'io6A': "255,0,128",
+                  '?C': "128,255,0",
+                  's2C': "0,255,128",
+                  'Cm': "128,0,255",
+                  'ac4C': "0,128,255",
+                  'm5C': "255,128,128",
+                  'm3C': "128,255,128",
+                  'k2C': "128,128,255",
+                  'f5C': "192,192,192",
+                  'f5Cm': "192,0,0",
+                  '?G': "192,192,0",
+                  'm1G': "0,192,0",
+                  'm2G': "192,0,192",
+                  'Gm': "0,192,192",
+                  'm22G': "0,0,192",
+                  'm22Gm': "0,0,64",
+                  'm7G': "0,64,0",
+                  'fa7d7G': "64,0,0",
+                  'Q': "0,205,139",
+                  'manQ': "64,64,64",
+                  'galQ': "64,64,0",
+                  'yW': "64,0,64",
+                  'o2yW': "0,64,64",
+                  '?U': "255,64,0",
+                  'mnm5U': "255,0,64",
+                  's2U': "64,255,0",
+                  'Um': "0,255,64",
+                  's4U': "64,0,255",
+                  'ncm5U': "0,64,255",
+                  'mcm5U': "255,64,64",
+                  'mnm5s2U': "64,255,64",
+                  'mcm5s2U': "64,64,255",
+                  'cmo5U': "205,205,205",
+                  'mo5U': "139,0,0",
+                  'cmnm5U': "139,139,0",
+                  'cmnm5s2U': "0,139,0",
+                  'acp3U': "139,0,139",
+                  'mchm5U': "0,139,139",
+                  'cmnm5Um': "0,0,139",
+                  'ncm5Um': "0,0,70",
+                  'D': "0,70,0",
+                  'psi': "205,139,0",
+                  'm1psi': "139,205,0",
+                  'm5U': "205,0,139",
+                  'm5s2U': "0,205,0",
+                  'm5Um': "0,139,205"}
+    return rgb_colors.get(modi)

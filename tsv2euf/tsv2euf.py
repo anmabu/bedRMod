@@ -4,6 +4,7 @@ import pandas as pd
 import yaml
 
 from helper import write_header
+from helper import get_modification_color
 
 
 def tsv2euf(input_file, config_yaml, output_file):
@@ -73,8 +74,8 @@ def proEUF2euf(input_file, config_yaml, output_file):
         mod_file = pd.read_csv(config["modifications_file"])
         with open(output_file, 'w') as f:
             write_header(config, f)
-            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
-                    "\trefBase\n")
+            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                    "\tfrequency\trefBase\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -85,12 +86,13 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 if selected_row.empty:
                     name = "."
                     frequency = 0
+                    item_rgb = '0,0,0'
                 else:
                     name = selected_row.iloc[0]["mod_type"]
                     frequency = 100
+                    item_rgb = get_modification_color(name)
                 thick_start = row['thickStart']
                 thick_end = row['thickEnd']
-                item_rgb = '0,0,0'
                 coverage = row["cov"]
                 refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
