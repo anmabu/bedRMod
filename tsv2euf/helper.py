@@ -1,6 +1,6 @@
 import yaml
 
-EUF_VERSION = "bedModv1.3"
+EUF_VERSION = "bedRModv1.4"
 
 
 def write_header(config, output_file):
