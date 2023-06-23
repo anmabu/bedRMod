@@ -14,4 +14,4 @@ options:
     geo_accession: "GSE198246"
   rawScore: p-value
 
-modifications_file: "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/example_files/mod_indices.csv"
+modifications_file: "example_files/mod_indices.csv"
