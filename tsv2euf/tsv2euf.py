@@ -28,9 +28,10 @@ def tsv2euf(input_file, config_yaml, output_file):
     # Drop the original frac column
     tsv = tsv.drop(columns=['frac'])
 
+    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+
     # Write output file in BED format
     with open(output_file, 'w') as f:
-        config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
         write_header(config, f)
         f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
                 "\trefBase\trawScore\n")
@@ -56,9 +57,9 @@ def tsv2euf(input_file, config_yaml, output_file):
 def proEUF2euf(input_file, config_yaml, output_file):
     """
     converts profile into EUF. needed second file to show at which positions are which modifications
-    :param input_file:
-    :param config_yaml:
-    :param output_file:
+    :param input_file: (path to) input file in proEUF format.
+    :param config_yaml: (path to) config file containing the information on the metadata
+    :param output_file: (path to) output file.
     :return:
     """
 
@@ -69,6 +70,15 @@ def proEUF2euf(input_file, config_yaml, output_file):
     # convert dtype of columns
     proEUF["pos"] = pd.to_numeric(proEUF["pos"])
     proEUF['thickEnd'] = proEUF["pos"] + 1
+
+    path, ending = os.path.splitext(output_file)
+    if not ending == ".bed":
+        output_file = path + ".bed"
+        print(f"filename changed to {output_file}")
+
+    directory, file = os.path.split(output_file)
+    if not os.path.isdir(directory):
+        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
 
     config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
     if config["modifications_file"]:
@@ -128,6 +138,5 @@ def proEUF2euf(input_file, config_yaml, output_file):
 
 
 if __name__ == "__main__":
-    # print(os.getcwd())
     proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "example_files/test_frankenstein.bed")
+               "example_files/test_frankenstein.txt")
