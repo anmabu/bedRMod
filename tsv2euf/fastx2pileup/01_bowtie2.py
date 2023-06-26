@@ -37,7 +37,7 @@ def call_bowtie2(ref_sequence, fastq_sequence_path, sam_file, bowtie_args=None, 
             print(os.path.basename(fastq_sequence_path))
         else:
             print(f"The file at {fastq_sequence_path} is empty!")
-    except OSError:
+    except FileNotFoundError:
         print(f"The file {fastq_sequence_path} does not exists!")
 
     if paired:
