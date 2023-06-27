@@ -7,11 +7,10 @@ def write_header(config, output_file):
     """
     reads information from the config yaml and writes it to the header of the bedMod file.
     the structure of the config file is quite rigid as of now.
-    :param config: this .yaml file contains the options to write to the header.
+    :param config: the contents of the config.yaml file that contains the options to write to the header.
     :param output_file: this is the file where the header is written into. File already has to be open for this to work! T
-    :return:
     """
-    # config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+
     euf_header_keys = [
         "fileformat",
         "organism",
@@ -54,7 +53,7 @@ def write_header(config, output_file):
 
 def get_modification_color(modi):
     """
-    looks up the color of the modification in the rgb dictionary and returns the assiciated rgb value
+    looks up the color of the modification in the rgb dictionary and returns the associated rgb value
     :param modi:
     :return:
     """

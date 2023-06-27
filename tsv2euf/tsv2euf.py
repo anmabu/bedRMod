@@ -28,7 +28,7 @@ def tsv2euf(input_file, config_yaml, output_file):
     # Drop the original frac column
     tsv = tsv.drop(columns=['frac'])
 
-    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+    config = yaml.safe_load(open(config_yaml, "r"))
 
     # Write output file in BED format
     with open(output_file, 'w') as f:
@@ -80,7 +80,7 @@ def proEUF2euf(input_file, config_yaml, output_file):
     if not os.path.isdir(directory):
         raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
 
-    config = yaml.load(open(config_yaml), Loader=yaml.FullLoader)
+    config = yaml.safe_load(open(config_yaml, "r"))
     if config["modifications_file"]:
         mod_file = pd.read_csv(config["modifications_file"])
         with open(output_file, 'w') as f:
