@@ -212,7 +212,7 @@ def create_mod_indices_file(output_file="../tsv2euf/example_files/mod_indices.cs
     strand_dict = {1: "+", -1: "-"}
     mod_indices["strand"] = mod_indices["strand"].replace(strand_dict)
     mod_indices["mod_type"] = [mod_name for i in mod_indices.index]
-    mod_indices["rawScore"] = [random() for i in mod_indices.index]
+    mod_indices["p-value"] = [random() for i in mod_indices.index]
     mod_indices.to_csv(output_file, index=False)
 
 

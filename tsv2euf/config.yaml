@@ -12,6 +12,5 @@ options:
   references:
     pubmed_id: "36434097"
     geo_accession: "GSE198246"
-  rawScore: p-value
 
 modifications_file: "example_files/mod_indices.csv"
