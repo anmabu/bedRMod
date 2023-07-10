@@ -1,12 +1,15 @@
-# EUF
+# bedRMod
 
-This project is about converting RNA sequencing data into the new epitranscriptomics unified data format, **bedRMod**. 
+This project is about converting RNA sequencing data into the new epitranscriptomics unified data format(EUF), **bedRMod**. 
 bedRMod does contain the read data on a per site-level (as opposed to SAM/BAM which contain the information per read-level) 
 as well as information on modification of the site. 
 
 The available options are conversion from: 
 - flat (tsv) format
 - pileup data (converted from fastq/fasta)
+
+## Specification
+For the data specification, please refer to the bedRMod.pdf.
 
 ## Instruction
 
