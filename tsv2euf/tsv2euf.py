@@ -103,6 +103,7 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 else:
                     selected_row = selected_row.iloc[0]
                     name = selected_row["mod_type"]
+                    score = 954
                     frequency = 100
                     item_rgb = get_modification_color(name)
                     custom = f"p-value={selected_row['p-value']};experimenter=John;"
