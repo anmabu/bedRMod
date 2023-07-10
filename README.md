@@ -1,7 +1,7 @@
 # EUF
 
-This project is about converting RNA sequencing data into the new epitranscriptomics unified data format (EUF). 
-EUF does contain the read data on a per site-level (as opposed to SAM/BAM which contain the information per read-level) 
+This project is about converting RNA sequencing data into the new epitranscriptomics unified data format, **bedRMod**. 
+bedRMod does contain the read data on a per site-level (as opposed to SAM/BAM which contain the information per read-level) 
 as well as information on modification of the site. 
 
 The available options are conversion from: 

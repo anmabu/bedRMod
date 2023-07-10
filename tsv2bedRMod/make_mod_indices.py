@@ -185,7 +185,7 @@ def get_reference_indices_sequences(modomics_tRNA, modomics_mods, tRNA_genes, mo
     return mod_pos_df
 
 
-def create_mod_indices_file(output_file="../tsv2euf/example_files/mod_indices.csv", mod_symbol='"', mod_name="m1A"):
+def create_mod_indices_file(output_file="../tsv2bedRMod/example_files/mod_indices.csv", mod_symbol='"', mod_name="m1A"):
     """
     Creates the file containing the indices where modifications occur.
     This is not the final form of the function, as this is restricted to S.cerv tRNA modifications for now.
@@ -196,10 +196,10 @@ def create_mod_indices_file(output_file="../tsv2euf/example_files/mod_indices.cs
     """
     # http://trnadb.bioinf.uni-leipzig.de/DataOutput/images/mod.pdf
     # the input file is this pdf, converted to txt format
-    mods = get_modomics_shortvalues_df("../tsv2euf/example_files/modomics_shortvalues.txt")
+    mods = get_modomics_shortvalues_df("/example_files/modomics_shortvalues.txt")
     # read in ref sequences obtained from:
     # https://www.genesilico.pl/modomics/api/sequences?RNAtype=tRNA&organism=saccharomyces+cerevisiae&format=json
-    tRNA_s_cerv = pd.read_json("../tsv2euf/example_files/tRNA_sequences.json")
+    tRNA_s_cerv = pd.read_json("/example_files/tRNA_sequences.json")
     # this file is needed to extract the possible modification indices on the tRNA
     tRNA_s_cerv = tRNA_s_cerv.transpose().reset_index(drop=True)
     tRNA_s_cerv.sort_values("anticodon")

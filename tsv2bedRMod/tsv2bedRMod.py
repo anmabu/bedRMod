@@ -72,8 +72,8 @@ def proEUF2euf(input_file, config_yaml, output_file):
     proEUF['thickEnd'] = proEUF["pos"] + 1
 
     path, ending = os.path.splitext(output_file)
-    if not ending == ".bed":
-        output_file = path + ".bed"
+    if not ending == ".euf.bed":
+        output_file = path + ".euf.bed"
         print(f"filename changed to {output_file}")
 
     directory, file = os.path.split(output_file)

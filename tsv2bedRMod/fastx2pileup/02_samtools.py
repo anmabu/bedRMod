@@ -126,7 +126,7 @@ def bam2pileup_MT_dir(input_dir):
 
 
 if __name__ == "__main__":
-    in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2euf/test_files/"
+    in_dir = "/tsv2bedRMod/test_files/"
     # sam2bam_dir(in_dir)
     # merge_bams_dir(in_dir)
     # sort_bam_dir(in_dir)
