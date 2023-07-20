@@ -7,7 +7,7 @@ from helper import write_header
 from helper import get_modification_color
 
 
-def tsv2euf(input_file, config_yaml, output_file):
+def tsv2bedRMod(input_file, config_yaml, output_file):
     """
     converts tab-seperated files into bedMod format. only works with special columns as of now.
     These columns are: "chr", "pos", "strand", "motif", "frac"
@@ -53,7 +53,7 @@ def tsv2euf(input_file, config_yaml, output_file):
                     f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
-def proEUF2euf(input_file, config_yaml, output_file):
+def proEUF2bedRMod(input_file, config_yaml, output_file):
     """
     converts proEUF into bedRMod. needed second file to show at which positions are which modifications. This file is linked to in the config file
     :param input_file: (path to) input file in proEUF format.
@@ -138,5 +138,5 @@ def proEUF2euf(input_file, config_yaml, output_file):
 
 
 if __name__ == "__main__":
-    proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+    proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
                "example_files/test_frankenstein.bedrmod")
