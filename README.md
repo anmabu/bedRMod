@@ -20,7 +20,7 @@ Those differ for the input formats.
 
 A config file is needed in which the metadata of the files are stored. 
 Please have a look at the config.yaml file to get a better impression. 
-To convert the file, call the `tsv2euf` function with the following arguments: 
+To convert the file, call the `tsv2bedRMod` function with the following arguments: 
 - path to tsv (input) file e.g. "/flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
 - path to config.yaml file e.g. "/tsv2euf/config.yaml"
 - path to output file e.g. "/flat2euf/m6aSACseq/euf/output_file.bedrmod"
