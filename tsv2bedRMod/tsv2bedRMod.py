@@ -11,9 +11,9 @@ def tsv2euf(input_file, config_yaml, output_file):
     """
     converts tab-seperated files into bedMod format. only works with special columns as of now.
     These columns are: "chr", "pos", "strand", "motif", "frac"
-    :param config_yaml: path/to/config.yaml, containing the header information for the new bedMod file.
+    :param config_yaml: path/to/config.yaml, containing the header information for the new bedRMod file.
     :param input_file: path/to/input_file.tsv(.gz)
-    :param output_file: path/to/output_file.bed
+    :param output_file: path/to/output_file.bedrmod
     :return:
     """
     tsv = pd.read_csv(input_file, delimiter="\t")
@@ -34,7 +34,7 @@ def tsv2euf(input_file, config_yaml, output_file):
     with open(output_file, 'w') as f:
         write_header(config, f)
         f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
-                "\trefBase\tcustom\n")
+                "\trefBase\n")
         for _, row in tsv.iterrows():
             chrom = row['chr']
             start = row['pos']
@@ -49,14 +49,13 @@ def tsv2euf(input_file, config_yaml, output_file):
             coverage = "-1"
             frequency = row['score']
             refBase = ""
-            custom = ""
             f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
+                    f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
 def proEUF2euf(input_file, config_yaml, output_file):
     """
-    converts profile into EUF. needed second file to show at which positions are which modifications
+    converts proEUF into bedRMod. needed second file to show at which positions are which modifications. This file is linked to in the config file
     :param input_file: (path to) input file in proEUF format.
     :param config_yaml: (path to) config file containing the information on the metadata
     :param output_file: (path to) output file.
@@ -86,7 +85,7 @@ def proEUF2euf(input_file, config_yaml, output_file):
         with open(output_file, 'w') as f:
             write_header(config, f)
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\trefBase\tcustom\n")
+                    "\tfrequency\trefBase\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -99,27 +98,27 @@ def proEUF2euf(input_file, config_yaml, output_file):
                     name = "."
                     frequency = 0
                     item_rgb = '0,0,0'
-                    custom = ""
+                    # custom = ""
                 else:
                     selected_row = selected_row.iloc[0]
                     name = selected_row["mod_type"]
                     score = 954
                     frequency = 100
                     item_rgb = get_modification_color(name)
-                    custom = f"p-value={selected_row['p-value']};experimenter=John;"
+                    # custom = f"p-value={selected_row['p-value']};experimenter=John;"
                 thick_start = row['thickStart']
                 thick_end = row['thickEnd']
                 coverage = row["cov"]
                 refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
+                        f'\t{coverage}\t{frequency}\t{refBase}\n')
 
     else:
         # Write output file in BED format without modifications
         with open(output_file, 'w') as f:
             write_header(config, f)
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\trefBase\tcustom\n")
+                    "\tfrequency\trefBase\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -133,11 +132,11 @@ def proEUF2euf(input_file, config_yaml, output_file):
                 coverage = row["cov"]
                 frequency = 0
                 refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
-                custom = ""
+                # custom = ""
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
+                        f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
 if __name__ == "__main__":
     proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "example_files/test_frankenstein.txt")
+               "example_files/test_frankenstein.bedrmod")
