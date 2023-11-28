@@ -117,3 +117,17 @@ def get_modification_color(modi):
                   'm5s2U': "0,205,0",
                   'm5Um': "0,139,205"}
     return rgb_colors.get(modi)
+
+
+def parse_excel(input_file):
+    """
+    parses the input excel file and returns a list of (outfilename, sheet). 
+    This is useful if the Excel file contains multiple sheets with information to be converted into bedrmod.
+    """
+    file = pd.read_excel("/home/annebusch/anne02/euf-data/bid-seq/GSE179798_Mouse_mRNA_12-Tissues_BID-seq.xlsx", None)
+    outfile, ext = os.path.splitext(input_file)
+    sheet_list = []
+    for key, value in file.items():
+        sheet_list.append((outfile + "_" + key.strip() + ext, value))
+    print(sheet_list)
+    return sheet_list
