@@ -148,7 +148,7 @@ def bid2bedRMod(input_file, config_yaml, output_file, sheet_name=0):
     :return:
     """
     bid = pd.read_excel(input_file, sheet_name=sheet_name, header=3)
-
+    # remove this code?
     # Set thickStart and thickEnd to pos and pos+1, respectively
     bid['thickStart'] = bid['pos']
     # convert dtype of columns
@@ -191,8 +191,9 @@ def bid2bedRMod(input_file, config_yaml, output_file, sheet_name=0):
             coverage = ((row["Deletion_count_rep1"] / row["Deletion_rep1"]) + (row["Deletion_count_rep2"] / row["Deletion_rep2"]))
             frequency = row["Frac_Ave %"]
             refBase = "U" if row["Motif_1"][3].upper() == "T" else row["Motif_1"][3].upper()
-                       f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
                     f'\t{coverage}\t{frequency}\t{refBase}\n')
+
 
 def etam2bedRMod(input_file, config_yaml, output_file):
     """
@@ -202,18 +203,11 @@ def etam2bedRMod(input_file, config_yaml, output_file):
    :param output_file: (path to) output file.
    :return:
    """
-
-    proEUF = pd.read_csv(input_file, delimiter="\t")
-
-    # Set thickStart and thickEnd to pos and pos+1, respectively
-    proEUF['thickStart'] = proEUF['pos']
-    # convert dtype of columns
-    proEUF["pos"] = pd.to_numeric(proEUF["pos"])
-    proEUF['thickEnd'] = proEUF["pos"] + 1
+    etam = pd.read_csv(input_file, delimiter="\t")
 
     path, ending = os.path.splitext(output_file)
-    if not ending == ".euf.bed":
-        output_file = path + ".euf.bed"
+    if not ending == ".bedrmod":
+        output_file = path + ".bedrmod"
         print(f"filename changed to {output_file}")
 
     directory, file = os.path.split(output_file)
@@ -222,6 +216,30 @@ def etam2bedRMod(input_file, config_yaml, output_file):
 
     config = yaml.safe_load(open(config_yaml, "r"))
 
+    with open(output_file, 'w') as f:
+        write_header(config, f)
+        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                "\tfrequency\trefBase\n")
+        for _, row in etam.iterrows():
+            ref_seg, pos, strand = row["pos"].split("_")
+            chrom = ref_seg
+            start = int(pos)
+            end = start + 1
+            name = "m6A"
+            score = int(1000 - (row["FDR"] * 1000))
+            strand = strand
+            thick_start = start
+            thick_end = end
+            item_rgb = get_modification_color(name)
+            # coverage is not directly indicated, but can be reconstructed from the given values
+            coverage = (row["FTOm_total_count"] * row["accessbility"])
+            frequency = row["methylation"]
+            refBase = "U" if row["motif"][3].upper() == "T" else row["motif"][3].upper()
+            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                    f'\t{coverage}\t{frequency}\t{refBase}\n')
+
+
 if __name__ == "__main__":
-    proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "example_files/test_frankenstein.bedrmod")
+    # proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+    #           "example_files/test_frankenstein.bedrmod")
+
