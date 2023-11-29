@@ -5,6 +5,7 @@ import yaml
 
 from helper import write_header
 from helper import get_modification_color
+from helper import parse_excel
 
 
 def tsv2euf(input_file, config_yaml, output_file):
@@ -138,6 +139,68 @@ def proEUF2euf(input_file, config_yaml, output_file):
                         f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
 
 
+def bid2euf(input_file, config_yaml, output_file, sheet_name=0):
+    """
+    converts bid-seq files into EUF.
+    :param input_file: (path to) input file.
+    :param config_yaml: (path to) config file containing the information on the metadata
+    :param output_file: (path to) output file.
+    :parm sheet_name: if multiple sheets within an excel file are present, they can be passed by sheet name.
+    :return:
+    """
+    bid = pd.read_excel(input_file, sheet_name=sheet_name, header=3)
+
+    # Set thickStart and thickEnd to pos and pos+1, respectively
+    bid['thickStart'] = bid['pos']
+    # convert dtype of columns
+    bid["pos"] = pd.to_numeric(bid["pos"])
+    bid['thickEnd'] = bid["pos"] + 1
+
+    path, ending = os.path.splitext(output_file)
+
+    if sheet_name != 0:
+        sheet_name = sheet_name.replace(" ", "")
+        path += f"_{sheet_name}"
+        
+    if not ending == ".bedrmod":
+        output_file = path + ".bedrmod"
+        print(f"filename changed to {output_file}")
+    else:  # this is the case if a sheet name is added to the filename
+        output_file = path + ending
+
+    
+    directory, file = os.path.split(output_file)
+    if not os.path.isdir(directory):
+        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
+
+    config = yaml.safe_load(open(config_yaml, "r"))
+    with open(output_file, 'w') as f:
+        write_header(config, f)
+        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                "\tfrequency\trefBase\tcustom\n")
+        for _, row in bid.iterrows():
+            chrom = row["chr"]
+            start = row['pos']
+            end = start + 1
+            name = "psi"
+            score = row["Frac_Ave %"] * 100
+            strand = row['strand']
+            thick_start = start
+            thick_end = end
+            item_rgb = get_modification_color(name)
+            # coverage is not directly indicated, but can be reconstructed from the given values
+            coverage = ((row["Deletion_count_rep1"] / row["Deletion_rep1"]) + (row["Deletion_count_rep2"] / row["Deletion_rep2"])) 
+            frequency = row["Frac_Ave %"]
+            refBase = "U" if row["Motif_1"][3].upper() == "T" else row["Motif_1"][3].upper()
+            custom = ""
+            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                    f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
+
+
+
 if __name__ == "__main__":
-    proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-               "example_files/test_frankenstein.txt")
+    # proEUF2euf("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
+    #           "example_files/test_frankenstein.txt")
+    for sheet in parse_excel("GSE179798_Mouse_mRNA_12-Tissues_BID-seq.xlsx"): 
+        bid2euf("/home/annebusch/anne02/euf-data/bid-seq/GSE179798_Mouse_mRNA_12-Tissues_BID-seq.xlsx", "/home/annebusch/anne02/euf-data/bid-seq/human_config.yaml", "/home/annebusch/anne02/euf-data/bid-seq/GSE179798_Mouse_mRNA_12-Tissues_BID-seq.bedrmod", sheet_name=sheet)
+        
