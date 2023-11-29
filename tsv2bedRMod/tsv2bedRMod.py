@@ -144,7 +144,7 @@ def bid2bedRMod(input_file, config_yaml, output_file, sheet_name=0):
     :param input_file: (path to) input file.
     :param config_yaml: (path to) config file containing the information on the metadata
     :param output_file: (path to) output file.
-    :parm sheet_name: if multiple sheets within an excel file are present, they can be passed by sheet name.
+    :param sheet_name: if multiple sheets within an excel file are present, they can be passed by sheet name.
     :return:
     """
     bid = pd.read_excel(input_file, sheet_name=sheet_name, header=3)
@@ -191,11 +191,36 @@ def bid2bedRMod(input_file, config_yaml, output_file, sheet_name=0):
             coverage = ((row["Deletion_count_rep1"] / row["Deletion_rep1"]) + (row["Deletion_count_rep2"] / row["Deletion_rep2"]))
             frequency = row["Frac_Ave %"]
             refBase = "U" if row["Motif_1"][3].upper() == "T" else row["Motif_1"][3].upper()
-            custom = ""
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\t{custom}\n')
+                       f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
+                    f'\t{coverage}\t{frequency}\t{refBase}\n')
 
+def etam2bedRMod(input_file, config_yaml, output_file):
+    """
+   converts etam-seq files into EUF.
+   :param input_file: (path to) input file.
+   :param config_yaml: (path to) config file containing the information on the metadata
+   :param output_file: (path to) output file.
+   :return:
+   """
 
+    proEUF = pd.read_csv(input_file, delimiter="\t")
+
+    # Set thickStart and thickEnd to pos and pos+1, respectively
+    proEUF['thickStart'] = proEUF['pos']
+    # convert dtype of columns
+    proEUF["pos"] = pd.to_numeric(proEUF["pos"])
+    proEUF['thickEnd'] = proEUF["pos"] + 1
+
+    path, ending = os.path.splitext(output_file)
+    if not ending == ".euf.bed":
+        output_file = path + ".euf.bed"
+        print(f"filename changed to {output_file}")
+
+    directory, file = os.path.split(output_file)
+    if not os.path.isdir(directory):
+        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
+
+    config = yaml.safe_load(open(config_yaml, "r"))
 
 if __name__ == "__main__":
     proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
