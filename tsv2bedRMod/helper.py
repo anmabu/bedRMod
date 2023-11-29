@@ -1,3 +1,4 @@
+import pandas as pd
 import yaml
 
 EUF_VERSION = "bedRModv1.5"
@@ -121,13 +122,9 @@ def get_modification_color(modi):
 
 def parse_excel(input_file):
     """
-    parses the input excel file and returns a list of (outfilename, sheet). 
+    parses the input excel file and returns a list of sheetnames.  
     This is useful if the Excel file contains multiple sheets with information to be converted into bedrmod.
+    Not really efficient, if the input file is huge, though. 
     """
     file = pd.read_excel("/home/annebusch/anne02/euf-data/bid-seq/GSE179798_Mouse_mRNA_12-Tissues_BID-seq.xlsx", None)
-    outfile, ext = os.path.splitext(input_file)
-    sheet_list = []
-    for key, value in file.items():
-        sheet_list.append((outfile + "_" + key.strip() + ext, value))
-    print(sheet_list)
-    return sheet_list
+    return file.keys()
