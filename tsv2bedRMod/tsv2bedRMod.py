@@ -138,7 +138,7 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                         f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
-def bid2euf(input_file, config_yaml, output_file, sheet_name=0):
+def bid2bedRMod(input_file, config_yaml, output_file, sheet_name=0):
     """
     converts bid-seq files into EUF.
     :param input_file: (path to) input file.
