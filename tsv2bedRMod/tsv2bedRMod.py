@@ -372,7 +372,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 coverage_col = coverage_function(params)
             else:
                 if coverage in file.columns:
-                    coverage_col = row[coverage_col]
+                    coverage_col = row[coverage]
                 else:
                     coverage_col = coverage
             if frequency_function is not None:
