@@ -246,6 +246,8 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                     f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\t{refBase_col}\n')
 
 
+
 if __name__ == "__main__":
     proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
                    "example_files/test_frankenstein.bedrmod")
+
