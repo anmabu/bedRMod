@@ -99,14 +99,12 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                     name = "."
                     frequency = 0
                     item_rgb = '0,0,0'
-                    # custom = ""
                 else:
                     selected_row = selected_row.iloc[0]
                     name = selected_row["mod_type"]
                     score = 954
                     frequency = 100
                     item_rgb = get_modification_color(name)
-                    # custom = f"p-value={selected_row['p-value']};experimenter=John;"
                 thick_start = row['thickStart']
                 thick_end = row['thickEnd']
                 coverage = row["cov"]
@@ -133,161 +131,8 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                 coverage = row["cov"]
                 frequency = 0
                 refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
-                # custom = ""
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
                         f'\t{coverage}\t{frequency}\t{refBase}\n')
-
-
-def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
-    """
-    converts bid-seq files into EUF.
-    :param input_file: (path to) input file.
-    :param config_yaml: (path to) config file containing the information on the metadata
-    :param output_file: (path to) output file.
-    :param sheet_name: if multiple sheets within an excel file are present, they can be passed by sheet name.
-    :return:
-    """
-    bid = pd.read_excel(input_file, sheet_name=sheet_name, header=3)
-    if output_file is None:
-        output_file = input_file
-    path, ending = os.path.splitext(output_file)
-
-    if sheet_name != 0:
-        sheet_name = sheet_name.replace(" ", "")
-        path += f"_{sheet_name}"
-
-    if not ending == ".bedrmod":
-        output_file = path + ".bedrmod"
-        print(f"filename changed to {output_file}")
-    else:  # this is the case if a sheet name is added to the filename
-        output_file = path + ending
-
-    directory, file = os.path.split(output_file)
-    if not os.path.isdir(directory):
-        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
-
-    config = yaml.safe_load(open(config_yaml, "r"))
-    with open(output_file, 'w') as f:
-        write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                "\tfrequency\trefBase\tcustom\n")
-        for _, row in bid.iterrows():
-            chrom = row["chr"]
-            start = pd.to_numeric(row['pos'])
-            end = start + 1
-            name = "psi"
-            score = row["Frac_Ave %"] * 100
-            strand = row['strand']
-            thick_start = start
-            thick_end = end
-            item_rgb = get_modification_color(name)
-            # coverage is not directly indicated, but can be reconstructed from the given values
-            coverage = ((row["Deletion_count_rep1"] / row["Deletion_rep1"])
-                        + (row["Deletion_count_rep2"] / row["Deletion_rep2"]))
-            frequency = row["Frac_Ave %"]
-            refBase = "U" if row["Motif_1"][2].upper() == "T" else row["Motif_1"][2].upper()
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\n')
-
-
-def bid_human2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
-    """
-    converts bid-seq files into EUF.
-    :param input_file: (path to) input file.
-    :param config_yaml: (path to) config file containing the information on the metadata
-    :param output_file: (path to) output file.
-    :param sheet_name: if multiple sheets within an excel file are present, they can be passed by sheet name.
-    :return:
-    """
-    bid = pd.read_excel(input_file, sheet_name=sheet_name, header=3)
-    if output_file is None:
-        output_file = input_file
-    path, ending = os.path.splitext(output_file)
-
-    if sheet_name != 0:
-        sheet_name = sheet_name.replace(" ", "")
-        path += f"_{sheet_name}"
-
-    if not ending == ".bedrmod":
-        output_file = path + ".bedrmod"
-        print(f"filename changed to {output_file}")
-    else:  # this is the case if a sheet name is added to the filename
-        output_file = path + ending
-
-    directory, file = os.path.split(output_file)
-    if not os.path.isdir(directory):
-        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
-
-    config = yaml.safe_load(open(config_yaml, "r"))
-    with open(output_file, 'w') as f:
-        write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                "\tfrequency\trefBase\tcustom\n")
-        for _, row in bid.iterrows():
-            chrom = row["chr"]
-            start = pd.to_numeric(row['pos'])
-            end = start + 1
-            name = "psi"
-            score = row["Frac_Ave %"] * 100
-            strand = row['strand']
-            thick_start = start
-            thick_end = end
-            item_rgb = get_modification_color(name)
-            # coverage is not directly indicated, but can be reconstructed from the given values
-            coverage = ((row["Deletion count_rep1"] / row["Deletion_rep1"])
-                        + (row["Deletion count_rep2"] / row["Deletion_rep2"])
-                        + (row["Deletion count_rep3"] / row["Deletion_rep3"]))
-            frequency = row["Frac_Ave %"]
-            refBase = "U" if row["Motif_1"][2].upper() == "T" else row["Motif_1"][2].upper()
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\n')
-
-
-def etam2bedRMod(input_file, config_yaml, output_file=None):
-    """
-    converts etam-seq files into EUF.
-    :param input_file: (path to) input file.
-    :param config_yaml: (path to) config file containing the information on the metadata
-    :param output_file: (path to) output file.
-    :return:
-    """
-    etam = pd.read_csv(input_file, delimiter="\t")
-
-    if output_file is None:
-        output_file = input_file
-
-    path, ending = os.path.splitext(output_file)
-    if not ending == ".bedrmod":
-        output_file = path + ".bedrmod"
-        print(f"output file: {output_file}")
-
-    directory, file = os.path.split(output_file)
-    if not os.path.isdir(directory):
-        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
-
-    config = yaml.safe_load(open(config_yaml, "r"))
-
-    with open(output_file, 'w') as f:
-        write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                "\tfrequency\trefBase\n")
-        for _, row in etam.iterrows():
-            ref_seg, pos, strand = row["pos"].split("_")
-            chrom = ref_seg
-            start = int(pos)
-            end = start + 1
-            name = "m6A"
-            score = int(1000 - (row["FDR"] * 1000))
-            strand = strand
-            thick_start = start
-            thick_end = end
-            item_rgb = get_modification_color(name)
-            # coverage is not directly indicated, but can be reconstructed from the given values
-            coverage = (row["FTOm_total_count"] * row["accessbility"])
-            frequency = row["methylation"]
-            refBase = "U" if row["motif"][2].upper() == "T" else row["motif"][2].upper()
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\n')
 
 
 def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", modi="m1A", modi_column=False,
@@ -352,7 +197,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 score_column = score_function(params)
             else:
                 if isinstance(score, str):
-                    score_column = row[score]
+                    score_column = round(row[score])
                 else:
                     score_column = score
             if strand == "+":
@@ -372,14 +217,14 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 coverage_col = coverage_function(params)
             else:
                 if coverage in file.columns:
-                    coverage_col = row[coverage]
+                    coverage_col = round(row[coverage])
                 else:
                     coverage_col = coverage
             if frequency_function is not None:
                 if isinstance(frequency, list):
                     params = [row[col] for col in frequency]
                 elif isinstance(frequency, str):
-                    params = row[frequency]
+                    params = rount(row[frequency])
                 frequency_col = frequency_function(params)
             else:
                 if isinstance(frequency, str):
