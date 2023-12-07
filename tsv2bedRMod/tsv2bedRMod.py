@@ -181,12 +181,9 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 "\tfrequency\trefBase\n")
         for _, row in file.iterrows():
             chrom = row[ref_seg]
-            # chrom = ref_seg
-            # start_col = int(pos)
             start_col = int(row[start])
             end = start_col + 1
             name = row[modi] if modi_column else modi
-            # does this make sense?
             if score_function is not None:
                 if type(score) == list:
                     params = [row[col] for col in score]
@@ -224,13 +221,16 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 if isinstance(frequency, list):
                     params = [row[col] for col in frequency]
                 elif isinstance(frequency, str):
-                    params = rount(row[frequency])
+                    params = row[frequency]
                 frequency_col = frequency_function(params)
             else:
-                if isinstance(frequency, str):
-                    frequency_col = row[frequency]
+                if frequency in file.columns:
+                    frequency_col = round(row[frequency])
                 elif isinstance(frequency, (int, float)):
-                    frequency_col = frequency
+                    frequency_col = round(frequency)
+                else:
+                    raise ValueError("Invalid frequency input. Must be either a column name of the input file or a "
+                                     "fixed value as Integer for all rows.")
             if refbase_function is not None:
                 if isinstance(refBase, list):
                     params = [row[col] for col in refBase]
@@ -244,7 +244,6 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                     refBase_col = refBase
             f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}\t{thick_end}'
                     f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\t{refBase_col}\n')
-
 
 
 if __name__ == "__main__":
