@@ -1,7 +1,7 @@
 import pandas as pd
 import yaml
 
-EUF_VERSION = "bedRModv1.6"
+EUF_VERSION = "bedRModv1.7"
 
 
 def write_header(config, output_file):
