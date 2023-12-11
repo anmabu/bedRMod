@@ -34,8 +34,7 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
     # Write output file in BED format
     with open(output_file, 'w') as f:
         write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency"
-                "\trefBase\n")
+        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency\n")
         for _, row in tsv.iterrows():
             chrom = row['chr']
             start = row['pos']
@@ -49,9 +48,8 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
             item_rgb = '0,0,0'
             coverage = "-1"
             frequency = row['score']
-            refBase = ""
             f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\t{refBase}\n')
+                    f'\t{coverage}\t{frequency}\n')
 
 
 def proEUF2bedRMod(input_file, config_yaml, output_file):
@@ -72,8 +70,8 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
     proEUF['thickEnd'] = proEUF["pos"] + 1
 
     path, ending = os.path.splitext(output_file)
-    if not ending == ".euf.bed":
-        output_file = path + ".euf.bed"
+    if not ending == ".bedrmod":
+        output_file = path + ".bedrmod"
         print(f"filename changed to {output_file}")
 
     directory, file = os.path.split(output_file)
@@ -86,7 +84,7 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
         with open(output_file, 'w') as f:
             write_header(config, f)
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\trefBase\n")
+                    "\tfrequency\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -108,16 +106,15 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                 thick_start = row['thickStart']
                 thick_end = row['thickEnd']
                 coverage = row["cov"]
-                refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\t{refBase}\n')
+                        f'\t{coverage}\t{frequency}\n')
 
     else:
         # Write output file in BED format without modifications
         with open(output_file, 'w') as f:
             write_header(config, f)
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\trefBase\n")
+                    "\tfrequency\n")
             for _, row in proEUF.iterrows():
                 chrom = row["ref_seg"]
                 start = row['pos']
@@ -130,14 +127,13 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                 item_rgb = '0,0,0'
                 coverage = row["cov"]
                 frequency = 0
-                refBase = "U" if row["ref_base"].upper() == "T" else row["ref_base"].upper()
                 f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\t{refBase}\n')
+                        f'\t{coverage}\t{frequency}\n')
 
 
 def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", modi="m1A", modi_column=False,
                 score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-                frequency_function=None, refBase=None, refbase_function=None):
+                frequency_function=None):
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
@@ -160,8 +156,6 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     :param coverage_function:
     :param frequency:
     :param frequency_function:
-    :param refBase:
-    :param refbase_function:
     :return:
     """
     file = pd.read_csv(input_file, delimiter=delimiter)
@@ -178,7 +172,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     with open(output_file, 'w') as f:
         write_header(config, f)
         f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                "\tfrequency\trefBase\n")
+                "\tfrequency\n")
         for _, row in file.iterrows():
             chrom = row[ref_seg]
             # chrom = ref_seg
@@ -231,19 +225,8 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                     frequency_col = row[frequency]
                 elif isinstance(frequency, (int, float)):
                     frequency_col = frequency
-            if refbase_function is not None:
-                if isinstance(refBase, list):
-                    params = [row[col] for col in refBase]
-                elif isinstance(refBase, str):
-                    params = row[refBase]
-                refBase_col = refbase_function(params)
-            else:
-                if refBase in file.columns:
-                    refBase_col = row[refBase]
-                else:
-                    refBase_col = refBase
             f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}\t{thick_end}'
-                    f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\t{refBase_col}\n')
+                    f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
 
 
 
