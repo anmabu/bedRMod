@@ -110,7 +110,8 @@ def pileup2proEUF(input_file, output_file):
                 'NC_001224.1': 'mitochondrion'
             }
             ref_seg, pos, ref_base, cov, strand = get_proEUF_features(line)
-            ref_seg = nc_to_chromosome[ref_seg]
+            if "NC" in ref_seg:  # this might only apply to yeast data as of now...
+                ref_seg = nc_to_chromosome[ref_seg]
             outfile.write(f"{ref_seg}\t{pos}\t{ref_base}\t{cov}\t{strand}\n")
     print(f"{input_file} converted to {output_file}!")
 
