@@ -43,7 +43,7 @@ for occur in mod_occur:
     i = 0
     while i < len(rel_positions):
         if i == 0:
-            abs_positions_local.append(int(rel_positions[i]))
+            abs_positions_local.append(int(rel_positions[i]) + 1)
             i += 1
         else:
             new_pos = abs_positions_local[i-1] + int(rel_positions[i]) + 1
