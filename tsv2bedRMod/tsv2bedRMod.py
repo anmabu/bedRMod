@@ -5,7 +5,6 @@ import yaml
 
 from helper import write_header
 from helper import get_modification_color
-from helper import parse_excel
 
 
 def tsv2bedRMod(input_file, config_yaml, output_file):
