@@ -21,9 +21,9 @@ Those differ for the input formats.
 A config file is needed in which the metadata of the files are stored. 
 Please have a look at the config.yaml file to get a better impression. 
 To convert the file, call the `tsv2bedRMod` function with the following arguments: 
-- path to tsv (input) file e.g. "/flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
-- path to config.yaml file e.g. "/tsv2euf/config.yaml"
-- path to output file e.g. "/flat2euf/m6aSACseq/euf/output_file.bedrmod"
+- path to tsv (input) file e.g. "/flat2bedRMod/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
+- path to config.yaml file e.g. "/tsv2bedRMod/config.yaml"
+- path to output file e.g. "/flat2bedRMod/m6aSACseq/euf/output_file.bedrmod"
 
 ### Converting from pileup
 A pileup file contains read results per site and can be directly converted from fasta/fastq files using [SAMtools](http://www.htslib.org/).
