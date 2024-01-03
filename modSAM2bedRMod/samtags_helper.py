@@ -2,22 +2,23 @@ import pandas as pd
 
 
 def get_SAMtags():
+    # the ambiguity codes are not from og samtags but stolen from Modomics
     SAMtags_df = pd.DataFrame([["C", "m", "5mC", "5-Methylcytosine", "27551"],
                                ["C", "h", "5hmC", "5-Hydroxymethylcytosine", "76792"],
                                ["C", "f", "5fC", "5-Formylcytosine", "76794"],
                                ["C", "c", "5caC", "5-Carboxylcytosine", "76793"],
-                               ["C", "C", "", "Ambiguity code; any C mod", ""],
+                               ["C", "C", "xC", "Ambiguity code; any C mod", ""],
                                ["T", "g", "5hmU", "5-Hydroxymethyluracil", "16964"],
                                ["T", "e", "5fU", "5-Formyluracil", "80961"],
                                ["T", "b", "5caU", "5-Carboxyluracil", "17477"],
-                               ["T", "T", "", "Ambiguity code; any T mod", ""],
-                               ["U", "U", "", "Ambiguity code; any U mod", ""],
+                               ["T", "T", "xT", "Ambiguity code; any T mod", ""],
+                               ["U", "U", "xU", "Ambiguity code; any U mod", ""],
                                ["A", "a", "6mA", "6-Methyladenine", "28871"],
-                               ["A", "A", "", "Ambiguity code; any A mod", ""],
+                               ["A", "A", "xA", "Ambiguity code; any A mod", ""],
                                ["G", "o", "8oxoG", "8-Oxoguanine", "44605"],
-                               ["U", "G", "", "Ambiguity code; any G mod", ""],
+                               ["U", "G", "xG", "Ambiguity code; any G mod", ""],
                                ["N", "n", "Xao", "Xanthosine", "18107"],
-                               ["N", "N", "", "Ambiguity code; any mod", ""],
+                               ["N", "N", "xX", "Ambiguity code; any mod", ""],
                                ], columns=["Unmodified base", "Code", "Abbreviation", "Name", "ChEBI"])
     return SAMtags_df
 
