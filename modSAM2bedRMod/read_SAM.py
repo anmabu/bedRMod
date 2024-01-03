@@ -3,41 +3,68 @@ from modSAM2bedRMod import samtags_helper
 
 sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t", header=None)
 # don't use comment=@, because this cuts off quality strings, containing @ just skip lines starting with @
+# the base modifications might also differ wrt the sequences stored in the SEQ field of the SAM file if
+# the sequence has been reverse complemented, in this case, the 0x10 flag is set
+# (in the second column of the alignment line)
+# but that means that the modified positions are recorded in their original position and count the original bases
 
-print(sam_file.iloc[:, 11:])
+
+# THE COORDINATES IN SAM ARE 1-BASED!
+
+# print(sam_file.iloc[:, 11:])
 
 # iterate this through all lines!
-# find column that starts with Ml and Mm
-mm_tag = sam_file.iloc[0, 11]
-ml_tag = sam_file.iloc[0, 12]
 
-nt_seq = sam_file.iloc[0, 9]
+def find_mm_column(sam):
+    """find the column in this row in the sam file that contains the Mm tag.
+    This is always after the first 11 column, thus search starts at the 12th column. """
+    for column, value in sam.iloc[:, 11:].items():
+        if value[0].startswith("Mm"):
+            return column
+        else:
+            print("No valid Mm tag")
 
-if not mm_tag.startswith("Mm:"):
-    print("No valid Mm tag")
+def find_ml_column(sam):
+    """find the column in this row in the sam file that contains the Ml tag.
+    This is always after the first 11 column, thus search starts at the 12th column. """
+    for column, value in sam.iloc[:, 11:].items():
+        if value[0].startswith("Ml"):
+            return column
+        else:
+            print("No valid Ml tag")
 
-if not ml_tag.startswith("Ml:"):
-    print("No valid Ml tag")
+
+mm_tag = sam_file.iloc[1, find_mm_column(sam_file)]
+ml_tag = sam_file.iloc[1, find_ml_column(sam_file)]
+nt_seq = sam_file.iloc[1, 9]
+
 
 ml, probs = ml_tag.split(",", 1)
 probabilites = probs.split(",")
 probabilites = [samtags_helper.scale_probability_ML_tag(int(x)) for x in probabilites]
 print(probabilites)
 
+
 mm, dt, mods = mm_tag.split(":")
 mod_list = mods.split(";")
 print(mod_list)
 
 mod_type = [x.split(",", 1)[0] for x in mod_list if len(x) != 0]
-mod_occur = [x.split(",", 1)[1] for x in mod_list if len(x) != 0]
+mod_index = [x.split(",", 1)[1] for x in mod_list if len(x) != 0]
 
 print(mod_type)
-print(mod_occur)
+# determine how many symbols are after the +
+mod_number = [len(x.split("+")[1]) for x in mod_type]
+# there are multiple modifications possible at each index
+# mod_number indicates how many consecutive probabilites belong to each modified type
+print(mod_number)
+
+print(mod_index)
 
 
 # change weird index to be consecutive
 abs_positions = []
-for occur in mod_occur:
+for occur in mod_index:
     rel_positions = occur.split(",")
     abs_positions_local = []
     i = 0
@@ -59,12 +86,18 @@ mod_position_df = pd.DataFrame(columns=["ref_base", "strand", "mod_type", "mod_i
 i = 0
 while i < len(probabilites):
     for index, pos in enumerate(abs_positions):
-        tmp_occur = []
         for j in pos:
-            ref_base, strand, modification = mod_type[index][0], mod_type[index][1], mod_type[index][2:]
-            new_row = [ref_base, strand, modification, j, probabilites[i]]
-            mod_position_df.loc[len(mod_position_df)] = new_row
-            i += 1
+            if mod_number[index] > 1:
+                for k in range(mod_number[index]):
+                    ref_base, strand, modification = mod_type[index][0], mod_type[index][1], mod_type[index][2+k]
+                    new_row = [ref_base, strand, modification, j, probabilites[i]]
+                    mod_position_df.loc[len(mod_position_df)] = new_row
+                    i += 1
+            else:
+                ref_base, strand, modification = mod_type[index][0], mod_type[index][1], mod_type[index][2:]
+                new_row = [ref_base, strand, modification, j, probabilites[i]]
+                mod_position_df.loc[len(mod_position_df)] = new_row
+                i += 1
 
 
 # count length of sequences as well as occurrences of bases and assign correct 0-based positions to modifications
