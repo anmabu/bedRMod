@@ -8,6 +8,8 @@ sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t"
 # (in the second column of the alignment line)
 # but that means that the modified positions are recorded in their original position and count the original bases
 
+# incorporate all test cases/files from here to enable conversion
+# https://github.com/samtools/htslib/tree/61b037bb881e85259f8df30c78d99ad3a357ed52/test/base_mods
 
 # THE COORDINATES IN SAM ARE 1-BASED!
 
