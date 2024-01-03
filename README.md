@@ -47,5 +47,3 @@ Converting into pileup format can be most easily achieved by using [SAMtools](ht
 When BAM files are available, they (can be merged and) have to be sorted and indexed before their conversion into pileup format. 
 It is recommended to set the options `-A -Q 0 -d 1000000 -x` when calling `samtools mpileup`. 
 
-## Known Issues
-- It is not possible to open the file "as is" in IGV. This is due to the file having too many columns for IGV. If only the first 11 columns are used, IGV can open them without problems
