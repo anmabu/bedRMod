@@ -393,7 +393,11 @@ def get_modification_color(modi):
                      'pyyW': '0,205,139',
                      'imG': '64,64,64',
                      'pimG': '64,64,0'}
-    return rgb_colors.get(modi)
+
+    if modi not in rgb_colors.keys():
+        return '0,0,0'
+    else:
+        return rgb_colors.get(modi)
 
 
 def parse_excel(input_file):
