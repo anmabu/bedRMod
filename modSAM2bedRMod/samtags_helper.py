@@ -16,7 +16,7 @@ def get_SAMtags():
                                ["A", "a", "6mA", "6-Methyladenine", "28871"],
                                ["A", "A", "xA", "Ambiguity code; any A mod", ""],
                                ["G", "o", "8oxoG", "8-Oxoguanine", "44605"],
-                               ["U", "G", "xG", "Ambiguity code; any G mod", ""],
+                               ["G", "G", "xG", "Ambiguity code; any G mod", ""],
                                ["N", "n", "Xao", "Xanthosine", "18107"],
                                ["N", "N", "xX", "Ambiguity code; any mod", ""],
                                ], columns=["Unmodified base", "Code", "Abbreviation", "Name", "ChEBI"])
