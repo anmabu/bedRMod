@@ -13,10 +13,6 @@ sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t"
 
 # THE COORDINATES IN SAM ARE 1-BASED!
 
-# print(sam_file.iloc[:, 11:])
-
-# iterate this through all lines!
-
 for index, row in sam_file.iterrows():
     # first 11 columns in SAM file are fixed
     qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual = row[:11]
@@ -61,6 +57,7 @@ for index, row in sam_file.iterrows():
         elif "-" in mod:
             strand.append("-")
             mod_number.append(len(mod.split("-")[1]))
+    # if the strand is negative, the read sequence is a reverse complement, so indices and ref base have to change a lot
 
     # change counting relative index to be consecutive
     abs_positions = []
@@ -103,40 +100,35 @@ for index, row in sam_file.iterrows():
     # the current mod_indices reflect e.g. the number of Cs until this modified C is reached
     # the following code adjusts the modification position in accordance to the complete read
     # count length of sequences as well as occurrences of bases and assign correct 0-based positions to modifications
-    # this is not right!!!
-    i = 0
-    A_counter = 0
-    C_counter = 0
-    G_counter = 0
-    T_counter = 0
-    # N_counter = 0  == i
-    j = 0
-    n_rows = len(mod_position_df)
-    print(seq)
-    while i < len(seq):
-        curr_nt = seq[i]
-        curr_counter = ""
-        if curr_nt == "A":
-            A_counter += 1
-            curr_counter = A_counter
-        elif curr_nt == "C":
-            C_counter += 1
-            curr_counter = C_counter
-        elif curr_nt == "G":
-            G_counter += 1
-            curr_counter = G_counter
-        elif curr_nt == "T":
-            T_counter += 1
-            curr_counter = T_counter
-        else:
-            curr_counter = i
+    for j in range(len(mod_position_df)):
+        ref_base, strand, mod_type, pos, score = mod_position_df.iloc[j]
+        print(ref_base, strand, pos)
+        curr_counter = 0
+        A_counter = 0
+        C_counter = 0
+        G_counter = 0
+        T_counter = 0
+        for i, base in enumerate(seq):
+            if base == "A" or base == "a":
+                A_counter += 1
+                curr_counter = A_counter
+            elif base == "C" or base == "c":
+                C_counter += 1
+                curr_counter = C_counter
+            elif base == "G" or base == "g":
+                G_counter += 1
+                curr_counter = G_counter
+            elif base == "T" or base == "t":
+                T_counter += 1
+                curr_counter = T_counter
+            else:
+                curr_counter = i
 
-        ref_seg, strand, mod_type, pos, prob = mod_position_df.iloc[j]
-        if curr_nt == ref_seg and curr_counter == pos + 1:
-            pos = i
-            mod_position_df.iloc[j] = [ref_seg, strand, mod_type, pos, prob]
-            j += 1
-        i += 1
+            if base == ref_base and curr_counter == pos:
+                mod_position_df.loc[j, "mod_index"] = i
+            elif ref_base == "N" and i == pos:  # nothing changes?
+                continue
+                # pos = i
 
     print(mod_position_df)
 

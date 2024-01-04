@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def get_SAMtags():
-    # the ambiguity codes are not from og samtags but stolen from Modomics
+    # the ambiguity codes are not from og samtags but from Modomics
     SAMtags_df = pd.DataFrame([["C", "m", "5mC", "5-Methylcytosine", "27551"],
                                ["C", "h", "5hmC", "5-Hydroxymethylcytosine", "76792"],
                                ["C", "f", "5fC", "5-Formylcytosine", "76794"],
