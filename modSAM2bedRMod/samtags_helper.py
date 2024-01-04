@@ -23,16 +23,16 @@ def get_SAMtags():
     return SAMtags_df
 
 
-def scale_probability_ML_tag(prob):
+def scale_score_ML_tag(prob):
     """
-    Convert the probability value given in the ML-Tag into the range of 0 - 1
+    Convert the probability value given in the ML-Tag into the range of 0 - 1000 to fit the score of bedRMod
     "Thus the probability range corresponding to integer value N is N/256 to (N + 1)/256." - according to SAMtags
     :param prob:
     :return:
     """
-    return prob/256
+    return round(prob/256 * 1000)
 
 
 if __name__ == "__main__":
     print(get_SAMtags())
-    print(scale_probability_ML_tag(229))
+    print(scale_score_ML_tag(229))
