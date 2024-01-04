@@ -135,8 +135,8 @@ for index, row in sam_file.iterrows():
     # translate code to Abbreviation of modification
     SAMtags = samtags_helper.get_SAMtags()
 
-    for index, row in mod_position_df.iterrows():
-        base, modification = row["ref_base"], row["mod_type"]
+    for ix, r in mod_position_df.iterrows():
+        base, modification = r["ref_base"], r["mod_type"]
         mod_abbrev = SAMtags.loc[(SAMtags['Unmodified base'] == base)
                                  & (SAMtags['Code'] == modification), 'Abbreviation'].iloc[0]
         mod_position_df.at[index, "mod_type"] = mod_abbrev
