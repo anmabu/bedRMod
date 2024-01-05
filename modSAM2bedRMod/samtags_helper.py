@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+
 def get_SAMtags():
     # the ambiguity codes are not from og samtags but from Modomics
     SAMtags_df = pd.DataFrame([["C", "m", "5mC", "5-Methylcytosine", "27551"],
@@ -31,6 +32,48 @@ def scale_score_ML_tag(prob):
     :return:
     """
     return round(prob/256 * 1000)
+
+
+def read_bitflag(flag):
+    skip = False
+    rc = False
+    # if flag == 0, do everything as before
+    if flag > 0:
+        bit_flag = bin(flag)
+        i = 1
+        while i < len(bit_flag) - 1:
+            if i == 1 and bit_flag[-i] == "1":  # relevance
+                print("template having multiple sequences in sequencing")
+            if i == 2 and bit_flag[-i] == "1":  # okay? I guess?
+                print("each segment properly aligned according to the aligner")
+            if i == 3 and bit_flag[-i] == "1":
+                print("segment unmapped")
+                skip = True
+            if i == 4 and bit_flag[-i] == "1":  # doesn't matter
+                print("next segment in the sequence is unmapped")
+            if i == 5 and bit_flag[-i] == "1":
+                print("Seq being reverse complemented, qual being reversed")
+                rc = True
+            if i == 6 and bit_flag[-i] == "1":  # doesn't matter
+                print("Seq of next segment in template being reverse complemented")
+            if i == 7 and bit_flag[-i] == "1":  # doesn't matter
+                print("first segment in the template")
+            if i == 8 and bit_flag[-i] == "1":  # doesn't matter
+                print("last segment in the template")
+            if i == 9 and bit_flag[-i] == "1":  # line not to be used when multiple alignments are in same file
+                print("secondary alignment")
+                skip = True
+            if i == 10 and bit_flag[-i] == "1":  # bad!
+                print("not passing filters such as platform/vendor quality controls")
+                skip = True
+            if i == 11 and bit_flag[-i] == "1":  # not okay!
+                print("PCR or optical duplicate")
+                skip = True
+            if i == 12 and bit_flag[-i] == "1":  # part of chimeric alignment. not bad
+                print("supplementary alignment")
+            i += 1
+
+    return skip, rc
 
 
 if __name__ == "__main__":
