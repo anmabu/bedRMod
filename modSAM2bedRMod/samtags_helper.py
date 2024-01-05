@@ -86,12 +86,36 @@ def read_flag(flag):
     return skip, rc
 
 
+def consecutive_to_positional_single_base(mod_index):
+    """
+    This function adjust these "consecutive positions" (C+m, 0, 2, 1) into "counting positions" (C+m, 0, 3, 5) on the
+    read sequence.
+    :param mod_index:
+    :return:
+    """
+    counting_positions = []
+    for occur in mod_index:
+        consecutive_positions = occur.split(",")
+        counting_positions_local = []
+        i = 0
+        while i < len(consecutive_positions):
+            if i == 0:
+                counting_positions_local.append(int(consecutive_positions[i]) + 1)
+                i += 1
+            else:
+                new_pos = counting_positions_local[i - 1] + int(consecutive_positions[i]) + 1
+                counting_positions_local.append(new_pos)
+                i += 1
+        counting_positions.append(counting_positions_local)
+    return counting_positions
+
+
 def single_base_to_sequence_indices(mod_df, seq):
     """
     The function converts the modification position in accordance to the complete read sequence.
     The current mod_indices reflect the number of e.g. Cs until the modified C is reached (0-based counting).
-    This function adjust these "consecutive indices" (C+m, 0, 2, 1) into "positional indices" (C+m, 0, 3, 5) on the
-    read sequence.
+    This function changes the indices counting only one base (e.g. C) into the positional index along the sequence,
+    counting all bases along the sequence.
     I'd like to further extend this function to return the positions on the reference segment of the read, but the now
     available test files don't contain neither reference segments nor read starting positions.
     :param mod_df: Dataframe with "wrong" (consecutive) mod_index information of one SAM line.
