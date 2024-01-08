@@ -1,35 +1,13 @@
 import sys
 
 from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame
+from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton
 from PySide6.QtCore import Qt
 
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-
-        input_label = QLabel("Select input file:")
-        self.file_path = QLabel()
-        self.file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.file_path.setText("none selected")
-        self.file_path.setStyleSheet("background-color: white")
-        self.input_file = QPushButton("...")
-        self.input_file.clicked.connect(self.select_input_file)
-
-        config_label = QLabel("Select config file:")
-        self.config_file_path = QLabel()
-        self.config_file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.config_file_path.setText("none selected")
-        self.config_file_path.setStyleSheet("background-color: white")
-        self.config_file = QPushButton("...")
-        self.config_file.clicked.connect(self.select_config_file)
-
-        delimiter_label = QLabel("Select file type / column delimiter")
-        self.delimiter = QComboBox()
-        self.delimiter.addItem("comma")
-        self.delimiter.addItem("tab")
-        self.delimiter.addItem("xlsx")
 
         info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -39,7 +17,30 @@ class MyWidget(QtWidgets.QWidget):
         # Set the height of the QTextEdit to the height of one line
         info_text.setFixedHeight(line_height * 1.8)
         info_text.isReadOnly()
-        # info_text.setVerticalScrollBarPolicy(0)
+
+        input_label = QLabel("Select input file:")
+        self.file_path = QTextEdit()
+        self.file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.file_path.setText("none selected")
+        self.file_path.setFixedHeight(line_height * 1.6)
+        # self.file_path.setStyleSheet("background-color: white")
+        self.input_file = QPushButton("...")
+        self.input_file.clicked.connect(self.select_input_file)
+
+        config_label = QLabel("Select config file:")
+        self.config_file_path = QTextEdit()
+        self.config_file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.config_file_path.setText("none selected")
+        self.config_file_path.setFixedHeight(line_height * 1.6)
+        # self.config_file_path.setStyleSheet("background-color: white")
+        self.config_file = QPushButton("...")
+        self.config_file.clicked.connect(self.select_config_file)
+
+        delimiter_label = QLabel("Select file type / column delimiter")
+        self.delimiter = QComboBox()
+        self.delimiter.addItem("comma")
+        self.delimiter.addItem("tab")
+        self.delimiter.addItem("xlsx")
 
         # ref_seg
         ref_seg_label = QLabel("Reference Segment / Chromosome")
@@ -47,7 +48,7 @@ class MyWidget(QtWidgets.QWidget):
                                  "One reference segment per row in the file.")
         self.ref_seg = QTextEdit()
         self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.ref_seg.setText('"ref_seg"')
+        self.ref_seg.setText('ref_seg')
         self.ref_seg.setFixedHeight(line_height * 1.6)
 
         # pos
@@ -56,7 +57,7 @@ class MyWidget(QtWidgets.QWidget):
                              "Only a single position per row in this column.")
         self.pos = QTextEdit()
         self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.pos.setText('"pos"')
+        self.pos.setText('pos')
         self.pos.setFixedHeight(line_height * 1.6)
 
         # modification type
@@ -65,8 +66,9 @@ class MyWidget(QtWidgets.QWidget):
                               "for the modification type when only one is present in the file.")
         self.modi = QTextEdit()
         self.modi.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.modi.setText('"m1A"')
+        self.modi.setText('modification')
         self.modi.setFixedHeight(line_height * 1.6)
+        self.modi_button = QRadioButton("Column?")
 
         # score
         score_label = QLabel("Score")
@@ -76,12 +78,49 @@ class MyWidget(QtWidgets.QWidget):
                                "Also a single integer can be passed as a fixed score value for the whole file.")
         self.score = QTextEdit()
         self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.score.setText('"pos"')
+        self.score.setText("score")
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
         self.score_function.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.score_function.setToolTip("When writing a function and refering to a column name in the calculation "
+                                       "(e.g. FDR), please refer to this column name as row['FDR']. "
+                                       "(Or do this calculation in a script and store the result in the same file)")
         self.score_function.setFixedHeight(line_height * 1.6)
+
+        # strand
+        strand_label = QLabel("Strandedness / strand column")
+        strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
+                                "for the whole file, '+' or '-' will work, too." )
+        self.strand = QTextEdit()
+        self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.strand.setText('strand')
+        self.strand.setFixedHeight(line_height * 1.6)
+
+        # coverage
+        coverage_label = QLabel("Coverage")
+        coverage_label.setToolTip("Select the column that contains the coverage information.")
+        self.coverage = QTextEdit()
+        self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.coverage.setText('coverage')
+        self.coverage.setFixedHeight(line_height * 1.6)
+
+        # frequency
+        frequency_label = QLabel("Modification Frequency")
+        frequency_label.setToolTip("Select the column that contains the modification frequency information."
+                                   "If the modification frequency is not stored but can be calculated, pass"
+                                   "the function to calculate it in the last field. ")
+        self.frequency = QTextEdit()
+        self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.frequency.setText('modification frequency')
+        self.frequency.setFixedHeight(line_height * 1.6)
+        self.frequency_function = QTextEdit()
+        self.frequency_function.setText("Frequency function")
+        self.frequency_function.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.frequency_function.setToolTip("When writing a function and refering to a column name in the calculation "
+                                       "(e.g. FDR), please refer to this column name as row['FDR']. "
+                                       "(Or do this calculation in a script and store the result in the same file)")
+        self.frequency_function.setFixedHeight(line_height * 1.6)
 
         # layout stuff
         layout = QtWidgets.QGridLayout()
@@ -109,10 +148,21 @@ class MyWidget(QtWidgets.QWidget):
 
         layout.addWidget(modi_label, 7, 0, 1, 1)
         layout.addWidget(self.modi, 7, 1, 1, 1)
+        layout.addWidget(self.modi_button, 7, 2, 1, 1)
 
         layout.addWidget(score_label, 8, 0, 1, 1)
         layout.addWidget(self.score, 8, 1, 1, 1)
         layout.addWidget(self.score_function, 8, 2, 1, 1)
+
+        layout.addWidget(strand_label, 9, 0, 1, 1)
+        layout.addWidget(self.strand, 9, 1, 1, 1)
+
+        layout.addWidget(coverage_label, 10, 0, 1, 1)
+        layout.addWidget(self.coverage, 10, 1, 1, 1)
+
+        layout.addWidget(frequency_label, 11, 0, 1, 1)
+        layout.addWidget(self.frequency, 11, 1, 1, 1)
+        layout.addWidget(self.frequency_function, 11, 2, 1, 1)
 
         self.setLayout(layout)
 
