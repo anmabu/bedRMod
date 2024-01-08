@@ -86,8 +86,16 @@ def read_flag(flag):
     return skip, rc
 
 
-def single_base_consecutive_to_positional_sequence_index(mod_type, mod_index, seq):
-    print(mod_index)
+def single_base_consecutive_to_absolute_sequence_index(mod_type, mod_index, seq):
+    """
+    This function converts the "consecutive positions" ((C+m, 0, 2, 1), meaning the first, fourth and sixth positions
+    are modified), into the absolute 0-based positions of the modifications on the read sequence.
+    :param mod_type: list containing the modification types e.g. ['C+m', 'N+n']
+    :param mod_index: list of lists containing the consecutive positions of the modifications
+    :param seq: read sequence where the modifications were read on
+    :return: list of list containing the absolute 0-based positions of the modifications on the sequence
+    """
+    # print(mod_index)
     mod_index = [[int(y) for y in x.split(",")] for x in mod_index]
     new_mod_index = deepcopy(mod_index)
     for idx, indices in enumerate(mod_index):
@@ -122,31 +130,31 @@ def single_base_consecutive_to_positional_sequence_index(mod_type, mod_index, se
                     if ind == 0:
                         if curr_counter == single_index:
                             new_mod_index[idx][ind] = i
-                            print(i)
-                            print(seq)
-                            print(i * " " + "^")
+                            # print(i)
+                            # print(seq)
+                            # print(i * " " + "^")
                     if ind > 0:
                         if curr_counter == single_index + indices[ind-1] + 1:
                             new_mod_index[idx][ind] = i
                             indices[ind] = single_index + indices[ind-1] + 1
-                            print(i)
-                            print(seq)
-                            print(i * " " + "^")
+                            # print(i)
+                            # print(seq)
+                            # print(i * " " + "^")
                 elif base.upper() == base_type.upper():
                     if ind == 0:
                         if curr_counter == single_index + 1:
                             new_mod_index[idx][ind] = i
-                            print(i)
-                            print(seq)
-                            print(i * " " + "^")
+                            # print(i)
+                            # print(seq)
+                            # print(i * " " + "^")
                     if ind > 0:
                         if curr_counter == single_index + indices[ind-1] + 2:
-                            print(i)
-                            print(seq)
-                            print(i*" " + "^")
+                            # print(i)
+                            # print(seq)
+                            # print(i*" " + "^")
                             new_mod_index[idx][ind] = i
                             indices[ind] = single_index + indices[ind - 1] + 1
-    print(new_mod_index)
+    # print(new_mod_index)
     return new_mod_index
 
 
@@ -223,5 +231,5 @@ if __name__ == "__main__":
     # print(get_SAMtags())
     # print(scale_score_ML_tag(229))
     # ['C+m', 'C+h', 'N+n'] mod_type
-    single_base_consecutive_to_positional_sequence_index(['C+m', 'C+h', 'N+n'],
-                                 ['2,2,1,4,1', '6,7', '15,2'], "AGCTCTCCAGAGTCGNACGCCATYCGCGCGCCACCA")
+    print(single_base_consecutive_to_absolute_sequence_index(['C+m', 'C+h', 'N+n'],
+                                                             ['2,2,1,4,1', '6,7', '15,2'], "AGCTCTCCAGAGTCGNACGCCATYCGCGCGCCACCA"))
