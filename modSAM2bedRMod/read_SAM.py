@@ -3,7 +3,6 @@ from Bio.Seq import Seq
 
 from modSAM2bedRMod import samtags_helper
 
-sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t", header=None)
 # don't use comment=@, because this cuts off quality strings, containing @ just skip lines starting with @
 # the base modifications might also differ wrt the sequences stored in the SEQ field of the SAM file if
 # the sequence has been reverse complemented, in this case, the 0x10 flag is set
@@ -62,23 +61,24 @@ def sam2proEUF():
             mod_type = list(map(lambda x: str(Seq(x[0]).reverse_complement() + x[1:]), mod_type))
 
         # there are multiple modifications possible at each index
-        # mod_number indicates how many consecutive probabilites belong to each modified type
-        # determine how many symbols are after the + or - (indicating the strand)
-        # Check if after +/- are numbers (ChEBI)
+        # mod_number indicates how many consecutive scores belong to each modified type
         mod_number = []
         strand = []
         for mod in mod_type:
+            # check strand
             if "+" in mod:
                 if reverse_complemented:
                     strand.append("-")
                 else:
                     strand.append("+")
                 mod_code = mod.split("+")[1]
+                # Check if after +/- are numbers (ChEBI)
                 if any(char.isdigit() for char in mod_code):
                     # if there is any digit, the assumtion is that the whole code is ChEBI
                     # I don't think something like "C+m76794" or multiple ChEBI codes concatenated are allowed
                     mod_number.append(1)
                 else:
+                    # determine how many symbols i.e. modifications are after the +
                     mod_number.append(len(mod.split("+")[1]))
             elif "-" in mod:
                 if reverse_complemented:
@@ -115,11 +115,6 @@ def sam2proEUF():
         mod_position_df = mod_position_df.sort_values(by="mod_index")
         print(mod_position_df)
 
-        # the current mod_indices reflect e.g. the number of Cs until this modified C is reached
-        # the following function adjusts the modification position in accordance to the complete sequence
-        # mod_position_df = samtags_helper.single_base_to_sequence_indices(mod_position_df, seq)
-        # print(mod_position_df)
-
         # translate code to Abbreviation of modification
         SAMtags = samtags_helper.get_SAMtags()
 
@@ -140,8 +135,3 @@ def sam2proEUF():
 
 if __name__ == "__main__":
     sam2proEUF()
-    sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t", header=None)
-    qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual = sam_file.iloc[1, 0:11]
-    # [[3, 5, 6, 10, 11], [7, 14], [16, 18]]
-    # [[3, 6, 8, 13, 15], [7, 15], [16, 19]]
-    # [[6, 17, 20, 31, 34], [19, 34], [15, 18]]
