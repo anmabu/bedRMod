@@ -43,14 +43,13 @@ def sam2proEUF():
 
         mm, dt, mods = mm_column.split(":")
         mod_list = mods.split(";")
-
         # which modifications occur
         mod_type = [x.split(",", 1)[0] for x in mod_list if len(x) != 0]
         # at which relative indices these modifications happen
         # The hard and soft clips are missing!!!
         mod_index = [x.split(",", 1)[1] for x in mod_list if len(x) != 0]
         print(mod_index)
-
+        print(mod_type)
         # check FLAGs of line and act accordingly
         skip, reverse_complemented = samtags_helper.read_flag(flag)
 
@@ -92,9 +91,7 @@ def sam2proEUF():
                 else:
                     mod_number.append(len(mod.split("-")[1]))
 
-        # change counting index, starting from 0 after finding the next modification to starting for all
-        # modifications from the first base (e.g. C)
-        abs_positions = samtags_helper.consecutive_to_positional_single_base(mod_index)
+        abs_positions = samtags_helper.single_base_consecutive_to_absolute_sequence_index(mod_type, mod_index, seq)
         print(abs_positions)
 
         mod_position_df = pd.DataFrame(columns=["ref_base", "strand", "mod_type", "mod_index", "score"])
@@ -120,8 +117,8 @@ def sam2proEUF():
 
         # the current mod_indices reflect e.g. the number of Cs until this modified C is reached
         # the following function adjusts the modification position in accordance to the complete sequence
-        mod_position_df = samtags_helper.single_base_to_sequence_indices(mod_position_df, seq)
-        print(mod_position_df)
+        # mod_position_df = samtags_helper.single_base_to_sequence_indices(mod_position_df, seq)
+        # print(mod_position_df)
 
         # translate code to Abbreviation of modification
         SAMtags = samtags_helper.get_SAMtags()
@@ -145,3 +142,6 @@ if __name__ == "__main__":
     sam2proEUF()
     sam_file = pd.read_csv("example_files/MM-multi.sam", comment="@", delimiter="\t", header=None)
     qname, flag, rname, pos, mapq, cigar, rnext, pnext, tlen, seq, qual = sam_file.iloc[1, 0:11]
+    # [[3, 5, 6, 10, 11], [7, 14], [16, 18]]
+    # [[3, 6, 8, 13, 15], [7, 15], [16, 19]]
+    # [[6, 17, 20, 31, 34], [19, 34], [15, 18]]
