@@ -1,5 +1,5 @@
+from copy import deepcopy
 import pandas as pd
-
 
 
 def get_SAMtags():
@@ -86,6 +86,70 @@ def read_flag(flag):
     return skip, rc
 
 
+def single_base_consecutive_to_positional_sequence_index(mod_type, mod_index, seq):
+    print(mod_index)
+    mod_index = [[int(y) for y in x.split(",")] for x in mod_index]
+    new_mod_index = deepcopy(mod_index)
+    for idx, indices in enumerate(mod_index):
+        # the first char in mod_type is the reference base in seq
+        base_type = mod_type[idx][0]
+        for ind, single_index in enumerate(indices):
+            curr_counter = 0
+            A_counter = 0
+            C_counter = 0
+            G_counter = 0
+            T_counter = 0
+            # do I also have to add DNA/RNA ambiguity codes to the counters?
+            # only canonical bases are counted when setting the index for mutated canonical bases.
+            for i, base in enumerate(seq):
+                if base.upper() == "A":
+                    A_counter += 1
+                    curr_counter = A_counter
+                elif base.upper() == "C":
+                    C_counter += 1
+                    curr_counter = C_counter
+                elif base.upper() == "G":
+                    G_counter += 1
+                    curr_counter = G_counter
+                elif base.upper() == "T":
+                    T_counter += 1
+                    curr_counter = T_counter
+                else:
+                    curr_counter = i
+
+                if base_type.upper() == "N":
+                    curr_counter = i
+                    if ind == 0:
+                        if curr_counter == single_index:
+                            new_mod_index[idx][ind] = i
+                            print(i)
+                            print(seq)
+                            print(i * " " + "^")
+                    if ind > 0:
+                        if curr_counter == single_index + indices[ind-1] + 1:
+                            new_mod_index[idx][ind] = i
+                            indices[ind] = single_index + indices[ind-1] + 1
+                            print(i)
+                            print(seq)
+                            print(i * " " + "^")
+                elif base.upper() == base_type.upper():
+                    if ind == 0:
+                        if curr_counter == single_index + 1:
+                            new_mod_index[idx][ind] = i
+                            print(i)
+                            print(seq)
+                            print(i * " " + "^")
+                    if ind > 0:
+                        if curr_counter == single_index + indices[ind-1] + 2:
+                            print(i)
+                            print(seq)
+                            print(i*" " + "^")
+                            new_mod_index[idx][ind] = i
+                            indices[ind] = single_index + indices[ind - 1] + 1
+    print(new_mod_index)
+    return new_mod_index
+
+
 def consecutive_to_positional_single_base(mod_index):
     """
     This function adjust these "consecutive positions" (C+m, 0, 2, 1) into "counting positions" (C+m, 0, 3, 5) on the
@@ -156,5 +220,8 @@ def single_base_to_sequence_indices(mod_df, seq):
 
 
 if __name__ == "__main__":
-    print(get_SAMtags())
-    print(scale_score_ML_tag(229))
+    # print(get_SAMtags())
+    # print(scale_score_ML_tag(229))
+    # ['C+m', 'C+h', 'N+n'] mod_type
+    single_base_consecutive_to_positional_sequence_index(['C+m', 'C+h', 'N+n'],
+                                 ['2,2,1,4,1', '6,7', '15,2'], "AGCTCTCCAGAGTCGNACGCCATYCGCGCGCCACCA")
