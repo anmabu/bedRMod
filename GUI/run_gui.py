@@ -1,11 +1,42 @@
 import sys
 
 from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton
+from PySide6.QtWidgets import (QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton,
+                               QVBoxLayout, QWidget)
 from PySide6.QtCore import Qt
 
 
-class MyWidget(QtWidgets.QWidget):
+class EditorWindow(QWidget):
+    def __init__(self, callback):
+        super().__init__()
+
+        self.callback = callback
+
+        self.text_edit = QTextEdit()
+        self.initUI()
+
+    def initUI(self):
+        template_content = "This is a template content.\nYou can customize it as needed."
+        self.text_edit.setText(template_content)
+        # self.text_edit = QTextEdit(self)
+        save_button = QPushButton('Save and Close', self)
+        save_button.clicked.connect(self.save_and_close)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.text_edit)
+        layout.addWidget(save_button)
+
+        self.setLayout(layout)
+
+    def save_and_close(self):
+        content = self.text_edit.toPlainText()
+        with open(self.callback, 'w') as new_file:
+            new_file.write(content)
+        # self.callback(content)
+        self.close()
+
+
+class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -18,6 +49,7 @@ class MyWidget(QtWidgets.QWidget):
         info_text.setFixedHeight(line_height * 1.8)
         info_text.isReadOnly()
 
+        # input file
         input_label = QLabel("Select input file:")
         self.file_path = QTextEdit()
         self.file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -27,6 +59,7 @@ class MyWidget(QtWidgets.QWidget):
         self.input_file = QPushButton("...")
         self.input_file.clicked.connect(self.select_input_file)
 
+        # config file
         config_label = QLabel("Select config file:")
         self.config_file_path = QTextEdit()
         self.config_file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -35,6 +68,8 @@ class MyWidget(QtWidgets.QWidget):
         # self.config_file_path.setStyleSheet("background-color: white")
         self.config_file = QPushButton("...")
         self.config_file.clicked.connect(self.select_config_file)
+        self.new_file_button = QPushButton('New Config File', self)
+        self.new_file_button.clicked.connect(self.create_new_file)
 
         delimiter_label = QLabel("Select file type / column delimiter")
         self.delimiter = QComboBox()
@@ -122,6 +157,9 @@ class MyWidget(QtWidgets.QWidget):
                                        "(Or do this calculation in a script and store the result in the same file)")
         self.frequency_function.setFixedHeight(line_height * 1.6)
 
+        # convert button
+        self.convert = QPushButton("Convert")
+
         # layout stuff
         layout = QtWidgets.QGridLayout()
 
@@ -133,7 +171,8 @@ class MyWidget(QtWidgets.QWidget):
         # config file
         layout.addWidget(config_label, 2, 0)
         layout.addWidget(self.config_file_path, 2, 1)
-        layout.addWidget(self.config_file, 2, 2)
+        layout.addWidget(self.config_file, 2, 2, 1, 1)
+        layout.addWidget(self.new_file_button, 2, 3, 1, 1)
 
         layout.addWidget(delimiter_label, 3, 0)
         layout.addWidget(self.delimiter, 3, 1)
@@ -164,6 +203,8 @@ class MyWidget(QtWidgets.QWidget):
         layout.addWidget(self.frequency, 11, 1, 1, 1)
         layout.addWidget(self.frequency_function, 11, 2, 1, 1)
 
+        layout.addWidget(self.convert, 12, 0, 1, 3)
+
         self.setLayout(layout)
 
     @QtCore.Slot()
@@ -183,6 +224,26 @@ class MyWidget(QtWidgets.QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.config_file_path.setText(pathFile)
+
+    @QtCore.Slot()
+    def create_new_file(self):
+        # Ask the user to choose a location and name for the new file
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        new_file_dialog = QFileDialog()
+
+        # QFileDialog.setDefaultSuffix(new_file_dialog, "yaml")
+        file_path, _ = new_file_dialog.getSaveFileName(self, "Save File", "", "Config Files (*.yaml);;All Files (*)",
+                                                   options=options)
+        new_file_dialog.setDefaultSuffix("yaml")
+        # QFileDialog.setDefaultSuffix(".yaml")
+        # If the user selected a file, create a new file from a template
+        print(file_path)
+        if file_path:
+            self.config_file_path.setText(file_path)
+            self.editor = EditorWindow(file_path)
+            self.editor.show()
+
 
 
 if __name__ == "__main__":
