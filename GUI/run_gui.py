@@ -166,11 +166,15 @@ class MyWidget(QtWidgets.QWidget):
 
         # layout stuff
         layout = QtWidgets.QGridLayout()
+        layout.setColumnStretch(0, 1)
+        layout.setColumnStretch(1, 3)
+        layout.setColumnStretch(2, 1)
+        layout.setColumnStretch(3, 1)
 
         # input file
         layout.addWidget(input_label, 1, 0)
         layout.addWidget(self.file_path, 1, 1)
-        layout.addWidget(self.input_file, 1, 2)
+        layout.addWidget(self.input_file, 1, 2, 1, 2)
 
         # config file
         layout.addWidget(config_label, 2, 0, 1, 1)
@@ -181,7 +185,7 @@ class MyWidget(QtWidgets.QWidget):
         layout.addWidget(delimiter_label, 3, 0)
         layout.addWidget(self.delimiter, 3, 1)
 
-        layout.addWidget(info_text, 4, 0, 1, 3)
+        layout.addWidget(info_text, 4, 0, 1, 4)
 
         layout.addWidget(ref_seg_label, 5, 0, 1, 1)
         layout.addWidget(self.ref_seg, 5, 1, 1, 1)
@@ -195,7 +199,7 @@ class MyWidget(QtWidgets.QWidget):
 
         layout.addWidget(score_label, 8, 0, 1, 1)
         layout.addWidget(self.score, 8, 1, 1, 1)
-        layout.addWidget(self.score_function, 8, 2, 1, 1)
+        layout.addWidget(self.score_function, 8, 2, 1, 2)
 
         layout.addWidget(strand_label, 9, 0, 1, 1)
         layout.addWidget(self.strand, 9, 1, 1, 1)
@@ -205,7 +209,7 @@ class MyWidget(QtWidgets.QWidget):
 
         layout.addWidget(frequency_label, 11, 0, 1, 1)
         layout.addWidget(self.frequency, 11, 1, 1, 1)
-        layout.addWidget(self.frequency_function, 11, 2, 1, 1)
+        layout.addWidget(self.frequency_function, 11, 2, 1, 2)
 
         layout.addWidget(self.convert, 12, 0, 1, 4)
 
