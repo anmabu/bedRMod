@@ -5,10 +5,10 @@ from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComb
     QWidget, QVBoxLayout
 
 
-class EditorWindow(QWidget):
+class NewConfigWindow(QWidget):
     def __init__(self, file_path):
         super().__init__()
-        EditorWindow.setWindowTitle(self, f"{file_path}")
+        NewConfigWindow.setWindowTitle(self, f"{file_path}")
         self.file_path = file_path
         self.text_edit = QTextEdit()
         self.text_edit.setText(
@@ -35,15 +35,17 @@ class EditorWindow(QWidget):
 
     def save_and_close(self):
         content = self.text_edit.toPlainText()
+        if not self.file_path.endswith(".yaml"):
+            self.file_path += ".yaml"
         with open(self.file_path, 'w') as new_file:
             new_file.write(content)
         self.close()
 
 
-class MyWidget(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        MyWidget.setWindowTitle(self, "Convert to bedRMod")
+        MainWindow.setWindowTitle(self, "Convert to bedRMod")
 
         info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -238,26 +240,23 @@ class MyWidget(QWidget):
     @QtCore.Slot()
     def create_new_file(self):
         # Ask the user to choose a location and name for the new file
-        conf_file = QFileDialog()
-        conf_file.setWindowTitle("New config.yaml")
-
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
+        conf_file = QFileDialog()
+        file_path, _ = conf_file.getSaveFileName(self, "New config.yaml", ".yaml", "Config Files (*.yaml);;All Files (*)",
+                                                 options=options)
 
-        file_path, _ = conf_file.getSaveFileName(self, "Save File", ".yaml", "Config Files (*.yaml);;All Files (*)",
-
-        conf_file.setDefaultSuffix("yaml")                                         options=options)
         # file_path = conf_file.exec_()
         # If the user selected a file, create a new file
         if file_path:
-            self.editor = EditorWindow(file_path)
+            self.editor = NewConfigWindow(file_path)
             self.editor.show()
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 
-    widget = MyWidget()
+    widget = MainWindow()
     # widget.resize(800, 600)
     widget.show()
 
