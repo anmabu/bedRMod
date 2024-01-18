@@ -227,6 +227,11 @@ class MainWindow(QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.file_path.setText(pathFile)
+            # check file type
+            # https: // github.com / ahupp / python - magic
+            # skip empty lines/header
+            # skip empty columns
+            # read column names
 
     @QtCore.Slot()
     def select_config_file(self):
