@@ -133,7 +133,7 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
 
 def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", modi="m1A", modi_column=False,
                 score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-                frequency_function=None):
+                frequency_function=None, output_file=None):
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
@@ -160,8 +160,9 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     """
     file = pd.read_csv(input_file, delimiter=delimiter)
     # file = pd.read_excel(input_file, header=3)
-
-    output_file = input_file
+    if output_file is None:
+        output_file = input_file
+        
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
