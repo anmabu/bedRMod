@@ -175,6 +175,18 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 "\tfrequency\n")
         for _, row in file.iterrows():
             chrom = row[ref_seg]
+            has_alpha = any(c.isalpha() for c in chrom)
+            has_digit = any(c.isdigit() for c in chrom)
+            if chrom == "chrY" or (chrom == "Y"):
+                chrom = "Y"
+            elif chrom == "chrX" or (chrom == "X"):
+                chrom = "X"
+            elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+                chrom = "MT"    
+            elif has_alpha and has_digit:
+                chrom = ''.join(c for c in chrom if c.isdigit())
+            else: 
+                print(f"something is weird in chrom {chrom}") 
             start_col = int(row[start])
             end = start_col + 1
             name = row[modi] if modi_column else modi
