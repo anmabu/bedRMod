@@ -18,20 +18,20 @@ def write_header(config, output_file):
         "modification_type",
         "assembly",
         "annotation_source",
-        "annotation_version",
-        "sequencing_platform",
-        "basecalling",
-        "bioinformatics_workflow",
-        "experiment",
-        "external_source", 
+        "annotation_version"#,
+        # "sequencing_platform",
+        # "basecalling",
+        #"bioinformatics_workflow",
+        #"experiment",
+        #"external_source", 
     ]
 
     # build the header from metadata
     euf_header = dict()
+    
     for key in euf_header_keys:
         euf_header[key] = config["options"].get(key, None)
     euf_header["fileformat"] = EUF_VERSION
-
     # check for additional keys and append them to the header
     additional_keys = []
     for key in config["options"].keys():
