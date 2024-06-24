@@ -45,6 +45,18 @@ def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
                 "\tfrequency\n")
         for _, row in bid.iterrows():
             chrom = row["chr"]
+            has_alpha = any(c.isalpha() for c in chrom)
+            has_digit = any(c.isdigit() for c in chrom)
+            if chrom == "chrY" or (chrom == "Y"):
+                chrom = "Y"
+            elif chrom == "chrX" or (chrom == "X"):
+                chrom = "X"
+            elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+                chrom = "MT"    
+            elif has_alpha and has_digit:
+                chrom = ''.join(c for c in chrom if c.isdigit())
+            else: 
+                print(f"something is weird in chrom {chrom}") 
             start = pd.to_numeric(row['pos'])
             end = start + 1
             name = "Y"
@@ -97,6 +109,18 @@ def bid_human2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
                 "\tfrequency\n")
         for _, row in bid.iterrows():
             chrom = row["chr"]
+            has_alpha = any(c.isalpha() for c in chrom)
+            has_digit = any(c.isdigit() for c in chrom)
+            if chrom == "chrY" or (chrom == "Y"):
+                chrom = "Y"
+            elif chrom == "chrX" or (chrom == "X"):
+                chrom = "X"
+            elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+                chrom = "MT"    
+            elif has_alpha and has_digit:
+                chrom = ''.join(c for c in chrom if c.isdigit())
+            else: 
+                print(f"something is weird in chrom {chrom}") 
             start = pd.to_numeric(row['pos'])
             end = start + 1
             name = "Y"
@@ -146,6 +170,18 @@ def etam2bedRMod(input_file, config_yaml, output_file=None):
         for _, row in etam.iterrows():
             ref_seg, pos, strand = row["pos"].split("_")
             chrom = ref_seg
+            has_alpha = any(c.isalpha() for c in chrom)
+            has_digit = any(c.isdigit() for c in chrom)
+            if chrom == "chrY" or (chrom == "Y"):
+                chrom = "Y"
+            elif chrom == "chrX" or (chrom == "X"):
+                chrom = "X"
+            elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+                chrom = "MT"    
+            elif has_alpha and has_digit:
+                chrom = ''.join(c for c in chrom if c.isdigit())
+            else: 
+                print(f"something is weird in chrom {chrom}") 
             start = int(pos)
             end = start + 1
             name = "m6A"
@@ -242,11 +278,13 @@ def convert_glori():
                         frequency="Ratio",
                         frequency_function=frequency_func)
 
-# convert_glori()
-# convert_bid_human()
-# convert_bid_mouse()
+convert_glori()
+convert_bid_human()
+convert_bid_mouse()
 # convert_etam_human()
-# convert_etam()
+convert_etam()
+
+
 def score_func(param):
     return int(1000 - (param * 1000))
 
@@ -259,13 +297,13 @@ def score_func(p_value):
 def frequency_func(ratio):
     return round(ratio * 100)
 
-csv2bedRMod("/home/annebusch/anne02/euf-data/etam/GSE211303_hela.polya.wt.ftom.ftop.rep1.deep.hits.txt",
-            "/home/annebusch/anne02/euf-data/etam/hela_config.yaml",
-            delimiter="\t",
-            modi="m6A",
-            coverage=["FTOm_total_count", "accessbility"],
-            coverage_function=cov_function,
-            score="FDR",
-            score_function=score_func,
-            frequency="methylation",
-            frequency_function=frequency_func)
+# csv2bedRMod("/home/annebusch/anne02/euf-data/etam/GSE211303_hela.polya.wt.ftom.ftop.rep1.deep.hits.txt",
+#            "/home/annebusch/anne02/euf-data/etam/hela_config.yaml",
+#            delimiter="\t",
+#            modi="m6A",
+#            coverage=["FTOm_total_count", "accessbility"],
+#            coverage_function=cov_function,
+#            score="FDR",
+#            score_function=score_func,
+#            frequency="methylation",
+#            frequency_function=frequency_func)
