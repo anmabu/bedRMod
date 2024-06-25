@@ -272,7 +272,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
-    print(output_file)
+    # print(output_file)
     config = yaml.safe_load(open(config_yaml, "r"))
 
     with open(output_file, 'w') as f:
@@ -291,6 +291,8 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
                 chrom = "MT"    
             elif has_alpha and has_digit:
                 chrom = ''.join(c for c in chrom if c.isdigit())
+            elif has_digit and not has_alpha:
+                chrom = chrom
             else: 
                 print(f"something is weird in chrom {chrom}") 
             start_col = int(row[start])
@@ -319,7 +321,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
             thick_end = end
             item_rgb = get_modification_color(name)
             if coverage_function is not None:
-                if isinstance(coverage, list):
+                if type(coverage) == list:
                     params = [row[col] for col in coverage]
                 elif isinstance(coverage, str):
                     params = row[coverage]
@@ -330,7 +332,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
                 else:
                     coverage_col = coverage
             if frequency_function is not None:
-                if isinstance(frequency, list):
+                if type(frequency) == list:
                     params = [row[col] for col in frequency]
                 elif isinstance(frequency, str):
                     params = row[frequency]
