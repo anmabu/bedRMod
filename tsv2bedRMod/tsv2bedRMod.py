@@ -131,8 +131,7 @@ def proEUF2bedRMod(input_file, config_yaml, output_file):
                         f'\t{coverage}\t{frequency}\n')
 
 
-def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", modi="m1A", modi_column=False,
-                score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
+def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
                 frequency_function=None):
     """
     converts arbitrary csv files into bedRMod format.
@@ -143,6 +142,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     :param delimiter: delimiter of the passed csv file. If "None" is it infered by pandas.
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
+    :param start_function: fix value of column eg. off-by-one errors
     :param modi: contains the column name of the column containing the modification or the name of the
     modification for the whole file.
     :param modi_column: indicates whether the value passed to "modi" contains the column name containing the
@@ -185,9 +185,21 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 chrom = "MT"    
             elif has_alpha and has_digit:
                 chrom = ''.join(c for c in chrom if c.isdigit())
+            elif has_digit and not has_alpha:
+                chrom = chrom
             else: 
                 print(f"something is weird in chrom {chrom}") 
-            start_col = int(row[start])
+            if start_function is not None:
+                if type(start) == list:
+                    params = [row[col] for col in start]
+                elif isinstance(start, str):
+                    params = row[start]
+                else:
+                    params = start
+                start_col = start_function(params)
+            else:
+                start_col = int(row[start])
+            
             end = start_col + 1
             name = row[modi] if modi_column else modi
             if score_function is not None:
@@ -239,7 +251,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                     f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
 
             
-def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", modi="m1A", modi_column=False,
+def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
                 score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
                 frequency_function=None):
     """
@@ -249,6 +261,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
     :param config_yaml: (path to) config file containing the information on the metadata
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
+    :param start_function: fix value of column eg. off-by-one errors
     :param modi: contains the column name of the column containing the modification or the name of the
     modification for the whole df.
     :param modi_column: indicates whether the value passed to "modi" contains the column name containing the
@@ -295,7 +308,16 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", mod
                 chrom = chrom
             else: 
                 print(f"something is weird in chrom {chrom}") 
-            start_col = int(row[start])
+            if start_function is not None:
+                if type(start) == list:
+                    params = [row[col] for col in start]
+                elif isinstance(start, str):
+                    params = row[start]
+                else:
+                    params = start
+                start_col = start_function(params)
+            else:
+                start_col = int(row[start])
             end = start_col + 1
             name = row[modi] if modi_column else modi
             if score_function is not None:
