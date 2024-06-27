@@ -18,19 +18,19 @@ def write_header(config, output_file):
         "modification_type",
         "assembly",
         "annotation_source",
-        "annotation_version"#,
-        # "sequencing_platform",
-        # "basecalling",
-        #"bioinformatics_workflow",
-        #"experiment",
-        #"external_source", 
+        "annotation_version",
+        "sequencing_platform",
+        "basecalling",
+        "bioinformatics_workflow",
+        "experiment",
+        "external_source" 
     ]
 
     # build the header from metadata
     euf_header = dict()
     
     for key in euf_header_keys:
-        euf_header[key] = config["options"].get(key, None)
+        euf_header[key] = config["options"].get(key, "")
     euf_header["fileformat"] = EUF_VERSION
     # check for additional keys and append them to the header
     additional_keys = []
@@ -41,14 +41,14 @@ def write_header(config, output_file):
     if len(additional_keys) > 0:
         for key in additional_keys:
             # if there are nested dictionaries, they get appended here
-            if isinstance(config["options"].get(key, None), dict):
+            if isinstance(config["options"].get(key, ""), dict):
                 npairs = ""
-                for nkey, nvalue in config["options"].get(key, None).items():
+                for nkey, nvalue in config["options"].get(key, "").items():
                     npairs += f"{nkey}:{nvalue};"
                 npairs = npairs[:-1]
                 euf_header[key] = npairs
             else:
-                euf_header[key] = config["options"].get(key, None)
+                euf_header[key] = config["options"].get(key, "")
     for k, v in euf_header.items():
         output_file.write(f"#{k}={v}\n")
 
