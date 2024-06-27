@@ -57,7 +57,7 @@ def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
                 chrom = ''.join(c for c in chrom if c.isdigit())
             else: 
                 print(f"something is weird in chrom {chrom}") 
-            start = pd.to_numeric(row['pos'])
+            start = pd.to_numeric(row['pos']) - 1 
             end = start + 1
             name = "Y"
             score = round(row["Frac_Ave %"] * 10)
@@ -121,7 +121,7 @@ def bid_human2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
                 chrom = ''.join(c for c in chrom if c.isdigit())
             else: 
                 print(f"something is weird in chrom {chrom}") 
-            start = pd.to_numeric(row['pos'])
+            start = pd.to_numeric(row['pos']) - 1 
             end = start + 1
             name = "Y"
             score = round(row["Frac_Ave %"] * 10)
@@ -182,7 +182,7 @@ def etam2bedRMod(input_file, config_yaml, output_file=None):
                 chrom = ''.join(c for c in chrom if c.isdigit())
             else: 
                 print(f"something is weird in chrom {chrom}") 
-            start = int(pos)
+            start = int(pos) - 1 
             end = start + 1
             name = "m6A"
             score = round(1000 - (row["FDR"] * 1000))
@@ -257,6 +257,9 @@ def convert_glori():
 
     def frequency_func(ratio):
         return round(ratio * 100)
+    
+    def start_func(pos):
+        return pos - 1
 
     dirpath = "/home/annebusch/anne02/euf-data/glori/"
     os.chdir(dirpath)
@@ -270,7 +273,9 @@ def convert_glori():
                 conf = "hek_hela-hypoxia_config.yaml"
             csv2bedRMod(file, conf,
                         delimiter="\t",
-                        ref_seg="Chr", start="Sites", strand="Strand",
+                        ref_seg="Chr", start="Sites", 
+                        start_function=start_func, 
+                        strand="Strand",
                         modi="m6A",
                         coverage="Acov",
                         score="Pvalue",
@@ -278,11 +283,11 @@ def convert_glori():
                         frequency="Ratio",
                         frequency_function=frequency_func)
 
-convert_glori()
+# convert_glori()
 convert_bid_human()
 convert_bid_mouse()
 # convert_etam_human()
-convert_etam()
+# convert_etam()
 
 
 def score_func(param):
