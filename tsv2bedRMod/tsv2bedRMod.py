@@ -199,7 +199,8 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                 start_col = start_function(params)
             else:
                 start_col = int(row[start])
-            
+            if start_col is None:
+                continue
             end = start_col + 1
             name = row[modi] if modi_column else modi
             if score_function is not None:
@@ -318,6 +319,8 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 start_col = start_function(params)
             else:
                 start_col = int(row[start])
+            if start_col is None:
+                continue
             end = start_col + 1
             name = row[modi] if modi_column else modi
             if score_function is not None:
