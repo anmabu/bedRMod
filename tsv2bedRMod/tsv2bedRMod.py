@@ -5,7 +5,7 @@ import yaml
 
 from .helper import write_header
 from .helper import get_modification_color
-from .helper import parse_excel
+from .helper import parse_excel_sheetnames
 
 
 def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None, frequency_function=None):

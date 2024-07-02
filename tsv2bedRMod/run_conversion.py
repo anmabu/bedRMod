@@ -7,7 +7,7 @@ from tsv2bedRMod import csv2bedRMod
 
 from helper import write_header
 from helper import get_modification_color
-from helper import parse_excel
+from helper import parse_excel_sheetnames
 
 
 def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
@@ -202,7 +202,7 @@ def convert_bid_mouse():
     dirpath = "/home/annebusch/anne02/euf-data/bid-seq/"
     for file in os.listdir(dirpath):
         if "Mouse" in file and file.endswith(".xlsx"):
-            sheet_names = parse_excel(dirpath + file)
+            sheet_names = parse_excel_sheetnames(dirpath + file)
             for name in sheet_names:
                 bid_mouse2bedRMod(dirpath + file, "/home/annebusch/anne02/euf-data/bid-seq/mouse_config.yaml", sheet_name=name)
 
