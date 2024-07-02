@@ -1,5 +1,7 @@
 # bedRMod
 
+This is not up to date!
+
 This project is about converting RNA sequencing data into the new epitranscriptomics unified data format(EUF), **bedRMod**. 
 bedRMod does contain the read data of modifications a per site-level (as opposed to SAM/BAM with Mm tags which contain the information per read-level).  
 
