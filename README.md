@@ -21,9 +21,9 @@ Those differ for the input formats.
 A config file is needed in which the metadata of the files are stored. 
 Please have a look at the config.yaml file to get a better impression. 
 To convert the file, call the `tsv2bedRMod` function with the following arguments: 
-- path to tsv (input) file e.g. "/flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
-- path to config.yaml file e.g. "/tsv2euf/config.yaml"
-- path to output file e.g. "/flat2euf/m6aSACseq/euf/output_file.bedrmod"
+- path to tsv (input) file e.g. "/flat2bedRMod/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
+- path to config.yaml file e.g. "/tsv2bedRMod/config.yaml"
+- path to output file e.g. "/flat2bedRMod/m6aSACseq/euf/output_file.bedrmod"
 
 ### Converting from pileup
 A pileup file contains read results per site and can be directly converted from fasta/fastq files using [SAMtools](http://www.htslib.org/).
@@ -47,5 +47,3 @@ Converting into pileup format can be most easily achieved by using [SAMtools](ht
 When BAM files are available, they (can be merged and) have to be sorted and indexed before their conversion into pileup format. 
 It is recommended to set the options `-A -Q 0 -d 1000000 -x` when calling `samtools mpileup`. 
 
-## Known Issues
-- It is not possible to open the file "as is" in IGV. This is due to the file having too many columns for IGV. If only the first 11 columns are used, IGV can open them without problems
