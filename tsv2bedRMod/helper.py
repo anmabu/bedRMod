@@ -32,6 +32,7 @@ def write_header(config, output_file):
     for key in euf_header_keys:
         euf_header[key] = config["options"].get(key, "")
     euf_header["fileformat"] = EUF_VERSION
+    
     # check for additional keys and append them to the header
     additional_keys = []
     for key in config["options"].keys():
@@ -56,8 +57,8 @@ def write_header(config, output_file):
 def get_modification_color(modi):
     """
     looks up the color of the modification in the rgb dictionary and returns the associated rgb value
-    :param modi:
-    :return:
+    :param modi: short name of modification in Modomics
+    :return: RGB value for modification
     """
     rgb_colors = {'pmnm5U': '255,0,0',
                      'm1Am': '0,255,0',
@@ -396,7 +397,7 @@ def get_modification_color(modi):
     return rgb_colors.get(modi)
 
 
-def parse_excel(input_file):
+def parse_excel_sheetnames(input_file):
     """
     parses the input excel file and returns a list of sheetnames.  
     This is useful if the Excel file contains multiple sheets with information to be converted into bedrmod.
