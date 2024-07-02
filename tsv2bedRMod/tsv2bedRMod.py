@@ -1,5 +1,4 @@
 import os
-
 import pandas as pd
 import yaml
 
@@ -8,7 +7,9 @@ from .helper import get_modification_color
 from .helper import parse_excel_sheetnames
 
 
-def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None, frequency_function=None):
+def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
+              score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
+              frequency_function=None):
     """
     parses a dataframe/csv row and return the values needed for a row in the bedRMod format
     """
@@ -28,7 +29,7 @@ def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_funct
     else: 
         print(f"something is weird in chrom {chrom}") 
     if start_function is not None:
-        if type(start) == list:
+        if start is list:
             params = [row[col] for col in start]
         elif isinstance(start, str):
             params = row[start]
@@ -42,7 +43,7 @@ def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_funct
     end = start_col + 1
     name = row[modi] if modi_column else modi
     if score_function is not None:
-        if type(score) == list:
+        if score is list:
             params = [row[col] for col in score]
         elif isinstance(score, str):
             params = row[score]
@@ -64,7 +65,7 @@ def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_funct
     thick_end = end
     item_rgb = get_modification_color(name)
     if coverage_function is not None:
-        if type(coverage) == list:
+        if coverage is list:
             params = [row[col] for col in coverage]
         elif isinstance(coverage, str):
             params = row[coverage]
@@ -85,7 +86,8 @@ def parse_row(row, columnnames = [], ref_seg="ref_seg", start="pos", start_funct
             frequency_col = round(row[frequency])
         elif isinstance(frequency, (int, float)):
             frequency_col = round(frequency)
-    return chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col, frequency_col
+    return (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
+            frequency_col)
 
 
 def tsv2bedRMod(input_file, config_yaml, output_file):
@@ -132,87 +134,9 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
                     f'\t{coverage}\t{frequency}\n')
 
 
-def proEUF2bedRMod(input_file, config_yaml, output_file):
-    """
-    converts proEUF into bedRMod. needed second file to show at which positions are which modifications. This file is linked to in the config file
-    :param input_file: (path to) input file in proEUF format.
-    :param config_yaml: (path to) config file containing the information on the metadata
-    :param output_file: (path to) output file.
-    :return:
-    """
-
-    proEUF = pd.read_csv(input_file, delimiter="\t")
-
-    # Set thickStart and thickEnd to pos and pos+1, respectively
-    proEUF['thickStart'] = proEUF['pos']
-    # convert dtype of columns
-    proEUF["pos"] = pd.to_numeric(proEUF["pos"])
-    proEUF['thickEnd'] = proEUF["pos"] + 1
-
-    path, ending = os.path.splitext(output_file)
-    if not ending == ".bedrmod":
-        output_file = path + ".bedrmod"
-        print(f"filename changed to {output_file}")
-
-    directory, file = os.path.split(output_file)
-    if not os.path.isdir(directory):
-        raise NotADirectoryError(f"the given path does not lead to a directory: {directory}")
-
-    config = yaml.safe_load(open(config_yaml, "r"))
-    if config["modifications_file"]:
-        mod_file = pd.read_csv(config["modifications_file"])
-        with open(output_file, 'w') as f:
-            write_header(config, f)
-            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\n")
-            for _, row in proEUF.iterrows():
-                chrom = row["ref_seg"]
-                start = row['pos']
-                end = start + 1
-                score = 0
-                strand = row['strand']
-                # print(mod_file.loc[(mod_file["ref_seg"] == chrom) & (mod_file["mod_index"] == start)])
-                selected_row = mod_file[(mod_file["ref_seg"] == chrom) & (mod_file["mod_index"] == start)]
-                if selected_row.empty:
-                    name = "."
-                    frequency = 0
-                    item_rgb = '0,0,0'
-                else:
-                    selected_row = selected_row.iloc[0]
-                    name = selected_row["mod_type"]
-                    score = 954
-                    frequency = 100
-                    item_rgb = get_modification_color(name)
-                thick_start = row['thickStart']
-                thick_end = row['thickEnd']
-                coverage = row["cov"]
-                f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\n')
-
-    else:
-        # Write output file in BED format without modifications
-        with open(output_file, 'w') as f:
-            write_header(config, f)
-            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                    "\tfrequency\n")
-            for _, row in proEUF.iterrows():
-                chrom = row["ref_seg"]
-                start = row['pos']
-                end = start + 1
-                name = "."
-                score = 0
-                strand = row['strand']
-                thick_start = row['thickStart']
-                thick_end = row['thickEnd']
-                item_rgb = '0,0,0'
-                coverage = row["cov"]
-                frequency = 0
-                f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                        f'\t{coverage}\t{frequency}\n')
-
-
-def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-                frequency_function=None):
+def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", start_function=None,
+                modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
+                coverage_function=None, frequency=None, frequency_function=None):
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
@@ -332,14 +256,15 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
                     f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
 
             
-def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
-                score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-                frequency_function=None):
+def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A",
+               modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
+               coverage_function=None, frequency=None, frequency_function=None):
     """
     converts arbitrary pandas_dataframes into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
     :param df: input pandas dataframe.
     :param config_yaml: (path to) config file containing the information on the metadata
+    :param output_file:
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
     :param start_function: fix value of column eg. off-by-one errors
@@ -356,6 +281,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     :param coverage_function:
     :param frequency:
     :param frequency_function:
+
     :return:
     """
     # file = pd.read_csv(input_file, delimiter=delimiter)
@@ -382,7 +308,5 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}\t{thick_end}'
                         f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
 
-if __name__ == "__main__":
-    proEUF2bedRMod("test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF", "config.yaml",
-                   "example_files/test_frankenstein.bedrmod")
+
 
