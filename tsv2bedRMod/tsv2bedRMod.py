@@ -29,7 +29,7 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
     else: 
         print(f"something is weird in chrom {chrom}") 
     if start_function is not None:
-        if start is list:
+        if type(start) == list:
             params = [row[col] for col in start]
         elif isinstance(start, str):
             params = row[start]
@@ -43,7 +43,7 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
     end = start_col + 1
     name = row[modi] if modi_column else modi
     if score_function is not None:
-        if score is list:
+        if type(score) == list:
             params = [row[col] for col in score]
         elif isinstance(score, str):
             params = row[score]
@@ -61,11 +61,8 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
         strandedness = "-"
     else:
         strandedness = row[strand]
-    thick_start = start_col
-    thick_end = end
-    item_rgb = get_modification_color(name)
     if coverage_function is not None:
-        if coverage is list:
+        if type(coverage) == list:
             params = [row[col] for col in coverage]
         elif isinstance(coverage, str):
             params = row[coverage]
@@ -77,7 +74,7 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             coverage_col = coverage
     print(frequency_function)
     if frequency_function is not None:
-        if frequency is list:
+        if type(frequency) == list:
             params = [row[col] for col in frequency]
         elif isinstance(frequency, str):
             params = row[frequency]
@@ -87,6 +84,9 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(row[frequency])
         elif isinstance(frequency, (int, float)):
             frequency_col = round(frequency)
+    thick_start = start_col
+    thick_end = end
+    item_rgb = get_modification_color(name)
     result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
     bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
@@ -172,7 +172,6 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     :return:
     """
     file = pd.read_csv(input_file, delimiter=delimiter)
-    # file = pd.read_excel(input_file, header=3)
 
     output_file = input_file
     path, ending = os.path.splitext(output_file)
@@ -182,87 +181,27 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
 
     config = yaml.safe_load(open(config_yaml, "r"))
 
-    with open(output_file, 'w') as f:
-        write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
-                "\tfrequency\n")
-        for _, row in file.iterrows():
-            chrom = row[ref_seg]
-            has_alpha = any(c.isalpha() for c in chrom)
-            has_digit = any(c.isdigit() for c in chrom)
-            if chrom == "chrY" or (chrom == "Y"):
-                chrom = "Y"
-            elif chrom == "chrX" or (chrom == "X"):
-                chrom = "X"
-            elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
-                chrom = "MT"    
-            elif has_alpha and has_digit:
-                chrom = ''.join(c for c in chrom if c.isdigit())
-            elif has_digit and not has_alpha:
-                chrom = chrom
-            else: 
-                print(f"something is weird in chrom {chrom}") 
-            if start_function is not None:
-                if type(start) == list:
-                    params = [row[col] for col in start]
-                elif isinstance(start, str):
-                    params = row[start]
-                else:
-                    params = start
-                start_col = start_function(params)
-            else:
-                start_col = int(row[start])
-            if start_col is None:
-                continue
-            end = start_col + 1
-            name = row[modi] if modi_column else modi
-            if score_function is not None:
-                if type(score) == list:
-                    params = [row[col] for col in score]
-                elif isinstance(score, str):
-                    params = row[score]
-                else:
-                    params = score
-                score_column = score_function(params)
-            else:
-                if isinstance(score, str):
-                    score_column = round(row[score])
-                else:
-                    score_column = score
-            if strand == "+":
-                strandedness = "+"
-            elif strand == "-":
-                strandedness = "-"
-            else:
-                strandedness = row[strand]
-            thick_start = start_col
-            thick_end = end
-            item_rgb = get_modification_color(name)
-            if coverage_function is not None:
-                if isinstance(coverage, list):
-                    params = [row[col] for col in coverage]
-                elif isinstance(coverage, str):
-                    params = row[coverage]
-                coverage_col = coverage_function(params)
-            else:
-                if coverage in file.columns:
-                    coverage_col = round(row[coverage])
-                else:
-                    coverage_col = coverage
-            if frequency_function is not None:
-                if isinstance(frequency, list):
-                    params = [row[col] for col in frequency]
-                elif isinstance(frequency, str):
-                    params = row[frequency]
-                frequency_col = frequency_function(params)
-            else:
-                if frequency in file.columns:
-                    frequency_col = round(row[frequency])
-                elif isinstance(frequency, (int, float)):
-                    frequency_col = round(frequency)
+    colnames = file.columns
+    try:
+        with open(output_file, 'w') as f:
+            header_written = write_header(config, f)
+            if not header_written:
+                raise TypeError("Header could not be written.")
+            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                    "\tfrequency\n")
 
-            f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}\t{thick_end}'
-                    f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
+            for _, row in file.iterrows():
+                result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score,
+                                   score_function,
+                                   strand, coverage, coverage_function, frequency, frequency_function)
+                if not any(item is None for item in result) or (result is not None):
+                    chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
+                        coverage_col, frequency_col = result
+                    f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
+                            f'\t{thick_end}\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
+            print("Done!")
+    except TypeError:
+        os.remove(output_file)
 
             
 def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A",
@@ -296,16 +235,14 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     # file = pd.read_csv(input_file, delimiter=delimiter)
     # file = pd.read_excel(input_file, header=3)
 
-    # output_file = input_file
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
-    # print(output_file)
+
     config = yaml.safe_load(open(config_yaml, "r"))
 
     colnames = df.columns
-
     try:
         with open(output_file, 'w') as f:
             header_written = write_header(config, f)
@@ -318,6 +255,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
                                    strand, coverage, coverage_function, frequency, frequency_function)
                 if not any(item is None for item in result) or (result is not None):
+                    print("none found")
                     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
                         coverage_col, frequency_col = result
                     f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
