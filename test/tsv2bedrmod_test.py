@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+import filecmp
 
 from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod, parse_row
 
@@ -45,3 +46,4 @@ def test_df2bedrmod():
                start_function=None, modi="name", modi_column=True, score="score_column", score_function=None,
                strand="strandedness", coverage="coverage_col", coverage_function=None,
                frequency="frequency_col", frequency_function=None)
+    assert filecmp.cmp("test_static_df2bedrmod.bedrmod", "test_df2bedrmod.bedrmod")
