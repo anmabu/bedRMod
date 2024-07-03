@@ -75,8 +75,9 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             coverage_col = round(row[coverage])
         else:
             coverage_col = coverage
+    print(frequency_function)
     if frequency_function is not None:
-        if type(frequency) == list:
+        if frequency is list:
             params = [row[col] for col in frequency]
         elif isinstance(frequency, str):
             params = row[frequency]
@@ -86,8 +87,16 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(row[frequency])
         elif isinstance(frequency, (int, float)):
             frequency_col = round(frequency)
-    return (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
+    result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
+    bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
+                       "itemRgb", "coverage", "frequency")
+    for index, item in enumerate(result):
+        if item is None:
+            print(f"The data has not been converted. \n"
+                  f"Please check the input value/function for the {bedrmod_columns[index]} column.")
+            result = None
+    return result
 
 
 def tsv2bedRMod(input_file, config_yaml, output_file):
@@ -302,11 +311,14 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 "\tfrequency\n")
         
         for _, row in df.iterrows():
-            result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function, strand, coverage, coverage_function, frequency, frequency_function)
-            if result is not None:
-                chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col, frequency_col = result
-                f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}\t{thick_end}'
-                        f'\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
+            result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
+                               strand, coverage, coverage_function, frequency, frequency_function)
+            if not any(item is None for item in result):
+                chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
+                    coverage_col, frequency_col = result
+                f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
+                        f'\t{thick_end}\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
+        print("Done!")
 
 
 
