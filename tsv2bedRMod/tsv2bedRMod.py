@@ -190,6 +190,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
+
             for _, row in file.iterrows():
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score,
                                    score_function,
@@ -207,6 +208,7 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
 def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A",
                modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
                coverage_function=None, frequency=None, frequency_function=None):
+
     """
     converts arbitrary pandas_dataframes into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
