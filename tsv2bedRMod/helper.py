@@ -23,15 +23,14 @@ def write_header(config, output_file):
         "basecalling",
         "bioinformatics_workflow",
         "experiment",
-        "external_source", 
+        "external_source" 
     ]
 
     # build the header from metadata
     euf_header = dict()
     for key in euf_header_keys:
-        euf_header[key] = config["options"].get(key, None)
+        euf_header[key] = config["options"].get(key, "")
     euf_header["fileformat"] = EUF_VERSION
-
     # check for additional keys and append them to the header
     additional_keys = []
     for key in config["options"].keys():
@@ -41,23 +40,35 @@ def write_header(config, output_file):
     if len(additional_keys) > 0:
         for key in additional_keys:
             # if there are nested dictionaries, they get appended here
-            if isinstance(config["options"].get(key, None), dict):
+            if isinstance(config["options"].get(key, ""), dict):
                 npairs = ""
-                for nkey, nvalue in config["options"].get(key, None).items():
+                for nkey, nvalue in config["options"].get(key, "").items():
                     npairs += f"{nkey}:{nvalue};"
                 npairs = npairs[:-1]
                 euf_header[key] = npairs
             else:
-                euf_header[key] = config["options"].get(key, None)
+                euf_header[key] = config["options"].get(key, "")
     for k, v in euf_header.items():
-        output_file.write(f"#{k}={v}\n")
+        if v is not None:
+            output_file.write(f"#{k}={v}\n")
+        else:
+            value = ""
+            # these are required fields in the config file
+            if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
+                     "annotation_version"]:
+                print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
+                      f"this and convert again!")
+                return False
+            else:
+                output_file.write(f"#{k}={value}\n")
+    return True
 
 
 def get_modification_color(modi):
     """
     looks up the color of the modification in the rgb dictionary and returns the associated rgb value
-    :param modi:
-    :return:
+    :param modi: short name of modification in Modomics
+    :return: RGB value for modification
     """
     rgb_colors = {'pmnm5U': '255,0,0',
                      'm1Am': '0,255,0',
@@ -396,7 +407,7 @@ def get_modification_color(modi):
     return rgb_colors.get(modi)
 
 
-def parse_excel(input_file):
+def parse_excel_sheetnames(input_file):
     """
     parses the input excel file and returns a list of sheetnames.  
     This is useful if the Excel file contains multiple sheets with information to be converted into bedrmod.
