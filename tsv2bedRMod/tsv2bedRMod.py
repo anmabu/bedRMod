@@ -143,8 +143,8 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
                     f'\t{coverage}\t{frequency}\n')
 
 
-def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", start_function=None,
-                modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
+def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
+                start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
                 coverage_function=None, frequency=None, frequency_function=None):
     """
     converts arbitrary csv files into bedRMod format.
@@ -152,7 +152,8 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     The name of the output file is infered from the input file and put in the same directory as the input file.
     :param input_file:(path to) input csv file.
     :param config_yaml: (path to) config file containing the information on the metadata
-    :param delimiter: delimiter of the passed csv file. If "None" is it infered by pandas.
+    :param output_file: (path to) output bedrmod file. If "None" it is the path to input file
+    :param delimiter: delimiter of the passed csv file. If "None" it is infered by pandas.
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
     :param start_function: fix value of column eg. off-by-one errors
@@ -172,8 +173,8 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     :return:
     """
     file = pd.read_csv(input_file, delimiter=delimiter)
-
-    output_file = input_file
+    if output_file is None:
+        output_file = input_file
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
