@@ -1,9 +1,11 @@
 import sys
+import os
 
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout
+    QWidget, QVBoxLayout, QButtonGroup
 
+from tsv2bedRMod.tsv2bedRMod import csv2bedRMod
 
 class NewConfigWindow(QWidget):
     def __init__(self, file_path):
@@ -56,6 +58,23 @@ class MainWindow(QWidget):
         info_text.setFixedHeight(line_height * 1.8)
         info_text.isReadOnly()
 
+        # variables to store everything
+        self.input_file_path = None
+        self.config_yaml_path = None
+        self.output_file_path = None
+        self.ref_seg_column = None
+        self.position_column = None
+        self.modification_column = None
+        self.strand_column = None
+        self.score_column = None
+        self.coverage_column = None
+        self.frequency_column = None
+
+        self.start_func = None
+        self.score_func = None
+        self.coverage_func = None
+        self.frequency_func = None
+
         # input file
         input_label = QLabel("Select input file:")
         self.file_path = QTextEdit()
@@ -78,11 +97,24 @@ class MainWindow(QWidget):
         self.new_config_file = QPushButton("New Config file")
         self.new_config_file.clicked.connect(self.create_new_file)
 
+        # output file
+        output_label = QLabel("Select output file path:")
+        self.outfile_path = QTextEdit()
+        self.outfile_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.outfile_path.setText("none selected")
+        self.outfile_path.setFixedHeight(line_height * 1.6)
+        # self.file_path.setStyleSheet("background-color: white")
+        self.output_file = QPushButton("...")
+        self.output_file.clicked.connect(self.select_output_file)
+
+        # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
         self.delimiter = QComboBox()
         self.delimiter.addItem("comma")
         self.delimiter.addItem("tab")
         self.delimiter.addItem("xlsx")
+        # selected_text = self.delimiter.currentText()
+        # del_dict = {"comma": ",", "tab": "\t", "xlsx": "Erro"}
 
         # ref_seg
         ref_seg_label = QLabel("Reference Segment / Chromosome")
@@ -101,6 +133,13 @@ class MainWindow(QWidget):
         self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.pos.setText('pos')
         self.pos.setFixedHeight(line_height * 1.6)
+        self.index_0_button = QRadioButton("0 indexed data")
+        self.index_1_button = QRadioButton("1 indexed data")
+        self.button_group = QButtonGroup()
+        self.button_group.addButton(self.index_0_button)
+        self.button_group.addButton(self.index_1_button)
+        # self.index_0_button.toggled.connect(self.onIndexButtonToggled)
+        # self.index_1_button.toggled.connect(self.onIndexButtonToggled)
 
         # modification type
         modi_label = QLabel("Modification type / column")
@@ -146,6 +185,13 @@ class MainWindow(QWidget):
         self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.coverage.setText('coverage')
         self.coverage.setFixedHeight(line_height * 1.6)
+        self.coverage_function = QTextEdit()
+        self.coverage_function.setText("Coverage function")
+        self.coverage_function.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.coverage_function.setToolTip("When writing a function and refering to a column name in the calculation "
+                                           "(e.g. cov), please refer to this column name as 'cov'. "
+                                           "(Or do this calculation in a script and store the result in the same file)")
+        self.coverage_function.setFixedHeight(line_height * 1.6)
 
         # frequency
         frequency_label = QLabel("Modification Frequency")
@@ -167,6 +213,7 @@ class MainWindow(QWidget):
         # convert now!
         self.convert = QPushButton()
         self.convert.setText("Convert!")
+        self.convert.clicked.connect(self.convert2bedrmod)
 
         # layout stuff
         layout = QtWidgets.QGridLayout()
@@ -186,43 +233,61 @@ class MainWindow(QWidget):
         layout.addWidget(self.config_file, 2, 2, 1, 1)
         layout.addWidget(self.new_config_file, 2, 3, 1, 1)
 
-        layout.addWidget(delimiter_label, 3, 0)
-        layout.addWidget(self.delimiter, 3, 1)
+        # output file
+        layout.addWidget(output_label, 3, 0)
+        layout.addWidget(self.outfile_path, 3, 1)
+        layout.addWidget(self.output_file, 3, 2, 1, 2)
 
-        layout.addWidget(info_text, 4, 0, 1, 4)
+        # delimiter stuff
+        layout.addWidget(delimiter_label, 4, 0)
+        layout.addWidget(self.delimiter, 4, 1)
 
-        layout.addWidget(ref_seg_label, 5, 0, 1, 1)
-        layout.addWidget(self.ref_seg, 5, 1, 1, 1)
+        # conversion info
+        layout.addWidget(info_text, 5, 0, 1, 4)
 
-        layout.addWidget(pos_label, 6, 0, 1, 1)
-        layout.addWidget(self.pos, 6, 1, 1, 1)
+        # chrom column
+        layout.addWidget(ref_seg_label, 6, 0, 1, 1)
+        layout.addWidget(self.ref_seg, 6, 1, 1, 1)
 
-        layout.addWidget(modi_label, 7, 0, 1, 1)
-        layout.addWidget(self.modi, 7, 1, 1, 1)
-        layout.addWidget(self.modi_button, 7, 2, 1, 1)
+        # start column
+        layout.addWidget(pos_label, 7, 0, 1, 1)
+        layout.addWidget(self.pos, 7, 1, 1, 1)
+        layout.addWidget(self.index_0_button, 7, 2, 1, 1)
+        layout.addWidget(self.index_1_button, 7, 3, 1, 1)
 
-        layout.addWidget(score_label, 8, 0, 1, 1)
-        layout.addWidget(self.score, 8, 1, 1, 1)
-        layout.addWidget(self.score_function, 8, 2, 1, 2)
+        # modification label
+        layout.addWidget(modi_label, 8, 0, 1, 1)
+        layout.addWidget(self.modi, 8, 1, 1, 1)
+        layout.addWidget(self.modi_button, 8, 2, 1, 1)
 
-        layout.addWidget(strand_label, 9, 0, 1, 1)
-        layout.addWidget(self.strand, 9, 1, 1, 1)
+        # score column
+        layout.addWidget(score_label, 9, 0, 1, 1)
+        layout.addWidget(self.score, 9, 1, 1, 1)
+        layout.addWidget(self.score_function, 9, 2, 1, 2)
 
-        layout.addWidget(coverage_label, 10, 0, 1, 1)
-        layout.addWidget(self.coverage, 10, 1, 1, 1)
+        # strand info
+        layout.addWidget(strand_label, 10, 0, 1, 1)
+        layout.addWidget(self.strand, 10, 1, 1, 1)
 
-        layout.addWidget(frequency_label, 11, 0, 1, 1)
-        layout.addWidget(self.frequency, 11, 1, 1, 1)
-        layout.addWidget(self.frequency_function, 11, 2, 1, 2)
+        # coverage info
+        layout.addWidget(coverage_label, 11, 0, 1, 1)
+        layout.addWidget(self.coverage, 11, 1, 1, 1)
+        layout.addWidget(self.coverage_function, 11, 2, 1, 2)
 
-        layout.addWidget(self.convert, 12, 0, 1, 4)
+        # frequency info
+        layout.addWidget(frequency_label, 12, 0, 1, 1)
+        layout.addWidget(self.frequency, 12, 1, 1, 1)
+        layout.addWidget(self.frequency_function, 12, 2, 1, 2)
+
+        # convert button
+        layout.addWidget(self.convert, 13, 0, 1, 4)
 
         self.setLayout(layout)
 
     @QtCore.Slot()
     def select_input_file(self):
         pathFile, ok = QFileDialog.getOpenFileName(self,
-                                                   "Open the input file",
+                                                   "Open input file",
                                                    "",
                                                    "All Files(*)")
         if pathFile:
@@ -232,6 +297,25 @@ class MainWindow(QWidget):
             # skip empty lines/header
             # skip empty columns
             # read column names
+
+    @QtCore.Slot()
+    def select_output_file(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        conf_file = QFileDialog()
+        print(self.file_path)
+        if self.input_file:
+            input_dir = os.path(self.input_file)
+            conf_file.setDirectory(input_dir)
+        file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
+                                                 "BedRMod Files (*.bedrmod);;All Files (*)",
+                                                 options=options)
+        if file_path:
+            if not file_path.endswith(".bedrmod"):
+                self.outfile_path.setText(file_path+".bedrmod")
+            else:
+                self.outfile_path.setText(file_path)
+
 
     @QtCore.Slot()
     def select_config_file(self):
@@ -257,6 +341,34 @@ class MainWindow(QWidget):
             self.editor = NewConfigWindow(file_path)
             self.editor.show()
 
+    @QtCore.Slot()
+    def onIndexButtonToggled(self):
+        if self.index_0_button.isChecked():
+            print(f"value index 0: {self.index_0_button.isChecked()}")
+        elif self.index_1_button.isChecked():
+            print(f"value index 1: {self.index_1_button.isChecked()}")
+        pass
+
+    @QtCore.Slot()
+    def convert2bedrmod(self):
+        print(f"input file path: {self.input_file_path}")
+        print(f"config yaml path: {self.config_yaml_path}")
+        print(f"output file path: {self.output_file_path}")
+        print(f"chrom column: {self.ref_seg_column}")
+        print(f"position column: {self.position_column}")
+        print(f"0 indexed? {self.index_0_button.isChecked()}")
+        print(f"1 indexed? {self.index_1_button.isChecked()}")
+        print(f"modification info: {self.modification_column}")
+        print(f"modification column? {self.modi_button.isChecked()}")
+        print(f"strand column {self.strand_column}")
+        print(f"score column {self.score_column}")
+        print(f"coverage column: {self.coverage_column}")
+        print(f"frequency column: {self.frequency_column}")
+        print(f"frequency function: {self.frequency_function.toPlainText()}")
+        self.start_func = None
+        self.score_func = None
+        self.coverage_func = None
+        self.frequency_func = None
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
