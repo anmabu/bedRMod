@@ -28,11 +28,9 @@ def write_header(config, output_file):
 
     # build the header from metadata
     euf_header = dict()
-    
     for key in euf_header_keys:
         euf_header[key] = config["options"].get(key, "")
     euf_header["fileformat"] = EUF_VERSION
-    
     # check for additional keys and append them to the header
     additional_keys = []
     for key in config["options"].keys():
@@ -51,7 +49,19 @@ def write_header(config, output_file):
             else:
                 euf_header[key] = config["options"].get(key, "")
     for k, v in euf_header.items():
-        output_file.write(f"#{k}={v}\n")
+        if v is not None:
+            output_file.write(f"#{k}={v}\n")
+        else:
+            value = ""
+            # these are required fields in the config file
+            if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
+                     "annotation_version"]:
+                print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
+                      f"this and convert again!")
+                return False
+            else:
+                output_file.write(f"#{k}={value}\n")
+    return True
 
 
 def get_modification_color(modi):
