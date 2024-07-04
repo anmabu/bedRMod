@@ -128,20 +128,17 @@ class MainWindow(QWidget):
         delimiter_label = QLabel("Select file type / column delimiter")
         self.delimiter = QButtonGroup(self)
         self.xlsx_file = QRadioButton(".xlsx")
-        self.delimiter.addButton(self.xlsx_file)
+        self.delimiter.addButton(self.xlsx_file, 1)
 
         self.custom_file_type = QRadioButton("custom delimiter")
-        self.delimiter.addButton(self.custom_file_type)
-
+        self.delimiter.addButton(self.custom_file_type, 2)
         self.custom_file_delimiter = QLineEdit()
         self.custom_file_delimiter.setText("e.g ',', '\\t'")
-        # self.custom_file_delimiter.setEnabled(False) # only enable if custom delimiter is selected
-        # self.delimiter = QComboBox()
-        # self.delimiter.addItem("comma", ",")
-        # self.delimiter.addItem("tab", "\t")
-        # self.delimiter.addItem("xlsx", "sheet")
-        # selected_text = self.delimiter.currentText()
-        # del_dict = {"comma": ",", "tab": "\t", "xlsx": "Erro"}
+        self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
+
+        self.xlsx_file.setChecked(True)
+        self.xlsx_file.toggled.connect(self.on_delimiter_button_toggled)
+        self.custom_file_type.toggled.connect(self.on_delimiter_button_toggled)
 
         # ref_seg
         ref_seg_label = QLabel("Reference Segment / Chromosome")
@@ -165,6 +162,7 @@ class MainWindow(QWidget):
         self.button_group = QButtonGroup()
         self.button_group.addButton(self.index_0_button)
         self.button_group.addButton(self.index_1_button)
+        self.index_0_button.setChecked(True)
         # self.index_0_button.toggled.connect(self.onIndexButtonToggled)
         # self.index_1_button.toggled.connect(self.onIndexButtonToggled)
 
@@ -333,19 +331,24 @@ class MainWindow(QWidget):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         conf_file = QFileDialog()
-        print(self.file_path)
-        if self.file_path:
-            input_dir = os.path(self.file_path)
+        plain_file_path = self.file_path.toPlainText()
+        print(plain_file_path)
+        if plain_file_path:
+            input_dir = os.path.dirname(plain_file_path)
             conf_file.setDirectory(input_dir)
-        file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
-                                                 "BedRMod Files (*.bedrmod);;All Files (*)",
-                                                 options=options)
+            # print(input_dir)
+            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", input_dir,
+                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
+                                                     options=options)
+        else:
+            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
+                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
+                                                     options=options)
         if file_path:
             if not file_path.endswith(".bedrmod"):
                 self.outfile_path.setText(file_path+".bedrmod")
             else:
                 self.outfile_path.setText(file_path)
-
 
     @QtCore.Slot()
     def select_config_file(self):
@@ -378,6 +381,13 @@ class MainWindow(QWidget):
         elif self.index_1_button.isChecked():
             print(f"value index 1: {self.index_1_button.isChecked()}")
         pass
+
+    @QtCore.Slot()
+    def on_delimiter_button_toggled(self):
+        if self.xlsx_file.isChecked():
+            self.custom_file_delimiter.setEnabled(False)
+        elif self.custom_file_type.isChecked():
+            self.custom_file_delimiter.setEnabled(True)
 
 
 if __name__ == "__main__":
