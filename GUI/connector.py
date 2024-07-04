@@ -1,3 +1,4 @@
+import os
 import sympy
 import sys
 
@@ -42,7 +43,19 @@ class Connector:
         self.ui.coverage_func = None
         self.ui.frequency_func = None
 
-        # use sympy to parse functions from strings into lambda functions
+        # as the input file can also be written directly into the field, check if it exists
+        if not os.path.exists(self.ui.file_path.toPlainText()):
+            print(f"The file at {self.ui.file_path.toPlainText()} does not exist! "
+                  f"Please make sure you selected a valid file and try again.")
+            return
+
+        if not os.path.exists(self.ui.config_file_path.toPlainText()):
+            print(f"The file at {self.ui.config_file_path.toPlainText()} does not exist! "
+                  f"Please make sure you selected a valid file and try again.")
+            return
+        # how to handle outfile?
+
+        # check delimiter of file.
 
         parsed_func = funcify("x * 2")
         print(parsed_func(3))
