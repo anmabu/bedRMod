@@ -59,6 +59,9 @@ class MainWindow(QWidget):
         self.outfile_path = None
         self.output_file = None
         self.delimiter = None
+        self.xlsx_file = None
+        self.custom_file_type = None
+        self.custom_file_delimiter = None
         self.ref_seg = None
         self.pos = None
         self.index_0_button = None
@@ -123,10 +126,20 @@ class MainWindow(QWidget):
 
         # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
-        self.delimiter = QComboBox()
-        self.delimiter.addItem("comma", ",")
-        self.delimiter.addItem("tab", "\t")
-        self.delimiter.addItem("xlsx", "sheet")
+        self.delimiter = QButtonGroup(self)
+        self.xlsx_file = QRadioButton(".xlsx")
+        self.delimiter.addButton(self.xlsx_file)
+
+        self.custom_file_type = QRadioButton("custom delimiter")
+        self.delimiter.addButton(self.custom_file_type)
+
+        self.custom_file_delimiter = QLineEdit()
+        self.custom_file_delimiter.setText("e.g ',', '\\t'")
+        # self.custom_file_delimiter.setEnabled(False) # only enable if custom delimiter is selected
+        # self.delimiter = QComboBox()
+        # self.delimiter.addItem("comma", ",")
+        # self.delimiter.addItem("tab", "\t")
+        # self.delimiter.addItem("xlsx", "sheet")
         # selected_text = self.delimiter.currentText()
         # del_dict = {"comma": ",", "tab": "\t", "xlsx": "Erro"}
 
@@ -136,7 +149,7 @@ class MainWindow(QWidget):
                                  "One reference segment per row in the file.")
         self.ref_seg = QTextEdit()
         self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.ref_seg.setText('ref_seg')
+        self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
 
         # pos
@@ -145,7 +158,7 @@ class MainWindow(QWidget):
                              "Only a single position per row in this column.")
         self.pos = QTextEdit()
         self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.pos.setText('pos')
+        self.pos.setText('start_col')
         self.pos.setFixedHeight(line_height * 1.6)
         self.index_0_button = QRadioButton("0 indexed data")
         self.index_1_button = QRadioButton("1 indexed data")
@@ -161,7 +174,7 @@ class MainWindow(QWidget):
                               "for the modification type when only one is present in the file.")
         self.modi = QTextEdit()
         self.modi.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.modi.setText('modification')
+        self.modi.setText('name')
         self.modi.setFixedHeight(line_height * 1.6)
         self.modi_button = QRadioButton("Column?")
 
@@ -173,7 +186,7 @@ class MainWindow(QWidget):
                                "Also a single integer can be passed as a fixed score value for the whole file.")
         self.score = QTextEdit()
         self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.score.setText("score")
+        self.score.setText("score_column")
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
@@ -189,7 +202,7 @@ class MainWindow(QWidget):
                                 "for the whole file, '+' or '-' will work, too." )
         self.strand = QTextEdit()
         self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.strand.setText('strand')
+        self.strand.setText('strandedness')
         self.strand.setFixedHeight(line_height * 1.6)
 
         # coverage
@@ -197,7 +210,7 @@ class MainWindow(QWidget):
         coverage_label.setToolTip("Select the column that contains the coverage information.")
         self.coverage = QTextEdit()
         self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.coverage.setText('coverage')
+        self.coverage.setText('coverage_col')
         self.coverage.setFixedHeight(line_height * 1.6)
         self.coverage_function = QTextEdit()
         self.coverage_function.setText("Coverage function")
@@ -214,7 +227,7 @@ class MainWindow(QWidget):
                                    "the function to calculate it in the last field. ")
         self.frequency = QTextEdit()
         self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.frequency.setText('modification frequency')
+        self.frequency.setText('frequency_col')
         self.frequency.setFixedHeight(line_height * 1.6)
         self.frequency_function = QTextEdit()
         self.frequency_function.setText("Frequency function")
@@ -254,7 +267,10 @@ class MainWindow(QWidget):
 
         # delimiter stuff
         layout.addWidget(delimiter_label, 4, 0)
-        layout.addWidget(self.delimiter, 4, 1)
+        # layout.addWidget(self.delimiter, 4, 1)
+        layout.addWidget(self.xlsx_file, 4, 1, 1, 1)
+        layout.addWidget(self.custom_file_type, 4, 2, 1, 1)
+        layout.addWidget(self.custom_file_delimiter, 4, 3, 1, 1)
 
         # conversion info
         layout.addWidget(info_text, 5, 0, 1, 4)
@@ -318,8 +334,8 @@ class MainWindow(QWidget):
         options |= QFileDialog.DontUseNativeDialog
         conf_file = QFileDialog()
         print(self.file_path)
-        if self.input_file:
-            input_dir = os.path(self.input_file)
+        if self.file_path:
+            input_dir = os.path(self.file_path)
             conf_file.setDirectory(input_dir)
         file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
                                                  "BedRMod Files (*.bedrmod);;All Files (*)",
