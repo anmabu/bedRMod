@@ -51,20 +51,29 @@ class MainWindow(QWidget):
 
         self.connector = Connector(self)
 
-        self.initUI()
-
-    def initUI(self):
-        MainWindow.setWindowTitle(self, "Convert to bedRMod")
-
-
-        info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
-        info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        font_metrics = info_text.fontMetrics()
-        line_height = font_metrics.lineSpacing()
-
-        # Set the height of the QTextEdit to the height of one line
-        info_text.setFixedHeight(line_height * 1.8)
-        info_text.isReadOnly()
+        self.file_path = None
+        self.input_file = None
+        self.config_file_path = None
+        self.config_file = None
+        self.new_config_file = None
+        self.outfile_path = None
+        self.output_file = None
+        self.delimiter = None
+        self.ref_seg = None
+        self.pos = None
+        self.index_0_button = None
+        self.index_1_button = None
+        self.button_group = None
+        self.modi = None
+        self.modi_button = None
+        self.score = None
+        self.score_function = None
+        self.strand = None
+        self.coverage = None
+        self.coverage_function = None
+        self.frequency = None
+        self.frequency_function = None
+        self.convert = None
 
         # variables to store everything
         self.input_file_path = None
@@ -82,6 +91,21 @@ class MainWindow(QWidget):
         self.score_func = None
         self.coverage_func = None
         self.frequency_func = None
+
+        self.initUI()
+
+    def initUI(self):
+        MainWindow.setWindowTitle(self, "Convert to bedRMod")
+
+
+        info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
+        info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        font_metrics = info_text.fontMetrics()
+        line_height = font_metrics.lineSpacing()
+
+        # Set the height of the QTextEdit to the height of one line
+        info_text.setFixedHeight(line_height * 1.8)
+        info_text.isReadOnly()
 
         # input file
         input_label = QLabel("Select input file:")
