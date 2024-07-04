@@ -16,9 +16,18 @@ def funcify(expression):
     return func
 
 
-class Connector:
+class Controller:
     def __init__(self, ui):
         self.ui = ui
+
+        # set default values for Window
+        self.score = "score_column"
+
+        self.strand = None
+        self.start_func = None
+        self.score_func = None
+        self.coverage_func = None
+        self.frequency_func = None
 
     def convert2bedrmod(self):
         print(f"input file path: {self.ui.file_path.toPlainText()}")
@@ -37,11 +46,7 @@ class Connector:
         print(f"frequency function: {self.ui.frequency_function.toPlainText()}")
         print(f"score function: {self.ui.score_function.toPlainText()}")
         print(f"coverage function: {self.ui.coverage_function.toPlainText()}")
-        print(f"delimiter: {self.ui.delimiter.currentData()}")
-        self.ui.start_func = None
-        self.ui.score_func = None
-        self.ui.coverage_func = None
-        self.ui.frequency_func = None
+        print(f"delimiter: {self.ui.delimiter.checkedId()}")
 
         # as the input file can also be written directly into the field, check if it exists
         if not os.path.exists(self.ui.file_path.toPlainText()):
@@ -57,10 +62,36 @@ class Connector:
 
         # check delimiter of file.
 
+        # pos
+        # check if 0-index or 1-indexed
+        if self.ui.index_1_button.isChecked():
+            self.start_func = funcify("x - 1")
+
+        # score
+        score = self.ui.score.toPlainText()
+        if score != self.score:
+            print(score)
+        if self.ui.score_function.toPlainText() != "Score function":
+            self.score_func = funcify(self.ui.score_function.toPlainText())
+
+        # strand
+        strand = self.ui.strand.toPlainText()
+        if strand == "+":
+            self.strand = "+"
+        elif strand == "-":
+            self.strand = "-"
+        elif strand != "strandedness":
+            self.strand = strand
+        # modi
+
+        # coverage
+
+        # frequency
+
         parsed_func = funcify("x * 2")
         print(parsed_func(3))
 
         csv2bedRMod(self.ui.file_path, self.ui.config_file_path, self.ui.outfile_path, self.ui.delimiter,
-                    self.ui.ref_seg_column, self.ui.position_column, self.ui.start_func, self.ui.modification_column,
-                    self.ui.modi_button.isChecked(), self.ui.score_column, self.ui.score_func, self.ui.strand_column,
-                    self.ui.coverage_column, self.ui.coverage_func, self.ui.frequency_column, self.ui.frequency_func)
+                    self.ui.ref_seg_column, self.ui.position_column, self.start_func, self.ui.modification_column,
+                    self.ui.modi_button.isChecked(), self.ui.score_column, self.score_func, self.strand,
+                    self.ui.coverage_column, self.coverage_func, self.ui.frequency_column, self.frequency_func)

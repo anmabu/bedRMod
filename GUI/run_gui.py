@@ -5,7 +5,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton, \
     QWidget, QVBoxLayout, QButtonGroup
 
-from connector import Connector
+from controller import Controller
 
 
 class NewConfigWindow(QWidget):
@@ -49,7 +49,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.connector = Connector(self)
+        self.controller = Controller(self)
 
         self.file_path = None
         self.input_file = None
@@ -197,7 +197,7 @@ class MainWindow(QWidget):
         # strand
         strand_label = QLabel("Strandedness / strand column")
         strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
-                                "for the whole file, '+' or '-' will work, too." )
+                                "for the whole file, '+' or '-' will work, too.")
         self.strand = QTextEdit()
         self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.strand.setText('strandedness')
@@ -238,7 +238,7 @@ class MainWindow(QWidget):
         # convert now!
         self.convert = QPushButton()
         self.convert.setText("Convert!")
-        self.convert.clicked.connect(self.connector.convert2bedrmod)
+        self.convert.clicked.connect(self.controller.convert2bedrmod)
 
         # layout stuff
         layout = QtWidgets.QGridLayout()
