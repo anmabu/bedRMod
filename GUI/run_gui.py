@@ -75,28 +75,10 @@ class MainWindow(QWidget):
         self.frequency_function = None
         self.convert = None
 
-        # variables to store everything
-        self.input_file_path = None
-        self.config_yaml_path = None
-        self.output_file_path = None
-        self.ref_seg_column = None
-        self.position_column = None
-        self.modification_column = None
-        self.strand_column = None
-        self.score_column = None
-        self.coverage_column = None
-        self.frequency_column = None
-
-        self.start_func = None
-        self.score_func = None
-        self.coverage_func = None
-        self.frequency_func = None
-
         self.initUI()
 
     def initUI(self):
         MainWindow.setWindowTitle(self, "Convert to bedRMod")
-
 
         info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -142,9 +124,9 @@ class MainWindow(QWidget):
         # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
         self.delimiter = QComboBox()
-        self.delimiter.addItem("comma")
-        self.delimiter.addItem("tab")
-        self.delimiter.addItem("xlsx")
+        self.delimiter.addItem("comma", ",")
+        self.delimiter.addItem("tab", "\t")
+        self.delimiter.addItem("xlsx", "sheet")
         # selected_text = self.delimiter.currentText()
         # del_dict = {"comma": ",", "tab": "\t", "xlsx": "Erro"}
 
