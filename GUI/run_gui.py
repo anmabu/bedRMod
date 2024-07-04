@@ -1,3 +1,4 @@
+import sympy
 import sys
 import os
 
@@ -365,10 +366,22 @@ class MainWindow(QWidget):
         print(f"coverage column: {self.coverage_column}")
         print(f"frequency column: {self.frequency_column}")
         print(f"frequency function: {self.frequency_function.toPlainText()}")
+        print(f"score function: {self.score_function.toPlainText()}")
+        print(f"coverage function: {self.coverage_function.toPlainText()}")
         self.start_func = None
         self.score_func = None
         self.coverage_func = None
         self.frequency_func = None
+
+        # use sympy to parse functions from strings into lambda functions
+        def funcify(expression):
+            x = sympy.symbols('x')
+            expression = sympy.sympify(expression)
+            func = sympy.lambdify(x, expression, "numpy")
+            return func
+        parsed_func = funcify("x * 2")
+        print(parsed_func(3))
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
