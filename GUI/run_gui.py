@@ -1,4 +1,3 @@
-import sympy
 import sys
 import os
 
@@ -6,7 +5,8 @@ from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton, \
     QWidget, QVBoxLayout, QButtonGroup
 
-from tsv2bedRMod.tsv2bedRMod import csv2bedRMod
+from connector import Connector
+
 
 class NewConfigWindow(QWidget):
     def __init__(self, file_path):
@@ -16,7 +16,7 @@ class NewConfigWindow(QWidget):
         self.text_edit = QTextEdit()
         self.text_edit.setText(
             'options:\n  modification_type: "RNA"\n  organism: 9606\n  assembly: "GRCh38"\n  annotation_source: null\n  '
-            'annotation_version: null\n  sequencing_platform: "Illumina NovaSeq 6000"\n  basecalling: null\n  '
+            'annotation_version: null\n  sequencing_platform: "Illumina NovaSeq 6000"\n  basecalling: \n  '
             'bioinformatics_workflow: "https://github.com/y9c/m6A-sacseq"\n  experiment: "2-50 ng of poly-A enriched or '
             'ribosome RNA-depleted RNAs were fragmented and ligated, then divided in a 2:1 ratio. 2/3 of the starting '
             'materials are labeled by MjDim1, while the remaining 1/3 serve as the untreated control. After reverse '
@@ -48,7 +48,14 @@ class NewConfigWindow(QWidget):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.connector = Connector(self)
+
+        self.initUI()
+
+    def initUI(self):
         MainWindow.setWindowTitle(self, "Convert to bedRMod")
+
 
         info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -214,7 +221,7 @@ class MainWindow(QWidget):
         # convert now!
         self.convert = QPushButton()
         self.convert.setText("Convert!")
-        self.convert.clicked.connect(self.convert2bedrmod)
+        self.convert.clicked.connect(self.connector.convert2bedrmod)
 
         # layout stuff
         layout = QtWidgets.QGridLayout()
@@ -350,44 +357,11 @@ class MainWindow(QWidget):
             print(f"value index 1: {self.index_1_button.isChecked()}")
         pass
 
-    @QtCore.Slot()
-    def convert2bedrmod(self):
-        print(f"input file path: {self.input_file_path}")
-        print(f"config yaml path: {self.config_yaml_path}")
-        print(f"output file path: {self.output_file_path}")
-        print(f"chrom column: {self.ref_seg_column}")
-        print(f"position column: {self.position_column}")
-        print(f"0 indexed? {self.index_0_button.isChecked()}")
-        print(f"1 indexed? {self.index_1_button.isChecked()}")
-        print(f"modification info: {self.modification_column}")
-        print(f"modification column? {self.modi_button.isChecked()}")
-        print(f"strand column {self.strand_column}")
-        print(f"score column {self.score_column}")
-        print(f"coverage column: {self.coverage_column}")
-        print(f"frequency column: {self.frequency_column}")
-        print(f"frequency function: {self.frequency_function.toPlainText()}")
-        print(f"score function: {self.score_function.toPlainText()}")
-        print(f"coverage function: {self.coverage_function.toPlainText()}")
-        self.start_func = None
-        self.score_func = None
-        self.coverage_func = None
-        self.frequency_func = None
-
-        # use sympy to parse functions from strings into lambda functions
-        def funcify(expression):
-            x = sympy.symbols('x')
-            expression = sympy.sympify(expression)
-            func = sympy.lambdify(x, expression, "numpy")
-            return func
-        parsed_func = funcify("x * 2")
-        print(parsed_func(3))
-
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
 
     widget = MainWindow()
-    # widget.resize(800, 600)
     widget.show()
 
     sys.exit(app.exec())
