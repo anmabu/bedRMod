@@ -144,7 +144,7 @@ class MainWindow(QWidget):
         ref_seg_label = QLabel("Reference Segment / Chromosome")
         ref_seg_label.setToolTip("Select column containing reference segment information. "
                                  "One reference segment per row in the file.")
-        self.ref_seg = QComboBox()
+        self.ref_seg = QTextEdit()
         self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
