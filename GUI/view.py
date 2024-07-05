@@ -4,10 +4,9 @@ import yaml
 
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox
 
 from controller import Controller
-from controller import detect_file_type_delimiter
 
 
 class NewConfigWindow(QWidget):
@@ -55,6 +54,8 @@ class MainWindow(QWidget):
         self.output_file = None
         self.delimiter = None
         self.xlsx_file = None
+        self.sheet_info = None
+        self.sheet_selector = None
         self.custom_file_type = None
         self.custom_file_delimiter = None
         self.ref_seg = None
@@ -72,20 +73,21 @@ class MainWindow(QWidget):
         self.frequency = None
         self.frequency_function = None
         self.convert = None
+        self.info_text = None
 
         self.initUI()
 
     def initUI(self):
         MainWindow.setWindowTitle(self, "Convert to bedRMod")
 
-        info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
-        info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        font_metrics = info_text.fontMetrics()
+        self.info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
+        self.info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        font_metrics = self.info_text.fontMetrics()
         line_height = font_metrics.lineSpacing()
 
         # Set the height of the QTextEdit to the height of one line
-        info_text.setFixedHeight(line_height * 1.8)
-        info_text.isReadOnly()
+        self.info_text.setFixedHeight(line_height * 1.8)
+        self.info_text.isReadOnly()
 
         # input file
         input_label = QLabel("Select input file:")
@@ -131,7 +133,7 @@ class MainWindow(QWidget):
         self.custom_file_delimiter.setText("e.g ',', '\\t'")
         self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
 
-        self.xlsx_file.setChecked(True)
+        self.custom_file_type.setChecked(True)
         self.xlsx_file.toggled.connect(self.on_delimiter_button_toggled)
         self.custom_file_type.toggled.connect(self.on_delimiter_button_toggled)
 
@@ -209,8 +211,8 @@ class MainWindow(QWidget):
         self.coverage_function.setText("Coverage function")
         self.coverage_function.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.coverage_function.setToolTip("When writing a function and refering to a column name in the calculation "
-                                           "(e.g. cov), please refer to this column name as 'cov'. "
-                                           "(Or do this calculation in a script and store the result in the same file)")
+                                          "(e.g. cov), please refer to this column name as 'cov'. "
+                                          "(Or do this calculation in a script and store the result in the same file)")
         self.coverage_function.setFixedHeight(line_height * 1.6)
 
         # frequency
@@ -226,8 +228,8 @@ class MainWindow(QWidget):
         self.frequency_function.setText("Frequency function")
         self.frequency_function.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.frequency_function.setToolTip("When writing a function and refering to a column name in the calculation "
-                                       "(e.g. FDR), please refer to this column name as row['FDR']. "
-                                       "(Or do this calculation in a script and store the result in the same file)")
+                                           "(e.g. FDR), please refer to this column name as row['FDR']. "
+                                           "(Or do this calculation in a script and store the result in the same file)")
         self.frequency_function.setFixedHeight(line_height * 1.6)
 
         # convert now!
@@ -236,76 +238,76 @@ class MainWindow(QWidget):
         self.convert.clicked.connect(self.controller.convert2bedrmod)
 
         # layout stuff
-        layout = QtWidgets.QGridLayout()
-        layout.setColumnStretch(0, 1)
-        layout.setColumnStretch(1, 3)
-        layout.setColumnStretch(2, 1)
-        layout.setColumnStretch(3, 1)
+        self.layout = QtWidgets.QGridLayout()
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setColumnStretch(1, 3)
+        self.layout.setColumnStretch(2, 1)
+        self.layout.setColumnStretch(3, 1)
 
         # input file
-        layout.addWidget(input_label, 1, 0)
-        layout.addWidget(self.file_path, 1, 1)
-        layout.addWidget(self.input_file, 1, 2, 1, 2)
+        self.layout.addWidget(input_label, 1, 0)
+        self.layout.addWidget(self.file_path, 1, 1)
+        self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
         # config file
-        layout.addWidget(config_label, 2, 0, 1, 1)
-        layout.addWidget(self.config_file_path, 2, 1, 1, 1)
-        layout.addWidget(self.config_file, 2, 2, 1, 1)
-        layout.addWidget(self.new_config_file, 2, 3, 1, 1)
+        self.layout.addWidget(config_label, 2, 0, 1, 1)
+        self.layout.addWidget(self.config_file_path, 2, 1, 1, 1)
+        self.layout.addWidget(self.config_file, 2, 2, 1, 1)
+        self.layout.addWidget(self.new_config_file, 2, 3, 1, 1)
 
         # output file
-        layout.addWidget(output_label, 3, 0)
-        layout.addWidget(self.outfile_path, 3, 1)
-        layout.addWidget(self.output_file, 3, 2, 1, 2)
+        self.layout.addWidget(output_label, 3, 0)
+        self.layout.addWidget(self.outfile_path, 3, 1)
+        self.layout.addWidget(self.output_file, 3, 2, 1, 2)
 
         # delimiter stuff
-        layout.addWidget(delimiter_label, 4, 0)
+        self.layout.addWidget(delimiter_label, 4, 0)
         # layout.addWidget(self.delimiter, 4, 1)
-        layout.addWidget(self.xlsx_file, 4, 1, 1, 1)
-        layout.addWidget(self.custom_file_type, 4, 2, 1, 1)
-        layout.addWidget(self.custom_file_delimiter, 4, 3, 1, 1)
+        self.layout.addWidget(self.xlsx_file, 4, 1, 1, 1)
+        self.layout.addWidget(self.custom_file_type, 4, 2, 1, 1)
+        self.layout.addWidget(self.custom_file_delimiter, 4, 3, 1, 1)
 
         # conversion info
-        layout.addWidget(info_text, 5, 0, 1, 4)
+        # self.layout.addWidget(self.info_text, 5, 0, 1, 4)
 
         # chrom column
-        layout.addWidget(ref_seg_label, 6, 0, 1, 1)
-        layout.addWidget(self.ref_seg, 6, 1, 1, 1)
+        self.layout.addWidget(ref_seg_label, 6, 0, 1, 1)
+        self.layout.addWidget(self.ref_seg, 6, 1, 1, 1)
 
         # start column
-        layout.addWidget(pos_label, 7, 0, 1, 1)
-        layout.addWidget(self.pos, 7, 1, 1, 1)
-        layout.addWidget(self.index_0_button, 7, 2, 1, 1)
-        layout.addWidget(self.index_1_button, 7, 3, 1, 1)
+        self.layout.addWidget(pos_label, 7, 0, 1, 1)
+        self.layout.addWidget(self.pos, 7, 1, 1, 1)
+        self.layout.addWidget(self.index_0_button, 7, 2, 1, 1)
+        self.layout.addWidget(self.index_1_button, 7, 3, 1, 1)
 
         # modification label
-        layout.addWidget(modi_label, 8, 0, 1, 1)
-        layout.addWidget(self.modi, 8, 1, 1, 1)
-        layout.addWidget(self.modi_button, 8, 2, 1, 1)
+        self.layout.addWidget(modi_label, 8, 0, 1, 1)
+        self.layout.addWidget(self.modi, 8, 1, 1, 1)
+        self.layout.addWidget(self.modi_button, 8, 2, 1, 1)
 
         # score column
-        layout.addWidget(score_label, 9, 0, 1, 1)
-        layout.addWidget(self.score, 9, 1, 1, 1)
-        layout.addWidget(self.score_function, 9, 2, 1, 2)
+        self.layout.addWidget(score_label, 9, 0, 1, 1)
+        self.layout.addWidget(self.score, 9, 1, 1, 1)
+        self.layout.addWidget(self.score_function, 9, 2, 1, 2)
 
         # strand info
-        layout.addWidget(strand_label, 10, 0, 1, 1)
-        layout.addWidget(self.strand, 10, 1, 1, 1)
+        self.layout.addWidget(strand_label, 10, 0, 1, 1)
+        self.layout.addWidget(self.strand, 10, 1, 1, 1)
 
         # coverage info
-        layout.addWidget(coverage_label, 11, 0, 1, 1)
-        layout.addWidget(self.coverage, 11, 1, 1, 1)
-        layout.addWidget(self.coverage_function, 11, 2, 1, 2)
+        self.layout.addWidget(coverage_label, 11, 0, 1, 1)
+        self.layout.addWidget(self.coverage, 11, 1, 1, 1)
+        self.layout.addWidget(self.coverage_function, 11, 2, 1, 2)
 
         # frequency info
-        layout.addWidget(frequency_label, 12, 0, 1, 1)
-        layout.addWidget(self.frequency, 12, 1, 1, 1)
-        layout.addWidget(self.frequency_function, 12, 2, 1, 2)
+        self.layout.addWidget(frequency_label, 12, 0, 1, 1)
+        self.layout.addWidget(self.frequency, 12, 1, 1, 1)
+        self.layout.addWidget(self.frequency_function, 12, 2, 1, 2)
 
         # convert button
-        layout.addWidget(self.convert, 13, 0, 1, 4)
+        self.layout.addWidget(self.convert, 13, 0, 1, 4)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
     @QtCore.Slot()
     def select_input_file(self):
@@ -315,13 +317,19 @@ class MainWindow(QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.file_path.setText(pathFile)
-            file_type, file_delimiter = detect_file_type_delimiter(pathFile)
+            file_type, file_delimiter = self.controller.detect_file_type_delimiter(pathFile)
             file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
 
             if file_type in file_endings:
                 self.xlsx_file.setChecked(True)
                 self.custom_file_type.setChecked(False)
                 self.custom_file_delimiter.setEnabled(False)
+                if self.controller.sheetnames is not None:
+                    self.sheet_selector = QComboBox()
+                    self.sheet_selector.addItems(self.controller.sheetnames)
+                    self.sheet_info = QLabel("Select sheet")
+                    self.layout.addWidget(self.sheet_info, 5, 0, 1, 1)
+                    self.layout.addWidget(self.sheet_selector, 5, 1, 1, 3)
             else:
                 self.xlsx_file.setChecked(False)
                 self.custom_file_type.setChecked(True)
@@ -350,7 +358,7 @@ class MainWindow(QWidget):
                                                      options=options)
         if file_path:
             if not file_path.endswith(".bedrmod"):
-                self.outfile_path.setText(file_path+".bedrmod")
+                self.outfile_path.setText(file_path + ".bedrmod")
             else:
                 self.outfile_path.setText(file_path)
 
@@ -369,7 +377,8 @@ class MainWindow(QWidget):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         conf_file = QFileDialog()
-        file_path, _ = conf_file.getSaveFileName(self, "New config.yaml", ".yaml", "Config Files (*.yaml);;All Files (*)",
+        file_path, _ = conf_file.getSaveFileName(self, "New config.yaml", ".yaml",
+                                                 "Config Files (*.yaml);;All Files (*)",
                                                  options=options)
 
         # file_path = conf_file.exec_()
@@ -391,6 +400,10 @@ class MainWindow(QWidget):
         if self.xlsx_file.isChecked():
             self.custom_file_delimiter.setEnabled(False)
         elif self.custom_file_type.isChecked():
+            self.layout.removeWidget(self.sheet_info)
+            self.layout.removeWidget(self.sheet_selector)
+            self.sheet_selector.setParent(None)
+            self.sheet_info.setParent(None)
             self.custom_file_delimiter.setEnabled(True)
 
 

@@ -2,7 +2,7 @@ import csv
 import os
 import sympy
 import sys
-# from pandas_ods_reader import read_ods
+
 from tsv2bedRMod.tsv2bedRMod import csv2bedRMod
 from tsv2bedRMod.helper import parse_excel_sheetnames
 
@@ -18,26 +18,13 @@ def funcify(expression):
     return func
 
 
-def detect_file_type_delimiter(file):
-    file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
-    if file.endswith(file_endings):
-        # print(parse_excel_sheetnames(file))
-        print(".xlsx")
-        return ".xlsx", None
-    else:
-        with open(file, 'r') as file:
-            sample = file.read(1024)
-            dialect = csv.Sniffer().sniff(sample)
-            delimiter = dialect.delimiter
-        print(f"csv, {delimiter}")
-        return "csv", delimiter
-
-
 class Controller:
     def __init__(self, ui):
         self.ui = ui
 
         # set default values for Window
+
+        self.sheetnames = None
         self.score = "score_column"
 
         self.strand = None
@@ -45,6 +32,20 @@ class Controller:
         self.score_func = None
         self.coverage_func = None
         self.frequency_func = None
+
+    def detect_file_type_delimiter(self, file):
+        file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
+        if file.endswith(file_endings):
+            self.sheetnames = parse_excel_sheetnames(file)
+            print(".xlsx")
+            return ".xlsx", None
+        else:
+            with open(file, 'r') as file:
+                sample = file.read(1024)
+                dialect = csv.Sniffer().sniff(sample)
+                delimiter = dialect.delimiter
+            print(f"csv, {delimiter}")
+            return "csv", delimiter
 
     def convert2bedrmod(self):
         print(f"input file path: {self.ui.file_path.toPlainText()}")
