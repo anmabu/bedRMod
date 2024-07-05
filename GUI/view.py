@@ -4,7 +4,7 @@ import yaml
 
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup, QComboBox
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox
 
 from controller import Controller
 
@@ -69,6 +69,8 @@ class MainWindow(QWidget):
         self.score = None
         self.score_function = None
         self.strand = None
+        self.strand_button = None
+        self.strand_custom = None
         self.coverage = None
         self.coverage_function = None
         self.frequency = None
@@ -172,11 +174,9 @@ class MainWindow(QWidget):
         modi_label.setToolTip("Select the column that contains the modifications or input the modomics shortname "
                               "for the modification type when only one is present in the file.")
         self.modi = QComboBox()
-        # self.modi.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.modi.setText('name')
         self.modi.setFixedHeight(line_height * 1.6)
-        self.modi_button = QRadioButton("Custom?")
-        self.modi_button.toggled.connect(self.on_custom_modification_toggled)
+        self.modi_button = QCheckBox("Custom?")
+        self.modi_button.clicked.connect(self.on_custom_modification_toggled)
         self.modi_custom = QTextEdit()
         self.modi_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.modi_custom.setText("modification")
@@ -205,10 +205,15 @@ class MainWindow(QWidget):
         strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
                                 "for the whole file, '+' or '-' will work, too.")
         self.strand = QComboBox()
-        # add something if this is missing but counts for whole file
-        # self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.strand.setText('strandedness')
         self.strand.setFixedHeight(line_height * 1.6)
+        # make group for single button to act independently
+
+        self.strand_button = QCheckBox("Custom?")
+        self.strand_button.clicked.connect(self.on_custom_strand_toggled)
+        self.strand_custom = QTextEdit()
+        self.strand_custom.setText("+ or -")
+        self.strand_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.strand_custom.setFixedHeight(line_height * 1.6)
 
         # coverage
         coverage_label = QLabel("Coverage")
@@ -303,6 +308,7 @@ class MainWindow(QWidget):
         # strand info
         self.layout.addWidget(strand_label, 10, 0, 1, 1)
         self.layout.addWidget(self.strand, 10, 1, 1, 1)
+        self.layout.addWidget(self.strand_button, 10, 2, 1, 1)
 
         # coverage info
         self.layout.addWidget(coverage_label, 11, 0, 1, 1)
@@ -418,16 +424,26 @@ class MainWindow(QWidget):
     @QtCore.Slot()
     def on_custom_modification_toggled(self):
         if self.modi_button.isChecked():
-            # print("jere")
             self.layout.addWidget(self.modi_custom, 8, 3, 1, 1)
+            self.modi_button.setChecked(True)
         else:
+            self.modi_button.setChecked(False)
             self.layout.removeWidget(self.modi_custom)
             self.modi_custom.setParent(None)
 
+    @QtCore.Slot()
+    def on_custom_strand_toggled(self):
+        if self.strand_button.isChecked():
+            self.layout.addWidget(self.strand_custom, 10, 3, 1, 1)
+            self.strand_button.setChecked(True)
+        else:
+            self.strand_button.setChecked(False)
+            self.layout.removeWidget(self.strand_custom)
+            self.strand_custom.setParent(None)
+
+
 def start_gui():
     app = QtWidgets.QApplication([])
-
     widget = MainWindow()
     widget.show()
-
     sys.exit(app.exec())
