@@ -1,5 +1,6 @@
 import os
 import sys
+import yaml
 
 from PySide6 import QtCore, QtWidgets
 from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
@@ -15,16 +16,10 @@ class NewConfigWindow(QWidget):
         NewConfigWindow.setWindowTitle(self, f"{file_path}")
         self.file_path = file_path
         self.text_edit = QTextEdit()
+        config = yaml.safe_load(open("../test/test_config.yaml", "r"))
+        formatted_yaml = yaml.dump(config, default_flow_style=False)
         self.text_edit.setText(
-            'options:\n  modification_type: "RNA"\n  organism: 9606\n  assembly: "GRCh38"\n  annotation_source: null\n  '
-            'annotation_version: null\n  sequencing_platform: "Illumina NovaSeq 6000"\n  basecalling: \n  '
-            'bioinformatics_workflow: "https://github.com/y9c/m6A-sacseq"\n  experiment: "2-50 ng of poly-A enriched or '
-            'ribosome RNA-depleted RNAs were fragmented and ligated, then divided in a 2:1 ratio. 2/3 of the starting '
-            'materials are labeled by MjDim1, while the remaining 1/3 serve as the untreated control. After reverse '
-            'transcription with HIV reverse transcriptase (Worthington Biochemical Corp), the cyclic allyl m6A sites '
-            'are converted to mismatches, while unconverted m6A sites in the control group are read as A."\n  '
-            'external_source: "GEO;GSE198246"\n  methods: "m6A-SAC-seq"\n  references:\n    pubmed_id: "36434097"\n \n  '
-            'modifications_file: "example_files/mod_indices.csv"')
+            formatted_yaml)
         self.initUI()
 
     def initUI(self):
