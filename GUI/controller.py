@@ -1,8 +1,10 @@
+import csv
 import os
 import sympy
 import sys
-
+# from pandas_ods_reader import read_ods
 from tsv2bedRMod.tsv2bedRMod import csv2bedRMod
+from tsv2bedRMod.helper import parse_excel_sheetnames
 
 
 def funcify(expression):
@@ -14,6 +16,22 @@ def funcify(expression):
     expression = sympy.sympify(expression)
     func = sympy.lambdify(x, expression, "numpy")
     return func
+
+
+def detect_file_type_delimiter(file):
+    pd_file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
+    if file.endswith(pd_file_endings):
+        print(parse_excel_sheetnames(file))
+        return parse_excel_sheetnames(file)
+    else:
+        with open(file, 'r') as file:
+            sample = file.read(1024)
+            dialect = csv.Sniffer().sniff(sample)
+            delimiter = dialect.delimiter
+            if delimiter == "\t":
+                delimiter = "\\t"
+        print(f"csv, {delimiter}")
+        return 'csv', delimiter
 
 
 class Controller:

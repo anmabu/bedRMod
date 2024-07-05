@@ -1,11 +1,12 @@
-import sys
 import os
+import sys
 
-from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QComboBox, QTextEdit, QFrame, QRadioButton, \
+from PySide6 import QtCore, QtWidgets
+from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
     QWidget, QVBoxLayout, QButtonGroup
 
 from controller import Controller
+from controller import detect_file_type_delimiter
 
 
 class NewConfigWindow(QWidget):
@@ -320,6 +321,7 @@ class MainWindow(QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.file_path.setText(pathFile)
+            detect_file_type_delimiter(pathFile)
             # check file type
             # https: // github.com / ahupp / python - magic
             # skip empty lines/header
