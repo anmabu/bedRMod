@@ -1,5 +1,7 @@
 import csv
 import os
+
+import pandas as pd
 import sympy
 import sys
 
@@ -23,9 +25,12 @@ class Controller:
         self.ui = ui
 
         # set default values for Window
-
+        self.header = None
         self.sheetnames = None
+        self.selected_sheet = None
         self.score = "score_column"
+
+        self.delimiter = None
 
         self.strand = None
         self.start_func = None
@@ -37,7 +42,8 @@ class Controller:
         file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
         if file.endswith(file_endings):
             self.sheetnames = parse_excel_sheetnames(file)
-            print(".xlsx")
+            self.header = pd.read_excel(file, sheet_name=list(self.sheetnames)[0], nrows=0).columns.tolist()
+            print(self.header)
             return ".xlsx", None
         else:
             with open(file, 'r') as file:
@@ -45,7 +51,17 @@ class Controller:
                 dialect = csv.Sniffer().sniff(sample)
                 delimiter = dialect.delimiter
             print(f"csv, {delimiter}")
+            self.delimiter = delimiter
+            self.header = pd.read_csv(file, nrows=0).columns.tolist()
+            print(self.header)
             return "csv", delimiter
+
+    def on_sheet_selection(self):
+        if self.ui.sheet_selector is not None:
+            print(self.ui.sheet_selector.currentIndex())
+            self.selected_sheet = self.ui.sheet_selector.currentIndex()
+            self.header = pd.read_excel(self.ui.file_path.toPlainText(), sheet_name=self.selected_sheet, nrows=0)\
+                .columns.tolist()
 
     def convert2bedrmod(self):
         print(f"input file path: {self.ui.file_path.toPlainText()}")
@@ -79,6 +95,8 @@ class Controller:
         # how to handle outfile?
 
         # check delimiter of file.
+        if self.delimiter is None:  # then its xlsx or other specified
+            df = pd.read_excel(self.ui.file_path, self.selected_sheet)
 
         # pos
         # check if 0-index or 1-indexed

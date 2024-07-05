@@ -137,11 +137,14 @@ class MainWindow(QWidget):
         self.xlsx_file.toggled.connect(self.on_delimiter_button_toggled)
         self.custom_file_type.toggled.connect(self.on_delimiter_button_toggled)
 
+        self.sheet_selector = QComboBox()
+        self.sheet_selector.currentIndexChanged.connect(self.controller.on_sheet_selection)
+
         # ref_seg
         ref_seg_label = QLabel("Reference Segment / Chromosome")
         ref_seg_label.setToolTip("Select column containing reference segment information. "
                                  "One reference segment per row in the file.")
-        self.ref_seg = QTextEdit()
+        self.ref_seg = QComboBox()
         self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
@@ -325,7 +328,6 @@ class MainWindow(QWidget):
                 self.custom_file_type.setChecked(False)
                 self.custom_file_delimiter.setEnabled(False)
                 if self.controller.sheetnames is not None:
-                    self.sheet_selector = QComboBox()
                     self.sheet_selector.addItems(self.controller.sheetnames)
                     self.sheet_info = QLabel("Select sheet")
                     self.layout.addWidget(self.sheet_info, 5, 0, 1, 1)
@@ -405,6 +407,8 @@ class MainWindow(QWidget):
             self.sheet_selector.setParent(None)
             self.sheet_info.setParent(None)
             self.custom_file_delimiter.setEnabled(True)
+
+
 
 
 def start_gui():
