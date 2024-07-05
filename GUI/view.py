@@ -184,7 +184,7 @@ class MainWindow(QWidget):
                                "Also a single integer can be passed as a fixed score value for the whole file.")
         self.score = QTextEdit()
         self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.score.setText("score_column")
+        self.score.setText(self.controller.score)
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
@@ -390,7 +390,7 @@ class MainWindow(QWidget):
             self.custom_file_delimiter.setEnabled(True)
 
 
-if __name__ == "__main__":
+def start_gui():
     app = QtWidgets.QApplication([])
 
     widget = MainWindow()
