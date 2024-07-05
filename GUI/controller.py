@@ -19,19 +19,18 @@ def funcify(expression):
 
 
 def detect_file_type_delimiter(file):
-    pd_file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
-    if file.endswith(pd_file_endings):
-        print(parse_excel_sheetnames(file))
-        return parse_excel_sheetnames(file)
+    file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
+    if file.endswith(file_endings):
+        # print(parse_excel_sheetnames(file))
+        print(".xlsx")
+        return ".xlsx", None
     else:
         with open(file, 'r') as file:
             sample = file.read(1024)
             dialect = csv.Sniffer().sniff(sample)
             delimiter = dialect.delimiter
-            if delimiter == "\t":
-                delimiter = "\\t"
         print(f"csv, {delimiter}")
-        return 'csv', delimiter
+        return "csv", delimiter
 
 
 class Controller:

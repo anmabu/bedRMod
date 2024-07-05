@@ -321,12 +321,20 @@ class MainWindow(QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.file_path.setText(pathFile)
-            detect_file_type_delimiter(pathFile)
-            # check file type
-            # https: // github.com / ahupp / python - magic
-            # skip empty lines/header
-            # skip empty columns
-            # read column names
+            file_type, file_delimiter = detect_file_type_delimiter(pathFile)
+            file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
+
+            if file_type in file_endings:
+                self.xlsx_file.setChecked(True)
+                self.custom_file_type.setChecked(False)
+                self.custom_file_delimiter.setEnabled(False)
+            else:
+                self.xlsx_file.setChecked(False)
+                self.custom_file_type.setChecked(True)
+                if file_delimiter == "\t":
+                    file_delimiter = "\\t"
+                self.custom_file_delimiter.setText(file_delimiter)
+                self.custom_file_delimiter.setEnabled(True)
 
     @QtCore.Slot()
     def select_output_file(self):
