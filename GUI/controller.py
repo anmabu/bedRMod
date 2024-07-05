@@ -25,7 +25,7 @@ class Controller:
         self.ui = ui
 
         # set default values for Window
-        self.header = None
+        self.columns = None
         self.sheetnames = None
         self.selected_sheet = None
         self.score = "score_column"
@@ -42,26 +42,36 @@ class Controller:
         file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
         if file.endswith(file_endings):
             self.sheetnames = parse_excel_sheetnames(file)
-            self.header = pd.read_excel(file, sheet_name=list(self.sheetnames)[0], nrows=0).columns.tolist()
-            print(self.header)
+            self.columns = pd.read_excel(file, sheet_name=list(self.sheetnames)[0], nrows=0).columns.tolist()
+            print(self.columns)
+
             return ".xlsx", None
         else:
             with open(file, 'r') as file:
                 sample = file.read(1024)
                 dialect = csv.Sniffer().sniff(sample)
                 delimiter = dialect.delimiter
-            print(f"csv, {delimiter}")
             self.delimiter = delimiter
-            self.header = pd.read_csv(file, nrows=0).columns.tolist()
-            print(self.header)
+            self.columns = pd.read_csv(file, nrows=0).columns.tolist()
+            print(self.columns)
             return "csv", delimiter
+
+    def update_columns_selection(self):
+        self.ui.ref_seg.addItems(self.columns)
+        self.ui.pos.addItems(self.columns)
+        self.ui.modi.addItems(self.columns)
+        self.ui.score.addItems(self.columns)
+        self.ui.strand.addItems(self.columns)
+        self.ui.coverage.addItems(self.columns)
+        self.ui.frequency.addItems(self.columns)
 
     def on_sheet_selection(self):
         if self.ui.sheet_selector is not None:
             print(self.ui.sheet_selector.currentIndex())
             self.selected_sheet = self.ui.sheet_selector.currentIndex()
-            self.header = pd.read_excel(self.ui.file_path.toPlainText(), sheet_name=self.selected_sheet, nrows=0)\
+            self.columns = pd.read_excel(self.ui.file_path.toPlainText(), sheet_name=self.selected_sheet, nrows=0)\
                 .columns.tolist()
+            self.update_columns_selection()
 
     def convert2bedrmod(self):
         print(f"input file path: {self.ui.file_path.toPlainText()}")

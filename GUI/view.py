@@ -65,6 +65,7 @@ class MainWindow(QWidget):
         self.button_group = None
         self.modi = None
         self.modi_button = None
+        self.modi_custom = None
         self.score = None
         self.score_function = None
         self.strand = None
@@ -144,18 +145,18 @@ class MainWindow(QWidget):
         ref_seg_label = QLabel("Reference Segment / Chromosome")
         ref_seg_label.setToolTip("Select column containing reference segment information. "
                                  "One reference segment per row in the file.")
-        self.ref_seg = QTextEdit()
-        self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.ref_seg.setText('chrom')
+        self.ref_seg = QComboBox()
+        # self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
 
         # pos
         pos_label = QLabel("Position")
         pos_label.setToolTip("Select column containing position of modification. "
                              "Only a single position per row in this column.")
-        self.pos = QTextEdit()
-        self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.pos.setText('start_col')
+        self.pos = QComboBox()
+        # self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.pos.setText('start_col')
         self.pos.setFixedHeight(line_height * 1.6)
         self.index_0_button = QRadioButton("0 indexed data")
         self.index_1_button = QRadioButton("1 indexed data")
@@ -170,11 +171,16 @@ class MainWindow(QWidget):
         modi_label = QLabel("Modification type / column")
         modi_label.setToolTip("Select the column that contains the modifications or input the modomics shortname "
                               "for the modification type when only one is present in the file.")
-        self.modi = QTextEdit()
-        self.modi.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.modi.setText('name')
+        self.modi = QComboBox()
+        # self.modi.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.modi.setText('name')
         self.modi.setFixedHeight(line_height * 1.6)
-        self.modi_button = QRadioButton("Column?")
+        self.modi_button = QRadioButton("Custom?")
+        self.modi_button.toggled.connect(self.on_custom_modification_toggled)
+        self.modi_custom = QTextEdit()
+        self.modi_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.modi_custom.setText("modification")
+        self.modi_custom.setFixedHeight(line_height * 1.6)
 
         # score
         score_label = QLabel("Score")
@@ -182,9 +188,9 @@ class MainWindow(QWidget):
                                "If the score in this interval is not readily available, a function to convert the "
                                "given values can be passed."
                                "Also a single integer can be passed as a fixed score value for the whole file.")
-        self.score = QTextEdit()
-        self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.score.setText(self.controller.score)
+        self.score = QComboBox()
+        # self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.score.setText(self.controller.score)
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
@@ -198,17 +204,18 @@ class MainWindow(QWidget):
         strand_label = QLabel("Strandedness / strand column")
         strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
                                 "for the whole file, '+' or '-' will work, too.")
-        self.strand = QTextEdit()
-        self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.strand.setText('strandedness')
+        self.strand = QComboBox()
+        # add something if this is missing but counts for whole file
+        # self.strand.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.strand.setText('strandedness')
         self.strand.setFixedHeight(line_height * 1.6)
 
         # coverage
         coverage_label = QLabel("Coverage")
         coverage_label.setToolTip("Select the column that contains the coverage information.")
-        self.coverage = QTextEdit()
-        self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.coverage.setText('coverage_col')
+        self.coverage = QComboBox()
+        # self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.coverage.setText('coverage_col')
         self.coverage.setFixedHeight(line_height * 1.6)
         self.coverage_function = QTextEdit()
         self.coverage_function.setText("Coverage function")
@@ -223,9 +230,9 @@ class MainWindow(QWidget):
         frequency_label.setToolTip("Select the column that contains the modification frequency information."
                                    "If the modification frequency is not stored but can be calculated, pass"
                                    "the function to calculate it in the last field. ")
-        self.frequency = QTextEdit()
-        self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        self.frequency.setText('frequency_col')
+        self.frequency = QComboBox()
+        # self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        # self.frequency.setText('frequency_col')
         self.frequency.setFixedHeight(line_height * 1.6)
         self.frequency_function = QTextEdit()
         self.frequency_function.setText("Frequency function")
@@ -408,8 +415,14 @@ class MainWindow(QWidget):
             self.sheet_info.setParent(None)
             self.custom_file_delimiter.setEnabled(True)
 
-
-
+    @QtCore.Slot()
+    def on_custom_modification_toggled(self):
+        if self.modi_button.isChecked():
+            # print("jere")
+            self.layout.addWidget(self.modi_custom, 8, 3, 1, 1)
+        else:
+            self.layout.removeWidget(self.modi_custom)
+            self.modi_custom.setParent(None)
 
 def start_gui():
     app = QtWidgets.QApplication([])
