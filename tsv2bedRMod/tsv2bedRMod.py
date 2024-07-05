@@ -2,8 +2,8 @@ import os
 import pandas as pd
 import yaml
 
-from .helper import write_header
-from .helper import get_modification_color
+from tsv2bedRMod.helper import write_header
+from tsv2bedRMod.helper import get_modification_color
 from .helper import parse_excel_sheetnames
 
 
@@ -86,6 +86,7 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(frequency)
     thick_start = start_col
     thick_end = end
+
     item_rgb = get_modification_color(name)
     result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
@@ -143,15 +144,16 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
                     f'\t{coverage}\t{frequency}\n')
 
 
-def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", start="pos", start_function=None,
-                modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
-                coverage_function=None, frequency=None, frequency_function=None):
+def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
+                start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand",
+                coverage=None, coverage_function=None, frequency=None, frequency_function=None):
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
     The name of the output file is infered from the input file and put in the same directory as the input file.
     :param input_file:(path to) input csv file.
     :param config_yaml: (path to) config file containing the information on the metadata
+    :param output_file: (path to) output bedrmod file. If "None" it is the path to input file
     :param delimiter: delimiter of the passed csv file. If "None" is it infered by pandas.
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
@@ -172,8 +174,9 @@ def csv2bedRMod(input_file, config_yaml, delimiter=None, ref_seg="ref_seg", star
     :return:
     """
     file = pd.read_csv(input_file, delimiter=delimiter)
+    if output_file is None:
+        output_file = input_file
 
-    output_file = input_file
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"

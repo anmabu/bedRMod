@@ -5,7 +5,7 @@ import pandas as pd
 import sympy
 import sys
 
-from tsv2bedRMod.tsv2bedRMod import csv2bedRMod
+from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod
 from tsv2bedRMod.helper import parse_excel_sheetnames
 
 
@@ -77,67 +77,83 @@ class Controller:
         print(f"input file path: {self.ui.file_path.toPlainText()}")
         print(f"config yaml path: {self.ui.config_file_path.toPlainText()}")
         print(f"output file path: {self.ui.outfile_path.toPlainText()}")
-        print(f"chrom column: {self.ui.ref_seg.toPlainText()}")
-        print(f"position column: {self.ui.pos.toPlainText()}")
+        print(f"chrom column: {self.ui.ref_seg.currentText()}")
+        print(f"position column: {self.ui.pos.currentText()}")
         print(f"0 indexed? {self.ui.index_0_button.isChecked()}")
         print(f"1 indexed? {self.ui.index_1_button.isChecked()}")
-        print(f"modification info: {self.ui.modi.toPlainText()}")
-        print(f"modification column? {self.ui.modi_button.isChecked()}")
-        print(f"strand column {self.ui.strand.toPlainText()}")
-        print(f"score column {self.ui.score.toPlainText()}")
-        print(f"coverage column: {self.ui.coverage.toPlainText()}")
-        print(f"frequency column: {self.ui.frequency.toPlainText()}")
+        print(f"modification info: {self.ui.modi.currentText()}")
+        print(f"custom modificaiton? {self.ui.modi_button.isChecked()}")
+        print(f"strand column {self.ui.strand.currentText()}")
+        print(f"score column {self.ui.score.currentText()}")
+        print(f"coverage column: {self.ui.coverage.currentText()}")
+        print(f"frequency column: {self.ui.frequency.currentText()}")
         print(f"frequency function: {self.ui.frequency_function.toPlainText()}")
         print(f"score function: {self.ui.score_function.toPlainText()}")
         print(f"coverage function: {self.ui.coverage_function.toPlainText()}")
-        print(f"delimiter: {self.ui.delimiter.checkedId()}")
+        print(f"delimiter: {self.delimiter}")
 
         # as the input file can also be written directly into the field, check if it exists
-        if not os.path.exists(self.ui.file_path.toPlainText()):
-            print(f"The file at {self.ui.file_path.toPlainText()} does not exist! "
-                  f"Please make sure you selected a valid file and try again.")
+        input_file = self.ui.file_path.toPlainText()
+        if not os.path.exists(input_file):
+            print(f"The file at {input_file} does not exist! "
+                  f"Please make sure you selected a valid input file and try again.")
             return
 
-        if not os.path.exists(self.ui.config_file_path.toPlainText()):
-            print(f"The file at {self.ui.config_file_path.toPlainText()} does not exist! "
-                  f"Please make sure you selected a valid file and try again.")
+        config_file = self.ui.config_file_path.toPlainText()
+        if not os.path.exists(config_file):
+            print(f"The file at {config_file} does not exist! "
+                  f"Please make sure you selected a valid config file and try again.")
             return
         # how to handle outfile?
+        output_file = self.ui.outfile_path.toPlainText()
 
         # check delimiter of file.
         if self.delimiter is None:  # then its xlsx or other specified
-            df = pd.read_excel(self.ui.file_path, self.selected_sheet)
+            df = pd.read_excel(input_file, self.selected_sheet)
+        else:
+            df = pd.read_csv(input_file, delimiter=self.delimiter)
+        # ref_seg
+        ref_seg = self.ui.ref_seg.currentText()
 
         # pos
+        pos = self.ui.pos.currentText()
         # check if 0-index or 1-indexed
         if self.ui.index_1_button.isChecked():
             self.start_func = funcify("x - 1")
 
         # score
-        score = self.ui.score.toPlainText()
-        if score != self.score:
-            print(score)
+        score = self.ui.score.currentText()
+        # if score != self.score:
+        #     print(score)
         if self.ui.score_function.toPlainText() != "Score function":
             self.score_func = funcify(self.ui.score_function.toPlainText())
 
         # strand
-        strand = self.ui.strand.toPlainText()
-        if strand == "+":
-            self.strand = "+"
-        elif strand == "-":
-            self.strand = "-"
-        elif strand != "strandedness":
-            self.strand = strand
+        strand = None
+        if self.ui.strand_button.isChecked():
+            strand = self.ui.strand_custom.toPlainText()
+        else:
+            strand = self.ui.strand.currentText()
         # modi
+        modi = None
+        modi_button_check = None  # modi button check is exactly the other way around because df2bedRMod() ist
+        if self.ui.modi_button.isChecked():
+            modi = self.ui.modi_custom.toPlainText()
+            modi_button_check = False
+        else:
+            modi = self.ui.modi.currentText()
+            modi_button_check = True
 
         # coverage
-
+        cov = self.ui.coverage.currentText()
+        if self.ui.coverage_function.toPlainText() != "Coverage function":
+            self.coverage_func = self.ui.coverage_function.toPlainText()
         # frequency
+        freq = self.ui.frequency.currentText()
+        if self.ui.frequency_function.toPlainText() != "Frequency function":
+            self.frequency_func = self.ui.frequency_function.toPlainText()
 
-        parsed_func = funcify("x * 2")
-        print(parsed_func(3))
-
-        csv2bedRMod(self.ui.file_path, self.ui.config_file_path, self.ui.outfile_path, self.ui.delimiter,
-                    self.ui.ref_seg_column, self.ui.position_column, self.start_func, self.ui.modification_column,
-                    self.ui.modi_button.isChecked(), self.ui.score_column, self.score_func, self.strand,
-                    self.ui.coverage_column, self.coverage_func, self.ui.frequency_column, self.frequency_func)
+        df2bedRMod(df, config_file, output_file, ref_seg=ref_seg, start=pos, start_function=self.start_func, modi=modi,
+                   modi_column=modi_button_check, score=score, score_function=self.score_func, strand=strand,
+                   coverage=cov, coverage_function=self.coverage_func, frequency=freq,
+                   frequency_function=self.frequency_func)
