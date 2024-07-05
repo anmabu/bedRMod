@@ -17,9 +17,8 @@ class NewConfigWindow(QWidget):
         self.file_path = file_path
         self.text_edit = QTextEdit()
         config = yaml.safe_load(open("../test/test_config.yaml", "r"))
-        formatted_yaml = yaml.dump(config, default_flow_style=False)
-        self.text_edit.setText(
-            formatted_yaml)
+        formatted_yaml = yaml.dump(config, default_flow_style=False, sort_keys=False)
+        self.text_edit.setText(formatted_yaml)
         self.initUI()
 
     def initUI(self):
