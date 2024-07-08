@@ -127,7 +127,7 @@ class MainWindow(QWidget):
         # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
         self.delimiter = QButtonGroup(self)
-        self.xlsx_file = QRadioButton(".xlsx")
+        self.xlsx_file = QRadioButton(".xlsx/.odf")
         self.delimiter.addButton(self.xlsx_file, 1)
 
         self.custom_file_type = QRadioButton("custom delimiter")
