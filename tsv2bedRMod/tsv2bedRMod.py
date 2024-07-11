@@ -4,7 +4,7 @@ import yaml
 
 from tsv2bedRMod.helper import write_header
 from tsv2bedRMod.helper import get_modification_color
-from .helper import parse_excel_sheetnames
+from tsv2bedRMod.helper import parse_excel_sheetnames
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -100,6 +100,57 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
     return result
 
 
+def check_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
+    """
+    check if customizable functions are in the config and add them if not.
+    :param config_yaml:
+    :param score_function:
+    :param coverage_function:
+    :param frequency_function:
+    :return:
+    """
+    config = yaml.safe_load(open(config_yaml, "r"))
+    if score_function is not None or coverage_function is not None or frequency_function is not None:
+        if type(config["options"]["bioinformatics_workflow"]) is not dict:
+            config["options"]["bioinformatics_workflow"] = {"workflow": config["options"]["bioinformatics_workflow"]}
+        if score_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+            config["options"]["bioinformatics_workflow"] = {"score_function": score_function}
+        elif score_function is not None and "bioinformatics_workflow" in config["options"].keys():
+            if "score_function" not in config["options"]["bioinformatics_workflow"].keys():
+                config["options"]["bioinformatics_workflow"]["score_function"] = score_function
+            else:
+                if score_function != config["options"]["bioinformatics_workflow"]["score_function"]:
+                    print(f"The score function from the config file "
+                          f"({config['options']['bioinformatics_workflow']['score_function']}) "
+                          f"does not match the newly given score function ({score_function})."
+                          f"Proceeding with the score function from the config file.")
+        if coverage_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+            config["options"]["bioinformatics_workflow"] = {"coverage_function": coverage_function}
+        elif coverage_function is not None and "bioinformatics_workflow" in config["options"].keys():
+            if "coverage_function" not in config["options"]["bioinformatics_workflow"].keys():
+                config["options"]["bioinformatics_workflow"]["coverage_function"] = coverage_function
+            else:
+                if coverage_function != config["options"]["bioinformatics_workflow"]["coverage_function"]:
+                    print(f"The coverage function from the config file "
+                          f"({config['options']['bioinformatics_workflow']['coverage_function']}) "
+                          f"does not match the newly given coverage function ({coverage_function})."
+                          f"Proceeding with the score function from the config file.")
+        if frequency_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+            config["options"]["bioinformatics_workflow"] = {"frequency_function": frequency_function}
+        elif frequency_function is not None and "bioinformatics_workflow" in config["options"].keys():
+            if "frequency_function" not in config["options"]["bioinformatics_workflow"].keys():
+                config["options"]["bioinformatics_workflow"]["frequency_function"] = frequency_function
+            else:
+                if frequency_function != config["options"]["bioinformatics_workflow"]["frequency_function"]:
+                    print(f"The frequency function from the config file "
+                          f"({config['options']['bioinformatics_workflow']['frequency_function']}) "
+                          f"does not match the newly given frequency function ({frequency_function})."
+                          f"Proceeding with the score function from the config file.")
+    # return config
+    with open(config_yaml, 'w') as file:
+        yaml.safe_dump(config, file, default_flow_style=False, sort_keys=False)
+
+
 def tsv2bedRMod(input_file, config_yaml, output_file):
     """
     converts tab-seperated files into bedMod format. only works with special columns as of now.
@@ -193,7 +244,6 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
-
             for _, row in file.iterrows():
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score,
                                    score_function,
@@ -245,6 +295,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
+    check_bioinformatics_keys(config_yaml, score_function, coverage_function, frequency_function)
     config = yaml.safe_load(open(config_yaml, "r"))
 
     colnames = df.columns
@@ -270,3 +321,6 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         os.remove(output_file)
 
 
+#if __name__ == "__main__":
+    # config = yaml.safe_load(open("/home/anne/Dokumente/Link to Dokumente/PhD/bedRMod/test/test_config.yaml", "r"))
+    # check_bioinformatics_keys(config, score_function="test", coverage_function="testy", frequency_function="another")
