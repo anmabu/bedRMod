@@ -5,7 +5,7 @@ import pandas as pd
 import sympy
 import sys
 
-from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod
+from tsv2bedRMod.tsv2bedRMod import df2bedRMod
 from tsv2bedRMod.helper import parse_excel_sheetnames
 
 
