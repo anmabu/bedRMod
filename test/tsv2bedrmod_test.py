@@ -47,7 +47,7 @@ def test_df2bedrmod():
         return round(score / cov)
 
     df = pd.DataFrame(data, columns=columns)
-    df2bedRMod(df, "test_config.yaml", "test_static_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
+    df2bedRMod(df, "test_config.yaml", "test_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
                modi="name", modi_column=True, score=["score_column", "coverage_col"], score_function=score_func,
                strand="strandedness", coverage="coverage_col", frequency="frequency_col")
     assert filecmp.cmp("test_static_df2bedrmod.bedrmod", "test_df2bedrmod.bedrmod")
