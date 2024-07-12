@@ -1,9 +1,8 @@
-import math
 import os
 import pandas as pd
 import yaml
 
-from tsv2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
+from convert2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -96,50 +95,6 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
                   f"Please check the input value/function for the {bedrmod_columns[index]} column.")
             result = None
     return result
-
-
-def tsv2bedRMod(input_file, config_yaml, output_file):
-    """
-    converts tab-seperated files into bedMod format. only works with special columns as of now.
-    These columns are: "chr", "pos", "strand", "motif", "frac"
-    :param config_yaml: path/to/config.yaml, containing the header information for the new bedRMod file.
-    :param input_file: path/to/input_file.tsv(.gz)
-    :param output_file: path/to/output_file.bedrmod
-    :return:
-    """
-    tsv = pd.read_csv(input_file, delimiter="\t")
-    tsv['score'] = tsv['frac'] * 100
-
-    # Set thickStart and thickEnd to pos and pos+1, respectively
-    tsv['thickStart'] = tsv['pos']
-    # convert dtype of columns
-    tsv["pos"] = pd.to_numeric(tsv["pos"], errors="coerce")
-    tsv['thickEnd'] = tsv["pos"] + 1
-
-    # Drop the original frac column
-    tsv = tsv.drop(columns=['frac'])
-
-    config = yaml.safe_load(open(config_yaml, "r"))
-
-    # Write output file in BED format
-    with open(output_file, 'w') as f:
-        write_header(config, f)
-        f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage\tfrequency\n")
-        for _, row in tsv.iterrows():
-            chrom = row['chr']
-            start = row['pos']
-            end = start + 1
-            # name = row['motif']
-            name = "."
-            score = 0
-            strand = row['strand']
-            thick_start = row['thickStart']
-            thick_end = row['thickEnd']
-            item_rgb = '0,0,0'
-            coverage = "-1"
-            frequency = row['score']
-            f.write(f'{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thick_start}\t{thick_end}\t{item_rgb}'
-                    f'\t{coverage}\t{frequency}\n')
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
