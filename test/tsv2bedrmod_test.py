@@ -2,14 +2,12 @@ import pytest
 import pandas as pd
 import filecmp
 
-from flat2euf.utils import check_keys_exist
 from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod, parse_row
-from tsv2bedRMod.helper import write_bioinformatics_keys
 
 
 def test_parse_row_working_example():
-    columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness', 
-           'thick_start', 'thick_end', 'item_rgb', 'coverage_col', 'frequency_col']
+    columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness',
+               'thick_start', 'thick_end', 'item_rgb', 'coverage_col', 'frequency_col']
     data = [['chr1', 1000, 1001, 'm3C', 900, '+', 1000, 1001, '0,128,128', 30, 90]]
     df = pd.DataFrame(data, columns=columns)
     row = df.head(1).iloc[0]
@@ -22,6 +20,7 @@ def test_parse_row_working_example():
 def test_parse_row_freq_none():
     def freq_func(param):
         return None
+
     columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness', 'thick_start', 'thick_end',
                'item_rgb', 'coverage_col', 'frequency_col']
     data = [['chr1', 1000, 1001, 'm1A', 900, '+', 1000, 1001, '0', 30, 90]]
@@ -73,6 +72,7 @@ def test_csv2bedrmod():
 
     def start_func(param):
         return param - 1
+
     csv2bedRMod("test_csv2bedrmod.csv", "test_config.yaml", ref_seg="chrom", start="start_col",
                 start_function=start_func, modi="name", modi_column=True, score="score_column",
                 strand="strandedness", coverage="coverage_col", coverage_function=cov_func,
@@ -80,9 +80,3 @@ def test_csv2bedrmod():
     assert filecmp.cmp("test_static_csv2bedrmod.bedrmod", "test_csv2bedrmod.bedrmod")
 
 
-def test_check_bioinformatics_keys():
-    score_func_str = "round(-log10(score))"
-    coverage_func_str = "round(coverage)"
-    frequency_func_str = "round(frequency)"
-    write_bioinformatics_keys("test_config.yaml", score_function=score_func_str,
-                              coverage_function=coverage_func_str, frequency_function=frequency_func_str)

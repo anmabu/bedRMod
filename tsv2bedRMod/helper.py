@@ -85,11 +85,11 @@ def funcify(expression):
 
 def write_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
     """
-    check if customizable functions are in the config and add them if not.
-    :param config_yaml:
-    :param score_function:
-    :param coverage_function:
-    :param frequency_function:
+    check if customizable functions are in the config and adds them to the config file if not included.
+    :param config_yaml: (path to) config file
+    :param score_function: string of score function
+    :param coverage_function: string of coverage function
+    :param frequency_function: string of frequency function
     :return:
     """
 
@@ -150,6 +150,24 @@ def write_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
         with open(config_yaml, 'w') as file:
             yaml.dump(original_config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
 
+
+def read_bioinformatics_keys(config_yaml):
+    score_function = None
+    coverage_function = None
+    frequency_function = None
+    config = yaml.safe_load(open(config_yaml, "r"))
+    if "bioinformatics_workflow" in config["options"].keys():
+        if isinstance(config["options"].get("bioinformatics_workflow", ""), dict):
+            # print(config["options"]["bioinformatics_workflow"].keys())
+            for key in config["options"]["bioinformatics_workflow"].keys():
+                if key == "score_function":
+                    score_function = config["options"]["bioinformatics_workflow"]["score_function"]
+                if key == "coverage_function":
+                    coverage_function = config["options"]["bioinformatics_workflow"]["coverage_function"]
+                if key == "frequency_function":
+                    frequency_function = config["options"]["bioinformatics_workflow"]["frequency_function"]
+
+    return score_function, coverage_function, frequency_function
 
 def get_modification_color(modi):
     """
