@@ -385,6 +385,7 @@ class MainWindow(QWidget):
                                                    "All Files(*)")
         if pathFile:
             self.config_file_path.setText(pathFile)
+            self.controller.update_function_selection(pathFile)
 
     @QtCore.Slot()
     def create_new_file(self):
@@ -401,6 +402,7 @@ class MainWindow(QWidget):
         if file_path:
             self.editor = NewConfigWindow(file_path)
             self.editor.show()
+            self.controller.update_function_selection(file_path)
 
     @QtCore.Slot()
     def onIndexButtonToggled(self):

@@ -4,8 +4,7 @@ import sys
 import pandas as pd
 
 from tsv2bedRMod.tsv2bedRMod import df2bedRMod
-from tsv2bedRMod.helper import parse_excel_sheetnames
-from tsv2bedRMod.helper import funcify
+from tsv2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
 
 
 class Controller:
@@ -43,6 +42,20 @@ class Controller:
             self.columns = pd.read_csv(file, nrows=0).columns.tolist()
             print(self.columns)
             return "csv", delimiter
+
+    def update_function_selection(self, file_path):
+        """
+        If a config file is selected and the functions are there an not none, they are displayed in their respective fields
+        :param file_path:
+        :return:
+        """
+        score_f, cov_f, func_f = read_bioinformatics_keys(file_path)
+        if score_f:
+            self.ui.score_function.setText(score_f)
+        if cov_f:
+            self.ui.coverage_function.setText(cov_f)
+        if func_f:
+            self.ui.frequency_function.setText(func_f)
 
     def update_columns_selection(self):
         self.ui.ref_seg.addItems(self.columns)
@@ -92,7 +105,8 @@ class Controller:
             print(f"The file at {config_file} does not exist! "
                   f"Please make sure you selected a valid config file and try again.")
             return
-        # how to handle outfile?
+
+         # how to handle outfile?
         output_file = self.ui.outfile_path.toPlainText()
 
         # check delimiter of file.
@@ -114,7 +128,8 @@ class Controller:
         # if score != self.score:
         #     print(score)
         if self.ui.score_function.toPlainText() != "Score function":
-            self.score_func = funcify(self.ui.score_function.toPlainText())
+            self.score_func = self.ui.score_function.toPlainText()
+            write_bioinformatics_keys(config_file, score_function=self.ui.score_function.toPlainText())
 
         # strand
         strand = None
@@ -136,10 +151,19 @@ class Controller:
         cov = self.ui.coverage.currentText()
         if self.ui.coverage_function.toPlainText() != "Coverage function":
             self.coverage_func = self.ui.coverage_function.toPlainText()
+            write_bioinformatics_keys(config_file, coverage_function=self.coverage_func)
         # frequency
         freq = self.ui.frequency.currentText()
         if self.ui.frequency_function.toPlainText() != "Frequency function":
             self.frequency_func = self.ui.frequency_function.toPlainText()
+            write_bioinformatics_keys(config_file, frequency_function=self.frequency_func)
+
+        if self.score_func:
+            self.score_func = funcify("lambda score: " + self.score_func)
+        if self.coverage_func:
+            self.coverage_func = funcify("lambda coverage: " + self.coverage_func)
+        if self.frequency_func:
+            self.frequency_func = funcify("lambda frequency: " + self.frequency_func)
 
         df2bedRMod(df, config_file, output_file, ref_seg=ref_seg, start=pos, start_function=self.start_func, modi=modi,
                    modi_column=modi_button_check, score=score, score_function=self.score_func, strand=strand,

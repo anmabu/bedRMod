@@ -1,6 +1,8 @@
+import math
 import pandas as pd
 import sympy
 import yaml
+
 
 EUF_VERSION = "bedRModv1.7"
 
@@ -77,9 +79,7 @@ def funcify(expression):
     Takes a string of an expression as an input and converts it into a python function.
     :return: function of passed expression string
     """
-    x = sympy.symbols('x')
-    expression = sympy.sympify(expression)
-    func = sympy.lambdify(x, expression, "numpy")
+    func = eval(expression)
     return func
 
 
@@ -117,8 +117,10 @@ def write_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
                     if score_function != config["options"]["bioinformatics_workflow"]["score_function"]:
                         print(f"The score function from the config file "
                               f"({config['options']['bioinformatics_workflow']['score_function']}) "
-                              f"does not match the newly given score function ({score_function})."
-                              f"Proceeding with the score function from the config file.")
+                              f"does not match the newly given score function ({score_function}). "
+                              f"Proceeding with the given score function {score_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["score_function"] = score_function
             if coverage_function is not None and "bioinformatics_workflow" not in config["options"].keys():
                 config["options"]["bioinformatics_workflow"] = {"coverage_function": coverage_function}
             elif coverage_function is not None and "bioinformatics_workflow" in config["options"].keys():
@@ -128,8 +130,10 @@ def write_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
                     if coverage_function != config["options"]["bioinformatics_workflow"]["coverage_function"]:
                         print(f"The coverage function from the config file "
                               f"({config['options']['bioinformatics_workflow']['coverage_function']}) "
-                              f"does not match the newly given coverage function ({coverage_function})."
-                              f"Proceeding with the score function from the config file.")
+                              f"does not match the newly given coverage function ({coverage_function}). "
+                              f"Proceeding with the given coverage function {coverage_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["coverage_function"] = coverage_function
             if frequency_function is not None and "bioinformatics_workflow" not in config["options"].keys():
                 config["options"]["bioinformatics_workflow"] = {"frequency_function": frequency_function}
             elif frequency_function is not None and "bioinformatics_workflow" in config["options"].keys():
@@ -139,8 +143,10 @@ def write_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
                     if frequency_function != config["options"]["bioinformatics_workflow"]["frequency_function"]:
                         print(f"The frequency function from the config file "
                               f"({config['options']['bioinformatics_workflow']['frequency_function']}) "
-                              f"does not match the newly given frequency function ({frequency_function})."
-                              f"Proceeding with the score function from the config file.")
+                              f"does not match the newly given frequency function ({frequency_function}). "
+                              f"Proceeding with the given frequency function {frequency_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["frequency_function"] = frequency_function
         with open(config_yaml, 'w') as file:
             yaml.dump(config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
     except Exception as e:
@@ -152,13 +158,17 @@ def write_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
 
 
 def read_bioinformatics_keys(config_yaml):
+    """
+
+    :param config_yaml:
+    :return:
+    """
     score_function = None
     coverage_function = None
     frequency_function = None
     config = yaml.safe_load(open(config_yaml, "r"))
     if "bioinformatics_workflow" in config["options"].keys():
         if isinstance(config["options"].get("bioinformatics_workflow", ""), dict):
-            # print(config["options"]["bioinformatics_workflow"].keys())
             for key in config["options"]["bioinformatics_workflow"].keys():
                 if key == "score_function":
                     score_function = config["options"]["bioinformatics_workflow"]["score_function"]
@@ -168,6 +178,7 @@ def read_bioinformatics_keys(config_yaml):
                     frequency_function = config["options"]["bioinformatics_workflow"]["frequency_function"]
 
     return score_function, coverage_function, frequency_function
+
 
 def get_modification_color(modi):
     """
@@ -509,7 +520,12 @@ def get_modification_color(modi):
                      'pyyW': '0,205,139',
                      'imG': '64,64,64',
                      'pimG': '64,64,0'}
-    return rgb_colors.get(modi)
+    if not rgb_colors.get(modi):
+        print("Please check your modification name. It does not seem to be a valid MODOMICS shortname."
+              "No RGB values were created.")
+        return None
+    else:
+        return rgb_colors.get(modi)
 
 
 def parse_excel_sheetnames(input_file):
