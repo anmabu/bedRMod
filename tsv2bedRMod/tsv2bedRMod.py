@@ -1,10 +1,9 @@
+import math
 import os
 import pandas as pd
 import yaml
 
-from .helper import write_header
-from .helper import get_modification_color
-from .helper import parse_excel_sheetnames
+from tsv2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -72,7 +71,6 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             coverage_col = round(row[coverage])
         else:
             coverage_col = coverage
-    print(frequency_function)
     if frequency_function is not None:
         if type(frequency) == list:
             params = [row[col] for col in frequency]
@@ -86,6 +84,7 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(frequency)
     thick_start = start_col
     thick_end = end
+
     item_rgb = get_modification_color(name)
     result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
@@ -144,8 +143,9 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
-                start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
-                coverage_function=None, frequency=None, frequency_function=None):
+                start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand",
+                coverage=None, coverage_function=None, frequency=None, frequency_function=None):
+
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
@@ -175,6 +175,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
     file = pd.read_csv(input_file, delimiter=delimiter)
     if output_file is None:
         output_file = input_file
+
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
@@ -190,7 +191,6 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
                 raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
-
 
             for _, row in file.iterrows():
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score,
@@ -243,6 +243,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
+    # check_bioinformatics_keys(config_yaml, score_function, coverage_function, frequency_function)
     config = yaml.safe_load(open(config_yaml, "r"))
 
     colnames = df.columns
@@ -258,7 +259,6 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
                                    strand, coverage, coverage_function, frequency, frequency_function)
                 if not any(item is None for item in result) or (result is not None):
-                    print("none found")
                     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
                         coverage_col, frequency_col = result
                     f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
@@ -266,5 +266,3 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
             print("Done!")
     except TypeError:
         os.remove(output_file)
-
-
