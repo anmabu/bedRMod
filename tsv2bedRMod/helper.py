@@ -45,11 +45,18 @@ def write_header(config, output_file):
                 npairs = ""
                 for nkey, nvalue in config["options"].get(key, "").items():
                     npairs += f"{nkey}:{nvalue};"
-                npairs = npairs[:-1]
+                npairs = npairs[:-1]  # remove last ;
                 euf_header[key] = npairs
             else:
                 euf_header[key] = config["options"].get(key, "")
     for k, v in euf_header.items():
+        if isinstance(v, dict):
+            npairs = ""
+            for ke, va in v.items():
+                npairs += f"{ke}:{va};"
+            npairs = npairs[:-1]  # remove last ;
+            output_file.write(f"#{k}={npairs}\n")
+            continue  # don't write it twice
         if v is not None:
             output_file.write(f"#{k}={v}\n")
         else:
@@ -76,7 +83,7 @@ def funcify(expression):
     return func
 
 
-def check_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
+def write_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
     """
     check if customizable functions are in the config and add them if not.
     :param config_yaml:
@@ -85,7 +92,8 @@ def check_bioinformatics_keys(config_yaml, score_function=None, coverage_functio
     :param frequency_function:
     :return:
     """
-    # print(inspect.getsource(score_function))
+
+    # change representation of None in the output file to "", so that nothing gets written in bedRMod
     class EmptyStringDumper(yaml.SafeDumper):
         def represent_none(self, _):
             return self.represent_scalar('tag:yaml.org,2002:str', '')

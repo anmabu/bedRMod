@@ -4,7 +4,7 @@ import filecmp
 
 from flat2euf.utils import check_keys_exist
 from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod, parse_row
-from tsv2bedRMod.helper import check_bioinformatics_keys
+from tsv2bedRMod.helper import write_bioinformatics_keys
 
 
 def test_parse_row_working_example():
@@ -84,5 +84,5 @@ def test_check_bioinformatics_keys():
     score_func_str = "round(-log10(score))"
     coverage_func_str = "round(coverage)"
     frequency_func_str = "round(frequency)"
-    check_bioinformatics_keys("test_config.yaml", score_function=score_func_str,
+    write_bioinformatics_keys("test_config.yaml", score_function=score_func_str,
                               coverage_function=coverage_func_str, frequency_function=frequency_func_str)

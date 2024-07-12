@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yaml
 
-from tsv2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, check_bioinformatics_keys
+from tsv2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -70,7 +70,6 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             coverage_col = round(row[coverage])
         else:
             coverage_col = coverage
-    print(frequency_function)
     if frequency_function is not None:
         if type(frequency) == list:
             params = [row[col] for col in frequency]
@@ -258,7 +257,6 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
                                    strand, coverage, coverage_function, frequency, frequency_function)
                 if not any(item is None for item in result) or (result is not None):
-                    print("none found")
                     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
                         coverage_col, frequency_col = result
                     f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
@@ -266,8 +264,3 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
             print("Done!")
     except TypeError:
         os.remove(output_file)
-
-
-#if __name__ == "__main__":
-    # config = yaml.safe_load(open("/home/anne/Dokumente/Link to Dokumente/PhD/bedRMod/test/test_config.yaml", "r"))
-    # check_bioinformatics_keys(config, score_function="test", coverage_function="testy", frequency_function="another")
