@@ -1,15 +1,19 @@
- options:
-  modification_type: "RNA"
+options:
+  modification_type: RNA
   organism: 9606
   assembly: GRCh38
   annotation_source: Ensemble
   annotation_version: 93
-  sequencing_platform: "Illumina NovaSeq 6000"
-  basecalling:
-  bioinformatics_workflow: "https://github.com/anmabu/bedRMod"
-  experiment: "https://doi.org/test"
-  external_source: "GEO;GSETEST"
-  methods: "TEST"
+  sequencing_platform: Illumina NovaSeq 6000
+  basecalling: ''
+  bioinformatics_workflow:
+    workflow: https://github.com/anmabu/bedRMod
+    coverage_function: round(coverage)
+    frequency_function: round(frequency)
+    score_function: round(-log10(score))
+  experiment: https://doi.org/test
+  external_source: GEO;GSETEST
+  methods: TEST
   references:
-    pubmed_id: "12345678"
-  conversion_information: "rgb value in df is ignored and calculated directly"
+    pubmed_id: '12345678'
+  conversion_information: rgb value in df is ignored and calculated directly
