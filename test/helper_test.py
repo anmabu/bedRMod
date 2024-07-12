@@ -1,4 +1,5 @@
 from tsv2bedRMod.helper import write_bioinformatics_keys, read_bioinformatics_keys
+from tsv2bedRMod.helper import funcify
 
 
 def test_bioinformatics_keys():
@@ -11,4 +12,9 @@ def test_bioinformatics_keys():
     assert score_f == score_func_str
     assert cov_f == coverage_func_str
     assert freq_f == frequency_func_str
+
+
+def test_funcify():
+    func = funcify("lambda x: round(-log10(x))")
+    print(func(0.1))
 

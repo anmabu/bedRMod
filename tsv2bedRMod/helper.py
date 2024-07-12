@@ -1,6 +1,5 @@
 import math
 import pandas as pd
-import sympy
 import yaml
 
 
@@ -79,7 +78,10 @@ def funcify(expression):
     Takes a string of an expression as an input and converts it into a python function.
     :return: function of passed expression string
     """
-    func = eval(expression)
+    eval_dict = {
+        "log10": math.log10
+    }
+    func = eval(expression, eval_dict)
     return func
 
 
