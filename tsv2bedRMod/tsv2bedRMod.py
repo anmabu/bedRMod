@@ -145,6 +145,7 @@ def tsv2bedRMod(input_file, config_yaml, output_file):
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
                 start_function=None, modi="m1A", modi_column=False, score=None, score_function=None, strand="strand",
                 coverage=None, coverage_function=None, frequency=None, frequency_function=None):
+
     """
     converts arbitrary csv files into bedRMod format.
     The parameters usually pass the column name of the csv which contains the respective information.
@@ -152,7 +153,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
     :param input_file:(path to) input csv file.
     :param config_yaml: (path to) config file containing the information on the metadata
     :param output_file: (path to) output bedrmod file. If "None" it is the path to input file
-    :param delimiter: delimiter of the passed csv file. If "None" is it infered by pandas.
+    :param delimiter: delimiter of the passed csv file. If "None" it is infered by pandas.
     :param ref_seg: column name of the column containing the reference sequence. i.e. the chromosome
     :param start: column name of the column that contains the positions of the modification
     :param start_function: fix value of column eg. off-by-one errors
