@@ -67,13 +67,80 @@ def write_header(config, output_file):
 
 def funcify(expression):
     """
-    Takes a string of an expression as an input and convert it into a python function.
+    Takes a string of an expression as an input and converts it into a python function.
     :return: function of passed expression string
     """
     x = sympy.symbols('x')
     expression = sympy.sympify(expression)
     func = sympy.lambdify(x, expression, "numpy")
     return func
+
+
+def check_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
+    """
+    check if customizable functions are in the config and add them if not.
+    :param config_yaml:
+    :param score_function:
+    :param coverage_function:
+    :param frequency_function:
+    :return:
+    """
+    # print(inspect.getsource(score_function))
+    class EmptyStringDumper(yaml.SafeDumper):
+        def represent_none(self, _):
+            return self.represent_scalar('tag:yaml.org,2002:str', '')
+
+    # Add the custom representer to the dumper
+    EmptyStringDumper.add_representer(type(None), EmptyStringDumper.represent_none)
+
+    config = yaml.safe_load(open(config_yaml, "r"))
+    with open(config_yaml + ".backup", 'w') as file:
+        yaml.dump(config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
+    try:
+        if score_function is not None or coverage_function is not None or frequency_function is not None:
+            if type(config["options"]["bioinformatics_workflow"]) is not dict:
+                config["options"]["bioinformatics_workflow"] = {"workflow": config["options"]["bioinformatics_workflow"]}
+            if score_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"score_function": score_function}
+            elif score_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "score_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["score_function"] = score_function
+                else:
+                    if score_function != config["options"]["bioinformatics_workflow"]["score_function"]:
+                        print(f"The score function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['score_function']}) "
+                              f"does not match the newly given score function ({score_function})."
+                              f"Proceeding with the score function from the config file.")
+            if coverage_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"coverage_function": coverage_function}
+            elif coverage_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "coverage_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["coverage_function"] = coverage_function
+                else:
+                    if coverage_function != config["options"]["bioinformatics_workflow"]["coverage_function"]:
+                        print(f"The coverage function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['coverage_function']}) "
+                              f"does not match the newly given coverage function ({coverage_function})."
+                              f"Proceeding with the score function from the config file.")
+            if frequency_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"frequency_function": frequency_function}
+            elif frequency_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "frequency_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["frequency_function"] = frequency_function
+                else:
+                    if frequency_function != config["options"]["bioinformatics_workflow"]["frequency_function"]:
+                        print(f"The frequency function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['frequency_function']}) "
+                              f"does not match the newly given frequency function ({frequency_function})."
+                              f"Proceeding with the score function from the config file.")
+        with open(config_yaml, 'w') as file:
+            yaml.dump(config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
+    except Exception as e:
+        print("An exception occurred while trying to write the config file")
+        with open(config_yaml + ".backup", 'r') as file:
+            original_config = yaml.safe_load(file)
+        with open(config_yaml, 'w') as file:
+            yaml.dump(original_config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
 
 
 def get_modification_color(modi):
