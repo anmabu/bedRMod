@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import filecmp
 
-from tsv2bedRMod.tsv2bedRMod import csv2bedRMod, df2bedRMod, parse_row
+from convert2bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
 
 
 def test_parse_row_working_example():

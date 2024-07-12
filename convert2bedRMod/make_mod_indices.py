@@ -185,7 +185,7 @@ def get_reference_indices_sequences(modomics_tRNA, modomics_mods, tRNA_genes, mo
     return mod_pos_df
 
 
-def create_mod_indices_file(output_file="../tsv2bedRMod/example_files/mod_indices.csv", mod_symbol='"', mod_name="m1A"):
+def create_mod_indices_file(output_file="../convert2bedRMod/example_files/mod_indices.csv", mod_symbol='"', mod_name="m1A"):
     """
     Creates the file containing the indices where modifications occur.
     This is not the final form of the function, as this is restricted to S.cerv tRNA modifications for now.

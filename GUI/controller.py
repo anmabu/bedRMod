@@ -3,8 +3,8 @@ import os
 import sys
 import pandas as pd
 
-from tsv2bedRMod.tsv2bedRMod import df2bedRMod
-from tsv2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
+from convert2bedRMod.convert2bedRMod import df2bedRMod
+from convert2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
 
 
 class Controller:
