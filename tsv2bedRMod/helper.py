@@ -1,4 +1,5 @@
 import pandas as pd
+import sympy
 import yaml
 
 EUF_VERSION = "bedRModv1.7"
@@ -62,6 +63,17 @@ def write_header(config, output_file):
             else:
                 output_file.write(f"#{k}={value}\n")
     return True
+
+
+def funcify(expression):
+    """
+    Takes a string of an expression as an input and convert it into a python function.
+    :return: function of passed expression string
+    """
+    x = sympy.symbols('x')
+    expression = sympy.sympify(expression)
+    func = sympy.lambdify(x, expression, "numpy")
+    return func
 
 
 def get_modification_color(modi):

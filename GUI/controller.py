@@ -1,23 +1,11 @@
 import csv
 import os
-
-import pandas as pd
-import sympy
 import sys
+import pandas as pd
 
 from tsv2bedRMod.tsv2bedRMod import df2bedRMod
 from tsv2bedRMod.helper import parse_excel_sheetnames
-
-
-def funcify(expression):
-    """
-    Takes a string of an expression as an input and convert it into a python function.
-    :return: function of passed expression string
-    """
-    x = sympy.symbols('x')
-    expression = sympy.sympify(expression)
-    func = sympy.lambdify(x, expression, "numpy")
-    return func
+from tsv2bedRMod.helper import funcify
 
 
 class Controller:
