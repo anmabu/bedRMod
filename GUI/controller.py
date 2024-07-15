@@ -249,7 +249,7 @@ class Controller:
         pos = self.ui.pos.currentText()
         # check if 0-index or 1-indexed
         if self.ui.index_1_button.isChecked():
-            self.start_func = funcify("x - 1")
+            self.start_func = funcify("lambda x: x - 1")
 
         # score
         score = self.ui.score.currentText()
