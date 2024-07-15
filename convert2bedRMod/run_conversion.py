@@ -2,12 +2,12 @@ import os
 import pandas as pd
 import yaml
 
-# from tsv2bedRMod import bid_mouse2bedRMod, bid_human2bedRMod, etam2bedRMod, csv2bedRMod
-from tsv2bedRMod import csv2bedRMod
+# from convert2bedRMod import bid_mouse2bedRMod, bid_human2bedRMod, etam2bedRMod, csv2bedRMod
+from convert2bedRMod.convert2bedRMod import csv2bedRMod
 
-from helper import write_header
-from helper import get_modification_color
-from helper import parse_excel_sheetnames
+from convert2bedRMod.helper import write_header
+from convert2bedRMod.helper import get_modification_color
+from convert2bedRMod.helper import parse_excel_sheetnames
 
 
 def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):

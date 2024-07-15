@@ -129,9 +129,9 @@ def pileup2proEUF_dir(input_dir, output_dir):
 
 
 if __name__ == "__main__":
-    infile = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2bedRMod/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.pileup"
-    outfile = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2bedRMod/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF"
+    infile = "/home/annebusch/Documents/PyCharmProjects/EUF/convert2bedRMod/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.pileup"
+    outfile = "/home/annebusch/Documents/PyCharmProjects/EUF/convert2bedRMod/test_files/MH1601_both_GCF_ref_localN1L10nofwD20R3k1.proEUF"
     pileup2proEUF(infile, outfile)
-    # in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2bedRMod/test_files"
-    # out_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/tsv2bedRMod/proEUF_files"
+    # in_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/convert2bedRMod/test_files"
+    # out_dir = "/home/annebusch/Documents/PyCharmProjects/EUF/convert2bedRMod/proEUF_files"
     # pileup2proEUF_dir(in_dir, out_dir)

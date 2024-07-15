@@ -4,7 +4,7 @@ This project is about converting RNA sequencing data into the new epitranscripto
 bedRMod does contain the read data of modifications a per site-level (as opposed to SAM/BAM with Mm tags which contain the information per read-level).  
 
 The available options are conversion from: 
-- flat (tsv) format
+- structured formats e.g. xlsx, odf, tsv, csv
 - pileup data (converted from fastq/fasta)
 
 ## Specification
@@ -12,18 +12,15 @@ For the data specification, please refer to the bedRMod.pdf.
 
 ## Instruction
 
-To convert RNA sequencing data into EUF a few requirements have to be met. 
+To convert RNA sequencing data into bedRMod a few requirements have to be met. 
 Those differ for the input formats. 
 
-### Converting from tsv (flat) format
-**!!It is currently not possible to store modification data in the output files with this conversion method!!**
+### Converting from structured formats
 
 A config file is needed in which the metadata of the files are stored. 
-Please have a look at the config.yaml file to get a better impression. 
-To convert the file, call the `tsv2bedRMod` function with the following arguments: 
-- path to tsv (input) file e.g. "/flat2bedRMod/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
-- path to config.yaml file e.g. "/tsv2bedRMod/config.yaml"
-- path to output file e.g. "/flat2bedRMod/m6aSACseq/euf/output_file.bedrmod"
+Please have a look at the /test/test_config.yaml file to get a better impression. 
+
+This description is a work in progress.
 
 ### Converting from pileup
 A pileup file contains read results per site and can be directly converted from fasta/fastq files using [SAMtools](http://www.htslib.org/).
