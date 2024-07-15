@@ -1,15 +1,21 @@
 import csv
 import os
-import sys
 import pandas as pd
 
-from convert2bedRMod.convert2bedRMod import df2bedRMod
-from convert2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
+from PySide6 import QtCore
+from PySide6.QtWidgets import QFileDialog, QLabel
+
+from view import MainWindow, NewConfigWindow
+
+from tsv2bedRMod.tsv2bedRMod import df2bedRMod
+from tsv2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
 
 
 class Controller:
-    def __init__(self, ui):
-        self.ui = ui
+    def __init__(self, app):
+        self.app = app
+        self.ui = MainWindow(self)
+        self.ui.show()
 
         # set default values for Window
         self.columns = None
@@ -24,6 +30,128 @@ class Controller:
         self.score_func = None
         self.coverage_func = None
         self.frequency_func = None
+
+    def open_config_window(self):
+        config_window = NewConfigWindow(self)
+        config_window.show()
+
+    @QtCore.Slot()
+    def select_input_file(self):
+        pathFile, ok = QFileDialog.getOpenFileName(self.ui,
+                                                   "Open input file",
+                                                   "",
+                                                   "All Files(*)")
+        if pathFile:
+            self.ui.file_path.setText(pathFile)
+            file_type, file_delimiter = self.detect_file_type_delimiter(pathFile)
+            file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
+
+            if file_type in file_endings:
+                self.ui.xlsx_file.setChecked(True)
+                self.ui.custom_file_type.setChecked(False)
+                self.ui.custom_file_delimiter.setEnabled(False)
+                if self.ui.controller.sheetnames is not None:
+                    self.ui.sheet_selector.addItems(self.sheetnames)
+                    self.ui.sheet_info = QLabel("Select sheet")
+                    self.ui.layout.addWidget(self.ui.sheet_info, 5, 0, 1, 1)
+                    self.ui.layout.addWidget(self.ui.sheet_selector, 5, 1, 1, 3)
+            else:
+                self.ui.xlsx_file.setChecked(False)
+                self.ui.custom_file_type.setChecked(True)
+                if file_delimiter == "\t":
+                    file_delimiter = "\\t"
+                self.ui.custom_file_delimiter.setText(file_delimiter)
+                self.ui.custom_file_delimiter.setEnabled(True)
+
+    @QtCore.Slot()
+    def select_output_file(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        conf_file = QFileDialog()
+        plain_file_path = self.ui.file_path.toPlainText()
+        #print(plain_file_path)
+        if plain_file_path:
+            input_dir = os.path.dirname(plain_file_path)
+            conf_file.setDirectory(input_dir)
+            file_path, _ = conf_file.getSaveFileName(self.ui, "New .bedrmod", input_dir,
+                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
+                                                     options=options)
+        else:
+            file_path, _ = conf_file.getSaveFileName(self.ui, "New .bedrmod", ".bedrmod",
+                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
+                                                     options=options)
+        if file_path:
+            if not file_path.endswith(".bedrmod"):
+                self.ui.outfile_path.setText(file_path + ".bedrmod")
+            else:
+                self.ui.outfile_path.setText(file_path)
+
+    @QtCore.Slot()
+    def select_config_file(self):
+        pathFile, ok = QFileDialog.getOpenFileName(self.ui,
+                                                   "Open the config file",
+                                                   "",
+                                                   "All Files(*)")
+        if pathFile:
+            self.ui.config_file_path.setText(pathFile)
+            self.ui.controller.update_function_selection(pathFile)
+
+    @QtCore.Slot()
+    def create_new_file(self):
+        # Ask the user to choose a location and name for the new file
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        conf_file = QFileDialog()
+        file_path, _ = conf_file.getSaveFileName(self.ui, "New config.yaml", ".yaml",
+                                                 "Config Files (*.yaml);;All Files (*)",
+                                                 options=options)
+
+        # If the user selected a file, create a new file
+        if file_path:
+            editor = NewConfigWindow(file_path)
+            editor.show()
+            # the editor shows the file contents but the file is not created yet.
+            # this line trys to parse info from the file that does not exist!!
+            self.update_function_selection(file_path)
+
+    @QtCore.Slot()
+    def onIndexButtonToggled(self):
+        if self.ui.index_0_button.isChecked():
+            print(f"value index 0: {self.ui.index_0_button.isChecked()}")
+        elif self.ui.index_1_button.isChecked():
+            print(f"value index 1: {self.ui.index_1_button.isChecked()}")
+        pass
+
+    @QtCore.Slot()
+    def on_delimiter_button_toggled(self):
+        if self.ui.xlsx_file.isChecked():
+            self.ui.custom_file_delimiter.setEnabled(False)
+        elif self.ui.custom_file_type.isChecked():
+            self.ui.layout.removeWidget(self.ui.sheet_info)
+            self.ui.layout.removeWidget(self.ui.sheet_selector)
+            self.ui.sheet_selector.setParent(None)
+            self.ui.sheet_info.setParent(None)
+            self.ui.custom_file_delimiter.setEnabled(True)
+
+    @QtCore.Slot()
+    def on_custom_modification_toggled(self):
+        if self.ui.modi_button.isChecked():
+            self.ui.layout.addWidget(self.ui.modi_custom, 8, 3, 1, 1)
+            self.ui.modi_button.setChecked(True)
+        else:
+            self.ui.modi_button.setChecked(False)
+            self.ui.layout.removeWidget(self.ui.modi_custom)
+            self.ui.modi_custom.setParent(None)
+
+    @QtCore.Slot()
+    def on_custom_strand_toggled(self):
+        if self.ui.strand_button.isChecked():
+            self.ui.layout.addWidget(self.ui.strand_custom, 10, 3, 1, 1)
+            self.ui.strand_button.setChecked(True)
+        else:
+            self.ui.strand_button.setChecked(False)
+            self.ui.layout.removeWidget(self.ui.strand_custom)
+            self.ui.strand_custom.setParent(None)
 
     def detect_file_type_delimiter(self, file):
         file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
