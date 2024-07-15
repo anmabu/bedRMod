@@ -1,12 +1,8 @@
-import os
-import sys
 import yaml
 
-from PySide6 import QtCore, QtWidgets
-from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
+from PySide6 import QtWidgets
+from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QRadioButton, \
     QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox
-
-from controller import Controller
 
 
 class NewConfigWindow(QWidget):
@@ -40,10 +36,10 @@ class NewConfigWindow(QWidget):
 
 
 class MainWindow(QWidget):
-    def __init__(self):
+    def __init__(self, controller):
         super().__init__()
 
-        self.controller = Controller(self)
+        self.controller = controller
 
         self.file_path = None
         self.input_file = None
@@ -100,7 +96,7 @@ class MainWindow(QWidget):
         self.file_path.setFixedHeight(line_height * 1.6)
         # self.file_path.setStyleSheet("background-color: white")
         self.input_file = QPushButton("...")
-        self.input_file.clicked.connect(self.select_input_file)
+        self.input_file.clicked.connect(self.controller.select_input_file)
 
         # config file
         config_label = QLabel("Select config file:")
@@ -110,9 +106,9 @@ class MainWindow(QWidget):
         self.config_file_path.setFixedHeight(line_height * 1.6)
         # self.config_file_path.setStyleSheet("background-color: white")
         self.config_file = QPushButton("...")
-        self.config_file.clicked.connect(self.select_config_file)
+        self.config_file.clicked.connect(self.controller.select_config_file)
         self.new_config_file = QPushButton("New Config file")
-        self.new_config_file.clicked.connect(self.create_new_file)
+        self.new_config_file.clicked.connect(self.controller.create_new_file)
 
         # output file
         output_label = QLabel("Select output file path:")
@@ -122,7 +118,7 @@ class MainWindow(QWidget):
         self.outfile_path.setFixedHeight(line_height * 1.6)
         # self.file_path.setStyleSheet("background-color: white")
         self.output_file = QPushButton("...")
-        self.output_file.clicked.connect(self.select_output_file)
+        self.output_file.clicked.connect(self.controller.select_output_file)
 
         # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
@@ -137,8 +133,8 @@ class MainWindow(QWidget):
         self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
 
         self.custom_file_type.setChecked(True)
-        self.xlsx_file.toggled.connect(self.on_delimiter_button_toggled)
-        self.custom_file_type.toggled.connect(self.on_delimiter_button_toggled)
+        self.xlsx_file.toggled.connect(self.controller.on_delimiter_button_toggled)
+        self.custom_file_type.toggled.connect(self.controller.on_delimiter_button_toggled)
 
         self.sheet_selector = QComboBox()
         self.sheet_selector.currentIndexChanged.connect(self.controller.on_sheet_selection)
@@ -176,7 +172,7 @@ class MainWindow(QWidget):
         self.modi = QComboBox()
         self.modi.setFixedHeight(line_height * 1.6)
         self.modi_button = QCheckBox("Custom?")
-        self.modi_button.clicked.connect(self.on_custom_modification_toggled)
+        self.modi_button.clicked.connect(self.controller.on_custom_modification_toggled)
         self.modi_custom = QTextEdit()
         self.modi_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.modi_custom.setText("modification")
@@ -209,7 +205,7 @@ class MainWindow(QWidget):
         # make group for single button to act independently
 
         self.strand_button = QCheckBox("Custom?")
-        self.strand_button.clicked.connect(self.on_custom_strand_toggled)
+        self.strand_button.clicked.connect(self.controller.on_custom_strand_toggled)
         self.strand_custom = QTextEdit()
         self.strand_custom.setText("+ or -")
         self.strand_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
@@ -324,128 +320,3 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.convert, 13, 0, 1, 4)
 
         self.setLayout(self.layout)
-
-    @QtCore.Slot()
-    def select_input_file(self):
-        pathFile, ok = QFileDialog.getOpenFileName(self,
-                                                   "Open input file",
-                                                   "",
-                                                   "All Files(*)")
-        if pathFile:
-            self.file_path.setText(pathFile)
-            file_type, file_delimiter = self.controller.detect_file_type_delimiter(pathFile)
-            file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
-
-            if file_type in file_endings:
-                self.xlsx_file.setChecked(True)
-                self.custom_file_type.setChecked(False)
-                self.custom_file_delimiter.setEnabled(False)
-                if self.controller.sheetnames is not None:
-                    self.sheet_selector.addItems(self.controller.sheetnames)
-                    self.sheet_info = QLabel("Select sheet")
-                    self.layout.addWidget(self.sheet_info, 5, 0, 1, 1)
-                    self.layout.addWidget(self.sheet_selector, 5, 1, 1, 3)
-            else:
-                self.xlsx_file.setChecked(False)
-                self.custom_file_type.setChecked(True)
-                if file_delimiter == "\t":
-                    file_delimiter = "\\t"
-                self.custom_file_delimiter.setText(file_delimiter)
-                self.custom_file_delimiter.setEnabled(True)
-
-    @QtCore.Slot()
-    def select_output_file(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        conf_file = QFileDialog()
-        plain_file_path = self.file_path.toPlainText()
-        print(plain_file_path)
-        if plain_file_path:
-            input_dir = os.path.dirname(plain_file_path)
-            conf_file.setDirectory(input_dir)
-            # print(input_dir)
-            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", input_dir,
-                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
-                                                     options=options)
-        else:
-            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
-                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
-                                                     options=options)
-        if file_path:
-            if not file_path.endswith(".bedrmod"):
-                self.outfile_path.setText(file_path + ".bedrmod")
-            else:
-                self.outfile_path.setText(file_path)
-
-    @QtCore.Slot()
-    def select_config_file(self):
-        pathFile, ok = QFileDialog.getOpenFileName(self,
-                                                   "Open the config file",
-                                                   "",
-                                                   "All Files(*)")
-        if pathFile:
-            self.config_file_path.setText(pathFile)
-            self.controller.update_function_selection(pathFile)
-
-    @QtCore.Slot()
-    def create_new_file(self):
-        # Ask the user to choose a location and name for the new file
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        conf_file = QFileDialog()
-        file_path, _ = conf_file.getSaveFileName(self, "New config.yaml", ".yaml",
-                                                 "Config Files (*.yaml);;All Files (*)",
-                                                 options=options)
-
-        # file_path = conf_file.exec_()
-        # If the user selected a file, create a new file
-        if file_path:
-            self.editor = NewConfigWindow(file_path)
-            self.editor.show()
-            self.controller.update_function_selection(file_path)
-
-    @QtCore.Slot()
-    def onIndexButtonToggled(self):
-        if self.index_0_button.isChecked():
-            print(f"value index 0: {self.index_0_button.isChecked()}")
-        elif self.index_1_button.isChecked():
-            print(f"value index 1: {self.index_1_button.isChecked()}")
-        pass
-
-    @QtCore.Slot()
-    def on_delimiter_button_toggled(self):
-        if self.xlsx_file.isChecked():
-            self.custom_file_delimiter.setEnabled(False)
-        elif self.custom_file_type.isChecked():
-            self.layout.removeWidget(self.sheet_info)
-            self.layout.removeWidget(self.sheet_selector)
-            self.sheet_selector.setParent(None)
-            self.sheet_info.setParent(None)
-            self.custom_file_delimiter.setEnabled(True)
-
-    @QtCore.Slot()
-    def on_custom_modification_toggled(self):
-        if self.modi_button.isChecked():
-            self.layout.addWidget(self.modi_custom, 8, 3, 1, 1)
-            self.modi_button.setChecked(True)
-        else:
-            self.modi_button.setChecked(False)
-            self.layout.removeWidget(self.modi_custom)
-            self.modi_custom.setParent(None)
-
-    @QtCore.Slot()
-    def on_custom_strand_toggled(self):
-        if self.strand_button.isChecked():
-            self.layout.addWidget(self.strand_custom, 10, 3, 1, 1)
-            self.strand_button.setChecked(True)
-        else:
-            self.strand_button.setChecked(False)
-            self.layout.removeWidget(self.strand_custom)
-            self.strand_custom.setParent(None)
-
-
-def start_gui():
-    app = QtWidgets.QApplication([])
-    widget = MainWindow()
-    widget.show()
-    sys.exit(app.exec())
