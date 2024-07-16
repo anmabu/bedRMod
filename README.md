@@ -9,9 +9,11 @@ The available options are conversion from:
 - csv, tsv, basically any common seperator
 
 
-# Specification
+## Specification
 For the data specification, please refer to the bedRMod.pdf.
 
+# Installation
+tbd
 # Usage Information
 
 To convert RNA sequencing data into bedRMod a few requirements have to be met. 
@@ -25,7 +27,16 @@ For further information, please refer to the specification
 
 ## 2. Converting the data
 ### 2.1 Using the GUI
-tbd
+When starting the GUI, the user has to select the input file, config file and output file, individually. 
+If a config file does not exist yet, a new one can be created from a template. 
+It is highly recommended for the input file to have a header aka column names in the first row, as the first row is parsed to give selectable options for the required information.
+As the columns cannot be processed further in the GUI, e.g. split a column if there are several values, all more sophisticated operations have to be done on the input file beforehand.
+Minor changes/adaptations of the values in the columnscan still be done in the GUI, though. 
+This includes selecting whether the position is 0- or 1-indexed  (counting start from 0 like birthdays or 1 like enumeration).
+If the input file does not contain information on the modification type or the strand these can be set for the whole file, in the GUI.
+Also functions can be passed to adapt score, coverage and frequency e.g. rounding for converting a float to an integer or scaling of the values. 
+
+Using the GUI is recommended for converting single files into bedRMod and users getting to know the conversion toolkit. 
 
 ### 2.2 Using the command line
 tbd
