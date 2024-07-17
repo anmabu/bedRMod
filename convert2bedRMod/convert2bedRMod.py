@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yaml
 
-from convert2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
+from helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -83,7 +83,6 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(frequency)
     thick_start = start_col
     thick_end = end
-
     item_rgb = get_modification_color(name)
     result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
@@ -211,6 +210,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                     "\tfrequency\n")
 
             for _, row in df.iterrows():
+                print(row)
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
                                    strand, coverage, coverage_function, frequency, frequency_function)
                 if not any(item is None for item in result) or (result is not None):
@@ -220,4 +220,5 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                             f'\t{thick_end}\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
             print("Done!")
     except TypeError:
+        print("Something went wrong! The bedrmod file was not generated!")
         os.remove(output_file)
