@@ -1,13 +1,14 @@
+import math
 import os
 import pandas as pd
 import yaml
 
 # from convert2bedRMod import bid_mouse2bedRMod, bid_human2bedRMod, etam2bedRMod, csv2bedRMod
-from convert2bedRMod.convert2bedRMod import csv2bedRMod
+from convert2bedRMod import csv2bedRMod
 
-from convert2bedRMod.helper import write_header
-from convert2bedRMod.helper import get_modification_color
-from convert2bedRMod.helper import parse_excel_sheetnames
+from helper import write_header
+from helper import get_modification_color
+from helper import parse_excel_sheetnames
 
 
 def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
@@ -60,7 +61,7 @@ def bid_mouse2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
             start = pd.to_numeric(row['pos']) - 1 
             end = start + 1
             name = "Y"
-            score = round(row["Frac_Ave %"] * 10)
+            score = 0
             strand = row['strand']
             thick_start = start
             thick_end = end
@@ -124,7 +125,7 @@ def bid_human2bedRMod(input_file, config_yaml, output_file=None, sheet_name=0):
             start = pd.to_numeric(row['pos']) - 1 
             end = start + 1
             name = "Y"
-            score = round(row["Frac_Ave %"] * 10)
+            score = 0
             strand = row['strand']
             thick_start = start
             thick_end = end
@@ -253,7 +254,10 @@ def rename_glori():
 
 def convert_glori():
     def score_func(p_value):
-        return round(1000 - (p_value * 1000))
+        if p_value == 0:
+            return 1
+        else:
+            return round(- math.log10(p_value))
 
     def frequency_func(ratio):
         return round(ratio * 100)
@@ -283,11 +287,11 @@ def convert_glori():
                         frequency="Ratio",
                         frequency_function=frequency_func)
 
-# convert_glori()
+convert_glori()
 convert_bid_human()
 convert_bid_mouse()
 # convert_etam_human()
-# convert_etam()
+convert_etam()
 
 
 def score_func(param):
