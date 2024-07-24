@@ -182,6 +182,22 @@ def read_bioinformatics_keys(config_yaml):
     return score_function, coverage_function, frequency_function
 
 
+def check_value_range(result):
+    """
+    check whether returned values are in the allowed range
+    :param result:
+    :return:
+    """
+    chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
+        coverage_col, frequency_col = result
+
+    if not 0 <= score_column <= 1000:
+        print(f"The score value ({score_column}) is not in the allowed range. Please check and try again.")
+
+    if not 1 <= frequency_col <= 100:
+        print(f"The frequency value ({frequency_col}) is not in the allowed range. Please check and try again.")
+
+
 def get_modification_color(modi):
     """
     looks up the color of the modification in the rgb dictionary and returns the associated rgb value
