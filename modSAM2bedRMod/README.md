@@ -6,6 +6,12 @@ The here used SAM format specifications are found [here](https://samtools.github
 with the current version defined on 17 August 2022.
 
 
+## Todo:
+- Update code to output bedRMod files directly not proEUF
+
+- (update to 2024-09-09 Version) Add reading and evalutation of MN tag and adapt ML and MM tags accordingly
+
+
 
 ### Issues
 
