@@ -4,48 +4,39 @@ This project is about converting RNA sequencing data into the new epitranscripto
 bedRMod does contain the read data of modifications a per site-level (as opposed to SAM/BAM with Mm tags which contain the information per read-level).  
 
 The available options are conversion from: 
-- flat (tsv) format
-- pileup data (converted from fastq/fasta)
+- xlsx and its relatives (e.g. xls)
+- odf and its relatives (e.g. ods)
+- csv, tsv, basically any common seperator
+
 
 ## Specification
 For the data specification, please refer to the bedRMod.pdf.
 
-## Instruction
+# Installation
+tbd
+# Usage Information
 
-To convert RNA sequencing data into EUF a few requirements have to be met. 
+To convert RNA sequencing data into bedRMod a few requirements have to be met. 
 Those differ for the input formats. 
 
-### Converting from tsv (flat) format
-**!!It is currently not possible to store modification data in the output files with this conversion method!!**
+## 1. Config file
+Independent of the input format, a config file is needed for successful conversion. 
+This file contains metadata of the input file.
+Please have a look at the example config file in /examples/example_config.yaml. 
+For further information, please refer to the specification
 
-A config file is needed in which the metadata of the files are stored. 
-Please have a look at the config.yaml file to get a better impression. 
-To convert the file, call the `tsv2bedRMod` function with the following arguments: 
-- path to tsv (input) file e.g. "/flat2euf/m6aSACseq/GSE198246/GSE198246_2ng_sites.tsv.gz"
-- path to config.yaml file e.g. "/tsv2euf/config.yaml"
-- path to output file e.g. "/flat2euf/m6aSACseq/euf/output_file.bedrmod"
+## 2. Converting the data
+### 2.1 Using the GUI
+When starting the GUI, the user has to select the input file, config file and output file, individually. 
+If a config file does not exist yet, a new one can be created from a template. 
+It is highly recommended for the input file to have a header aka column names in the first row, as the first row is parsed to give selectable options for the required information.
+As the columns cannot be processed further in the GUI, e.g. split a column if there are several values, all more sophisticated operations have to be done on the input file beforehand.
+Minor changes/adaptations of the values in the columnscan still be done in the GUI, though. 
+This includes selecting whether the position is 0- or 1-indexed  (counting start from 0 like birthdays or 1 like enumeration).
+If the input file does not contain information on the modification type or the strand these can be set for the whole file, in the GUI.
+Also functions can be passed to adapt score, coverage and frequency e.g. rounding for converting a float to an integer or scaling of the values. 
 
-### Converting from pileup
-A pileup file contains read results per site and can be directly converted from fasta/fastq files using [SAMtools](http://www.htslib.org/).
-Once the data has been converted to pileup (using `fastx2pileup`), a proEUF file has to be constructed using `pileup2proEUF`.
-The resulting file is the starting point to convert into EUF using `proEUF2bedRMod`. 
+Using the GUI is recommended for converting single files into bedRMod and users getting to know the conversion toolkit. 
 
-To not only store the per site information but also modification data, an additional file containing the modified sites is required. 
-The path to this file needs to be specified in the config file and the modification data has to meet some format definitions. 
-Please have a look at `mod_indices.csv` to see an example. 
-For now, only information on reference segment/chromosome, position, strandedness and modification type are included. 
-
-
-This function `proEUF2bedRMod` takes also 3 arguments: 
-- path to proEUF (input) file
-- path to config.yaml file, optional: with path to file containing modification indices. 
-- path to output file 
-
-
-#### Converting into pileup
-Converting into pileup format can be most easily achieved by using [SAMtools](http://www.htslib.org/).
-When BAM files are available, they (can be merged and) have to be sorted and indexed before their conversion into pileup format. 
-It is recommended to set the options `-A -Q 0 -d 1000000 -x` when calling `samtools mpileup`. 
-
-## Known Issues
-- It is not possible to open the file "as is" in IGV. This is due to the file having too many columns for IGV. If only the first 11 columns are used, IGV can open them without problems
+### 2.2 Using the command line
+tbd

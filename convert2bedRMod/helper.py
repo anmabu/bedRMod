@@ -1,7 +1,9 @@
+import math
 import pandas as pd
 import yaml
 
-EUF_VERSION = "bedRModv1.7"
+
+EUF_VERSION = "bedRModv1.8"
 
 
 def write_header(config, output_file):
@@ -23,15 +25,14 @@ def write_header(config, output_file):
         "basecalling",
         "bioinformatics_workflow",
         "experiment",
-        "external_source", 
+        "external_source" 
     ]
 
     # build the header from metadata
     euf_header = dict()
     for key in euf_header_keys:
-        euf_header[key] = config["options"].get(key, None)
+        euf_header[key] = config["options"].get(key, "")
     euf_header["fileformat"] = EUF_VERSION
-
     # check for additional keys and append them to the header
     additional_keys = []
     for key in config["options"].keys():
@@ -41,23 +42,167 @@ def write_header(config, output_file):
     if len(additional_keys) > 0:
         for key in additional_keys:
             # if there are nested dictionaries, they get appended here
-            if isinstance(config["options"].get(key, None), dict):
+            if isinstance(config["options"].get(key, ""), dict):
                 npairs = ""
-                for nkey, nvalue in config["options"].get(key, None).items():
+                for nkey, nvalue in config["options"].get(key, "").items():
                     npairs += f"{nkey}:{nvalue};"
-                npairs = npairs[:-1]
+                npairs = npairs[:-1]  # remove last ;
                 euf_header[key] = npairs
             else:
-                euf_header[key] = config["options"].get(key, None)
+                euf_header[key] = config["options"].get(key, "")
     for k, v in euf_header.items():
-        output_file.write(f"#{k}={v}\n")
+        if isinstance(v, dict):
+            npairs = ""
+            for ke, va in v.items():
+                npairs += f"{ke}:{va};"
+            npairs = npairs[:-1]  # remove last ;
+            output_file.write(f"#{k}={npairs}\n")
+            continue  # don't write it twice
+        if v is not None:
+            output_file.write(f"#{k}={v}\n")
+        else:
+            value = ""
+            # these are required fields in the config file
+            if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
+                     "annotation_version"]:
+                print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
+                      f"this and convert again!")
+                return False
+            else:
+                output_file.write(f"#{k}={value}\n")
+    return True
+
+
+def funcify(expression):
+    """
+    Takes a string of an expression as an input and converts it into a python function.
+    :return: function of passed expression string
+    """
+    eval_dict = {
+        "log10": math.log10
+    }
+    func = eval(expression, eval_dict)
+    return func
+
+
+def write_bioinformatics_keys(config_yaml, score_function=None, coverage_function=None, frequency_function=None):
+    """
+    check if customizable functions are in the config and adds them to the config file if not included.
+    :param config_yaml: (path to) config file
+    :param score_function: string of score function
+    :param coverage_function: string of coverage function
+    :param frequency_function: string of frequency function
+    :return:
+    """
+
+    # change representation of None in the output file to "", so that nothing gets written in bedRMod
+    class EmptyStringDumper(yaml.SafeDumper):
+        def represent_none(self, _):
+            return self.represent_scalar('tag:yaml.org,2002:str', '')
+
+    # Add the custom representer to the dumper
+    EmptyStringDumper.add_representer(type(None), EmptyStringDumper.represent_none)
+
+    config = yaml.safe_load(open(config_yaml, "r"))
+    with open(config_yaml + ".backup", 'w') as file:
+        yaml.dump(config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
+    try:
+        if score_function is not None or coverage_function is not None or frequency_function is not None:
+            if type(config["options"]["bioinformatics_workflow"]) is not dict:
+                config["options"]["bioinformatics_workflow"] = {"workflow": config["options"]["bioinformatics_workflow"]}
+            if score_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"score_function": score_function}
+            elif score_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "score_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["score_function"] = score_function
+                else:
+                    if score_function != config["options"]["bioinformatics_workflow"]["score_function"]:
+                        print(f"The score function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['score_function']}) "
+                              f"does not match the newly given score function ({score_function}). "
+                              f"Proceeding with the given score function {score_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["score_function"] = score_function
+            if coverage_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"coverage_function": coverage_function}
+            elif coverage_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "coverage_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["coverage_function"] = coverage_function
+                else:
+                    if coverage_function != config["options"]["bioinformatics_workflow"]["coverage_function"]:
+                        print(f"The coverage function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['coverage_function']}) "
+                              f"does not match the newly given coverage function ({coverage_function}). "
+                              f"Proceeding with the given coverage function {coverage_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["coverage_function"] = coverage_function
+            if frequency_function is not None and "bioinformatics_workflow" not in config["options"].keys():
+                config["options"]["bioinformatics_workflow"] = {"frequency_function": frequency_function}
+            elif frequency_function is not None and "bioinformatics_workflow" in config["options"].keys():
+                if "frequency_function" not in config["options"]["bioinformatics_workflow"].keys():
+                    config["options"]["bioinformatics_workflow"]["frequency_function"] = frequency_function
+                else:
+                    if frequency_function != config["options"]["bioinformatics_workflow"]["frequency_function"]:
+                        print(f"The frequency function from the config file "
+                              f"({config['options']['bioinformatics_workflow']['frequency_function']}) "
+                              f"does not match the newly given frequency function ({frequency_function}). "
+                              f"Proceeding with the given frequency function {frequency_function} "
+                              f"and overwriting the config file.")
+                        config["options"]["bioinformatics_workflow"]["frequency_function"] = frequency_function
+        with open(config_yaml, 'w') as file:
+            yaml.dump(config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
+    except Exception as e:
+        print("An exception occurred while trying to write the config file")
+        with open(config_yaml + ".backup", 'r') as file:
+            original_config = yaml.safe_load(file)
+        with open(config_yaml, 'w') as file:
+            yaml.dump(original_config, file, Dumper=EmptyStringDumper, default_flow_style=False, sort_keys=False)
+
+
+def read_bioinformatics_keys(config_yaml):
+    """
+
+    :param config_yaml:
+    :return:
+    """
+    score_function = None
+    coverage_function = None
+    frequency_function = None
+    config = yaml.safe_load(open(config_yaml, "r"))
+    if "bioinformatics_workflow" in config["options"].keys():
+        if isinstance(config["options"].get("bioinformatics_workflow", ""), dict):
+            for key in config["options"]["bioinformatics_workflow"].keys():
+                if key == "score_function":
+                    score_function = config["options"]["bioinformatics_workflow"]["score_function"]
+                if key == "coverage_function":
+                    coverage_function = config["options"]["bioinformatics_workflow"]["coverage_function"]
+                if key == "frequency_function":
+                    frequency_function = config["options"]["bioinformatics_workflow"]["frequency_function"]
+
+    return score_function, coverage_function, frequency_function
+
+
+def check_value_range(result):
+    """
+    check whether returned values are in the allowed range
+    :param result:
+    :return:
+    """
+    chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
+        coverage_col, frequency_col = result
+
+    if not 0 <= score_column <= 1000:
+        print(f"The score value ({score_column}) is not in the allowed range. Please check and try again.")
+
+    if not 1 <= frequency_col <= 100:
+        print(f"The frequency value ({frequency_col}) is not in the allowed range. Please check and try again.")
 
 
 def get_modification_color(modi):
     """
     looks up the color of the modification in the rgb dictionary and returns the associated rgb value
-    :param modi:
-    :return:
+    :param modi: short name of modification in Modomics
+    :return: RGB value for modification
     """
     rgb_colors = {'pmnm5U': '255,0,0',
                      'm1Am': '0,255,0',
@@ -394,13 +539,15 @@ def get_modification_color(modi):
                      'imG': '64,64,64',
                      'pimG': '64,64,0'}
 
-    if modi not in rgb_colors.keys():
-        return '0,0,0'
+    if not rgb_colors.get(modi):
+        print("Please check your modification name. It does not seem to be a valid MODOMICS shortname."
+              "No RGB values were created.")
+        return None
     else:
         return rgb_colors.get(modi)
 
 
-def parse_excel(input_file):
+def parse_excel_sheetnames(input_file):
     """
     parses the input excel file and returns a list of sheetnames.  
     This is useful if the Excel file contains multiple sheets with information to be converted into bedrmod.
