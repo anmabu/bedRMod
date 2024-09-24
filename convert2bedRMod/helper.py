@@ -193,10 +193,12 @@ def check_value_range(result):
 
     if not 0 <= score_column <= 1000:
         print(f"The score value ({score_column}) is not in the allowed range. Please check and try again.")
+        return False
 
     if not 1 <= frequency_col <= 100:
         print(f"The frequency value ({frequency_col}) is not in the allowed range. Please check and try again.")
-
+        return False
+    return True
 
 def get_modification_color(modi):
     """

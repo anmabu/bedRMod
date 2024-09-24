@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yaml
 
-from convert2bedRMod.helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
+from helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
                     check_value_range)
 
 
@@ -211,7 +211,6 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                     "\tfrequency\n")
 
             for _, row in df.iterrows():
-                # print(row)
                 result = parse_row(row, colnames, ref_seg, start, start_function, modi, modi_column, score, score_function,
                                    strand, coverage, coverage_function, frequency, frequency_function)
                 if not any(item is None for item in result) or (result is not None):

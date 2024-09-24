@@ -287,11 +287,11 @@ def convert_glori():
                         frequency="Ratio",
                         frequency_function=frequency_func)
 
-convert_glori()
+# convert_glori()
 convert_bid_human()
 convert_bid_mouse()
 # convert_etam_human()
-convert_etam()
+# convert_etam()
 
 
 def score_func(param):
