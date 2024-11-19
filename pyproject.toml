@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bedRMod"
-version = "1.8.4"
+version = "1.8.0"
 requires-python = ">=3.8"
 authors = [
   { name="Anne Busch", email="anne.busch@uni-mainz.de" },
@@ -30,13 +30,6 @@ include = [
     "LICENSE",
     "bedRModv1.8.pdf", 
 ]
-exclude = [
-    "**/.gitignore",
-     "test/**",  
-     "examples/**", 
-     "convert2bedRMod/**", 
-     "flat2euf/**", 
-     "modSAM2bedRMod/**",
-]
+
 [project.gui-scripts]
 bedRMod-gui = "bedRMod.gui.main:main"
