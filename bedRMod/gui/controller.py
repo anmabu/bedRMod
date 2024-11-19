@@ -7,8 +7,8 @@ from PySide6.QtWidgets import QFileDialog, QLabel
 
 from view import MainWindow, NewConfigWindow
 
-from convert2bedRMod.convert2bedRMod import df2bedRMod
-from convert2bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
+from bedRMod.convert2bedRMod import df2bedRMod
+from bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
 
 
 class Controller:
