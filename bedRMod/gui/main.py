@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication
-from gui.controller import Controller
+from .controller import Controller
 
 
 def start_gui():
