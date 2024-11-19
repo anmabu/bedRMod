@@ -199,7 +199,7 @@ class MainWindow(QWidget):
         # strand
         strand_label = QLabel("Strandedness / strand column")
         strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
-                                "for the whole file, '+' or '-' will work, too.")
+                                "for the whole file, '+' or '-' will work, too. Use '.' for unknown.")
         self.strand = QComboBox()
         self.strand.setFixedHeight(line_height * 1.6)
         # make group for single button to act independently
@@ -207,7 +207,7 @@ class MainWindow(QWidget):
         self.strand_button = QCheckBox("Custom?")
         self.strand_button.clicked.connect(self.controller.on_custom_strand_toggled)
         self.strand_custom = QTextEdit()
-        self.strand_custom.setText("+ or -")
+        self.strand_custom.setText("+ or - or . (unknown)")
         self.strand_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.strand_custom.setFixedHeight(line_height * 1.6)
 
