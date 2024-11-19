@@ -5,7 +5,7 @@ import pandas as pd
 from PySide6 import QtCore
 from PySide6.QtWidgets import QFileDialog, QLabel
 
-from view import MainWindow, NewConfigWindow
+from gui.view import MainWindow, NewConfigWindow
 
 from bedRMod.convert2bedRMod import df2bedRMod
 from bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
