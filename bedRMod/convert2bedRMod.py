@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yaml
 
-from helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
+from bedRMod.helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
                     check_value_range)
 
 

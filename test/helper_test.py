@@ -1,5 +1,5 @@
-from convert2bedRMod.helper import write_bioinformatics_keys, read_bioinformatics_keys
-from convert2bedRMod.helper import funcify
+from bedRMod.helper import write_bioinformatics_keys, read_bioinformatics_keys
+from bedRMod.helper import funcify
 
 
 def test_bioinformatics_keys():
