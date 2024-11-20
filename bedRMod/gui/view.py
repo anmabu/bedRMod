@@ -207,7 +207,7 @@ class MainWindow(QWidget):
         self.strand_button = QCheckBox("Custom?")
         self.strand_button.clicked.connect(self.controller.on_custom_strand_toggled)
         self.strand_custom = QTextEdit()
-        self.strand_custom.setText("+ or - or . (unknown)")
+        self.strand_custom.setText("+ or - or .")
         self.strand_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.strand_custom.setFixedHeight(line_height * 1.6)
 
