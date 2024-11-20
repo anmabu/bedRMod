@@ -9,7 +9,7 @@ requires-python = ">=3.9"
 authors = [
   { name="Anne Busch", email="anne.busch@uni-mainz.de" },
 ]
-description = "A small example package"
+description = "Converting RNA modification data into bedRMod format."
 readme = { file = "README.md", content-type = "text/markdown" }
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -19,8 +19,8 @@ classifiers = [
 dependencies = ["numpy>=1.24.0, <2.1.0", "pandas>=2.2.2", "PySide6>=6.6.1", "pytest>=7.3.1", "pyYAML>=6.0.1"]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/anmabu/bedRMod"
+Issues = "https://github.com/anmabu/bedRMod/issues"
 
 [tool.hatch.build]
 debug = true
