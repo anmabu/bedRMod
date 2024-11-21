@@ -44,18 +44,18 @@ This includes selecting whether the position is 0- or 1-indexed  (counting start
 If the input file does not contain information on the modification type or the strand these can be set for the whole file, in the GUI.
 Also functions can be passed to adapt score, coverage and frequency e.g. rounding for converting a float to an integer or scaling of the values. 
 
-Using the GUI is recommended for converting single files into bedRMod and users getting to know the conversion toolkit. 
+Using the GUI is recommended for converting already existing, single files into bedRMod and for users getting to know the conversion toolkit. 
 
 ### 2.2 Using the API
-Using the API is generally **NOT** recommended to convert single files into the bedRMod format. Use the GUI for this. 
-
-To convert or create more than one bedRMod file (or very few files), using the API is recommended. 
-
+Once installed, the 
 Creating bedRMod files can be achived using the `df2bedrmod` function. 
 This takes a pandas.DataFrame as well as a config.yaml file as input and creates a bedRMod file. 
 For this, the data needs to be manipulated beforehand to comply with the specifications as defined in [bedRModv*.pdf](bedRModv1.8.pdf).
 Then, the dataframe and the config.yaml can be given to the `df2bedrmod` function in a similar way as follows:
 ```angular2html
+import pandas as pd
+from bedRMod import df2bedRMod, csv2bedRMod
+
 # define column names
 columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness', 'thick_start', 'thick_end', 'item_rgb', 'coverage_col', 'frequency_col']
 data = [
