@@ -1,7 +1,7 @@
 # bedRMod
 
-This project is about converting RNA sequencing data into the new epitranscriptomics unified data format(EUF), **bedRMod**. 
-bedRMod does contain the read data of modifications a per site-level (as opposed to SAM/BAM with Mm tags which contain the information per read-level).  
+This project is about converting RNA modification data into the new epitranscriptomics unified data format(EUF), **bedRMod**. 
+bedRMod contains the read data of RNA modifications per site (as opposed to SAM/BAM with Mm tags which contain the information per read-level).  
 
 The available options are conversion from: 
 - xlsx and its relatives (e.g. xls)
@@ -10,12 +10,12 @@ The available options are conversion from:
 
 
 ## Specification
-For the data specification, please refer to the bedRMod.pdf.
+For the data specification, please refer to the bedRModv*.pdf.
 
 # Installation
-tbd
-# Usage Information
+In a python environment use `pip install bedRMod` to download the package from pypi. 
 
+# Usage Information
 To convert RNA sequencing data into bedRMod a few requirements have to be met. 
 Those differ for the input formats. 
 
@@ -38,5 +38,5 @@ Also functions can be passed to adapt score, coverage and frequency e.g. roundin
 
 Using the GUI is recommended for converting single files into bedRMod and users getting to know the conversion toolkit. 
 
-### 2.2 Using the command line
+### 2.2 Using the API
 tbd
