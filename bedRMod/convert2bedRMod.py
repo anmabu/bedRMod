@@ -190,15 +190,12 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
 
     :return:
     """
-    # file = pd.read_csv(input_file, delimiter=delimiter)
-    # file = pd.read_excel(input_file, header=3)
 
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    # check_bioinformatics_keys(config_yaml, score_function, coverage_function, frequency_function)
     config = yaml.safe_load(open(config_yaml, "r"))
 
     colnames = df.columns
