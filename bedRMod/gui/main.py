@@ -1,11 +1,9 @@
-from PySide6.QtWidgets import QApplication
 from .controller import Controller
 
 
 def start_gui():
-    app = QApplication([])
-    controller = Controller(app)
-    app.exec()
+    controller = Controller()
+    controller.run()
 
 
 if __name__ == "__main__":

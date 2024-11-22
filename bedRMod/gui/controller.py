@@ -3,19 +3,20 @@ import os
 import pandas as pd
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QFileDialog, QLabel
+from PySide6.QtWidgets import QFileDialog, QLabel, QApplication
 
-from .view import MainWindow, NewConfigWindow
+from .view import bedRModWidget, NewConfigWindow, MainWindow
 
 from bedRMod.convert2bedRMod import df2bedRMod
 from bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, read_bioinformatics_keys, funcify
 
 
 class Controller:
-    def __init__(self, app):
-        self.app = app
-        self.ui = MainWindow(self)
-        self.ui.show()
+    def __init__(self):
+        self.app = QApplication([])
+        self.window = MainWindow(self)
+
+        self.ui = bedRModWidget(self)
 
         # set default values for Window
         self.columns = None
@@ -301,3 +302,7 @@ class Controller:
                    modi_column=modi_button_check, score=score, score_function=self.score_func, strand=strand,
                    coverage=cov, coverage_function=self.coverage_func, frequency=freq,
                    frequency_function=self.frequency_func)
+
+    def run(self):
+        self.window.show()
+        self.app.exec()

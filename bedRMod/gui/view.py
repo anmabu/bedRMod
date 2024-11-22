@@ -2,7 +2,7 @@ import yaml
 
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow
 
 
 class NewConfigWindow(QWidget):
@@ -33,9 +33,15 @@ class NewConfigWindow(QWidget):
         with open(self.file_path, 'w') as new_file:
             new_file.write(content)
         self.close()
+class MainWindow(QMainWindow):
+    def __init__(self, controller):
+        super().__init__()
 
+        self.controller = controller
+        self.centralWidget = bedRModWidget(self.controller)
+        self.setCentralWidget(self.centralWidget)
 
-class MainWindow(QWidget):
+class bedRModWidget(QWidget):
     def __init__(self, controller):
         super().__init__()
 
@@ -77,7 +83,7 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        MainWindow.setWindowTitle(self, "Convert to bedRMod")
+        bedRModWidget.setWindowTitle(self, "Convert to bedRMod")
 
         self.info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         self.info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
