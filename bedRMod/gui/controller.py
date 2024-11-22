@@ -127,10 +127,14 @@ class Controller:
         if self.ui.xlsx_file.isChecked():
             self.ui.custom_file_delimiter.setEnabled(False)
         elif self.ui.custom_file_type.isChecked():
-            self.ui.layout.removeWidget(self.ui.sheet_info)
-            self.ui.layout.removeWidget(self.ui.sheet_selector)
-            self.ui.sheet_selector.setParent(None)
-            self.ui.sheet_info.setParent(None)
+            if self.ui.sheet_info is not None:
+                self.ui.layout.removeWidget(self.ui.sheet_info)
+            if self.ui.sheet_selector is not None:
+                self.ui.layout.removeWidget(self.ui.sheet_selector)
+            if self.ui.sheet_selector is not None:
+                self.ui.sheet_selector.setParent(None)
+            if self.ui.sheet_info is not None:
+                self.ui.sheet_info.setParent(None)
             self.ui.custom_file_delimiter.setEnabled(True)
 
     @QtCore.Slot()
