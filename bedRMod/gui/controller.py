@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from PySide6 import QtCore
-from PySide6.QtWidgets import QFileDialog, QLabel, QApplication
+from PySide6.QtWidgets import QFileDialog, QLabel, QApplication, QMessageBox
 
 from .view import bedRModWidget, NewConfigWindow, MainWindow
 
@@ -167,13 +167,13 @@ class Controller:
 
             return ".xlsx", None
         else:
-            with open(file, 'r') as file:
-                sample = file.read(1024)
+            with open(file, 'r') as f:
+                sample = f.read(1024)
                 dialect = csv.Sniffer().sniff(sample)
                 delimiter = dialect.delimiter
             self.delimiter = delimiter
-            self.columns = pd.read_csv(file, nrows=0).columns.tolist()
-            print(self.columns)
+            self.columns = pd.read_csv(file, nrows=0, delimiter=delimiter).columns.tolist()
+            self.update_columns_selection()
             return "csv", delimiter
 
     def update_function_selection(self, file_path):
@@ -206,6 +206,15 @@ class Controller:
             self.columns = pd.read_excel(self.ui.file_path.toPlainText(), sheet_name=self.selected_sheet, nrows=0)\
                 .columns.tolist()
             self.update_columns_selection()
+
+    def done_message(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Conversion Finished!")
+        msg.setText(f"The conversion of {self.ui.file_path.toPlainText()} into {self.ui.outfile_path.toPlainText} is finished!")
+        close_button = msg.addButton("Close", QMessageBox.ButtonRole.AcceptRole)
+
+        close_button.clicked.connect(msg.accept)
+        msg.exec()
 
     def convert2bedrmod(self):
         print(f"input file path: {self.ui.file_path.toPlainText()}")
@@ -302,6 +311,8 @@ class Controller:
                    modi_column=modi_button_check, score=score, score_function=self.score_func, strand=strand,
                    coverage=cov, coverage_function=self.coverage_func, frequency=freq,
                    frequency_function=self.frequency_func)
+
+        self.done_message()
 
     def run(self):
         self.window.show()
