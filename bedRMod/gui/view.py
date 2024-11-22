@@ -148,6 +148,7 @@ class bedRModWidget(QWidget):
         self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
 
         self.custom_file_type.setChecked(True)
+        self.custom_file_delimiter.setEnabled(True)
         self.xlsx_file.toggled.connect(self.controller.on_delimiter_button_toggled)
         self.custom_file_type.toggled.connect(self.controller.on_delimiter_button_toggled)
 
