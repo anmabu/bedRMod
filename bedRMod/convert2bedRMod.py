@@ -163,7 +163,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
             
 def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A",
                modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
-               coverage_function=None, frequency=None, frequency_function=None):
+               coverage_function=None, frequency=None, frequency_function=None, from_gui=False):
 
     """
     converts arbitrary pandas_dataframes into bedRMod format.
@@ -187,7 +187,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     :param coverage_function:
     :param frequency:
     :param frequency_function:
-
+    :param from_gui: (bool) indicates whether it was called from the GUI.
     :return:
     """
 
@@ -217,6 +217,10 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                     f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
                             f'\t{thick_end}\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
             print("Done!")
+            if from_gui:
+                return "Done"
     except TypeError:
         print("Something went wrong! The bedrmod file was not generated!")
         os.remove(output_file)
+        if from_gui:
+            return "Error"

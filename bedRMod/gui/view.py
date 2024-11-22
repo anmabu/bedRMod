@@ -144,7 +144,7 @@ class bedRModWidget(QWidget):
         self.custom_file_type = QRadioButton("custom delimiter")
         self.delimiter.addButton(self.custom_file_type, 2)
         self.custom_file_delimiter = QLineEdit()
-        self.custom_file_delimiter.setText("e.g ',', '\\t'")
+        self.custom_file_delimiter.setText("e.g , or \\t")
         self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
 
         self.custom_file_type.setChecked(True)

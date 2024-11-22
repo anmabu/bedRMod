@@ -1,6 +1,7 @@
 import csv
 import os
 import pandas as pd
+from pathlib import Path
 
 from PySide6 import QtCore
 from PySide6.QtWidgets import QFileDialog, QLabel, QApplication, QMessageBox
@@ -63,6 +64,11 @@ class Controller:
                     file_delimiter = "\\t"
                 self.ui.custom_file_delimiter.setText(file_delimiter)
                 self.ui.custom_file_delimiter.setEnabled(True)
+
+            # set default path to output file
+            input_file_split, ending = self.ui.file_path.toPlainText().rsplit('.', 1)
+            output_file = input_file_split + '.bedrmod'
+            self.ui.outfile_path.setText(output_file)
 
     @QtCore.Slot()
     def select_output_file(self):
@@ -207,34 +213,22 @@ class Controller:
                 .columns.tolist()
             self.update_columns_selection()
 
-    def done_message(self):
+    def done_message(self, success):
         msg = QMessageBox()
-        msg.setWindowTitle("Conversion Finished!")
-        msg.setText(f"The conversion of {self.ui.file_path.toPlainText()} into {self.ui.outfile_path.toPlainText} is finished!")
+
+        if success == "Done":
+            msg.setWindowTitle("Conversion Finished!")
+            msg.setText(f"The conversion of {self.ui.file_path.toPlainText()} into {self.ui.outfile_path.toPlainText()} is finished!")
+        elif success == "Error":
+            msg.setWindowTitle("Error!")
+            msg.setText(f"An Error occured during the the conversion of {self.ui.file_path.toPlainText()} into "
+                        f"{self.ui.outfile_path.toPlainText()}. Check the input values and try again.")
         close_button = msg.addButton("Close", QMessageBox.ButtonRole.AcceptRole)
 
         close_button.clicked.connect(msg.accept)
         msg.exec()
 
     def convert2bedrmod(self):
-        print(f"input file path: {self.ui.file_path.toPlainText()}")
-        print(f"config yaml path: {self.ui.config_file_path.toPlainText()}")
-        print(f"output file path: {self.ui.outfile_path.toPlainText()}")
-        print(f"chrom column: {self.ui.ref_seg.currentText()}")
-        print(f"position column: {self.ui.pos.currentText()}")
-        print(f"0 indexed? {self.ui.index_0_button.isChecked()}")
-        print(f"1 indexed? {self.ui.index_1_button.isChecked()}")
-        print(f"modification info: {self.ui.modi.currentText()}")
-        print(f"custom modificaiton? {self.ui.modi_button.isChecked()}")
-        print(f"strand column {self.ui.strand.currentText()}")
-        print(f"score column {self.ui.score.currentText()}")
-        print(f"coverage column: {self.ui.coverage.currentText()}")
-        print(f"frequency column: {self.ui.frequency.currentText()}")
-        print(f"frequency function: {self.ui.frequency_function.toPlainText()}")
-        print(f"score function: {self.ui.score_function.toPlainText()}")
-        print(f"coverage function: {self.ui.coverage_function.toPlainText()}")
-        print(f"delimiter: {self.delimiter}")
-
         # as the input file can also be written directly into the field, check if it exists
         input_file = self.ui.file_path.toPlainText()
         if not os.path.exists(input_file):
@@ -248,7 +242,6 @@ class Controller:
                   f"Please make sure you selected a valid config file and try again.")
             return
 
-         # how to handle outfile?
         output_file = self.ui.outfile_path.toPlainText()
 
         # check delimiter of file.
@@ -307,12 +300,31 @@ class Controller:
         if self.frequency_func:
             self.frequency_func = funcify("lambda frequency: " + self.frequency_func)
 
-        df2bedRMod(df, config_file, output_file, ref_seg=ref_seg, start=pos, start_function=self.start_func, modi=modi,
+        print(f"input file path: {self.ui.file_path.toPlainText()}")
+        print(f"config yaml path: {self.ui.config_file_path.toPlainText()}")
+        print(f"output file path: {self.ui.outfile_path.toPlainText()}")
+        print(f"chrom column: {self.ui.ref_seg.currentText()}")
+        print(f"position column: {self.ui.pos.currentText()}")
+        print(f"0 indexed? {self.ui.index_0_button.isChecked()}")
+        print(f"1 indexed? {self.ui.index_1_button.isChecked()}")
+        print(f"modification info: {self.ui.modi.currentText()}")
+        print(f"custom modificaiton? {self.ui.modi_button.isChecked()}")
+        print(f"strand column {self.ui.strand.currentText()}")
+        print(f"score column {self.ui.score.currentText()}")
+        print(f"coverage column: {self.ui.coverage.currentText()}")
+        print(f"frequency column: {self.ui.frequency.currentText()}")
+        print(f"frequency function: {self.ui.frequency_function.toPlainText()}")
+        print(f"score function: {self.ui.score_function.toPlainText()}")
+        print(f"coverage function: {self.ui.coverage_function.toPlainText()}")
+        print(f"delimiter: {self.delimiter}")
+
+        function_success = df2bedRMod(df, config_file, output_file, ref_seg=ref_seg, start=pos,
+                                      start_function=self.start_func, modi=modi,
                    modi_column=modi_button_check, score=score, score_function=self.score_func, strand=strand,
                    coverage=cov, coverage_function=self.coverage_func, frequency=freq,
-                   frequency_function=self.frequency_func)
+                   frequency_function=self.frequency_func, from_gui=True)
 
-        self.done_message()
+        self.done_message(function_success)
 
     def run(self):
         self.window.show()
