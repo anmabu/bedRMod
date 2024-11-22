@@ -2,7 +2,7 @@ import yaml
 
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow, QMenu
 
 
 class NewConfigWindow(QWidget):
@@ -33,13 +33,22 @@ class NewConfigWindow(QWidget):
         with open(self.file_path, 'w') as new_file:
             new_file.write(content)
         self.close()
+
 class MainWindow(QMainWindow):
-    def __init__(self, controller):
+    def __init__(self, bedrmodwidget):
         super().__init__()
 
-        self.controller = controller
-        self.centralWidget = bedRModWidget(self.controller)
-        self.setCentralWidget(self.centralWidget)
+        self.setCentralWidget(bedrmodwidget)
+
+        self.setWindowTitle("Convert to bedRMod")
+
+        self._createMenuBar()
+
+    def _createMenuBar(self):
+        menubar = QMenuBar(self)
+        helpMenu = QMenu('How to', self)
+        menubar.addMenu(helpMenu)
+        self.setMenuBar(menubar)
 
 class bedRModWidget(QWidget):
     def __init__(self, controller):
@@ -83,7 +92,7 @@ class bedRModWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        bedRModWidget.setWindowTitle(self, "Convert to bedRMod")
+        # bedRModWidget.setWindowTitle(self, "Convert to bedRMod")
 
         self.info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         self.info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)

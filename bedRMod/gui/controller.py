@@ -14,9 +14,9 @@ from bedRMod.helper import parse_excel_sheetnames, write_bioinformatics_keys, re
 class Controller:
     def __init__(self):
         self.app = QApplication([])
-        self.window = MainWindow(self)
 
         self.ui = bedRModWidget(self)
+        self.window = MainWindow(self.ui)
 
         # set default values for Window
         self.columns = None
