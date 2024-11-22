@@ -273,7 +273,6 @@ class MainWindow(QWidget):
 
         # delimiter stuff
         self.layout.addWidget(delimiter_label, 4, 0)
-        # layout.addWidget(self.delimiter, 4, 1)
         self.layout.addWidget(self.xlsx_file, 4, 1, 1, 1)
         self.layout.addWidget(self.custom_file_type, 4, 2, 1, 1)
         self.layout.addWidget(self.custom_file_delimiter, 4, 3, 1, 1)

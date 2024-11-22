@@ -115,7 +115,7 @@ class Controller:
             self.update_function_selection(file_path)
 
     @QtCore.Slot()
-    def onIndexButtonToggled(self):
+    def on_index_button_toggled(self):
         if self.ui.index_0_button.isChecked():
             print(f"value index 0: {self.ui.index_0_button.isChecked()}")
         elif self.ui.index_1_button.isChecked():
