@@ -1,9 +1,13 @@
 import pytest
+from pathlib import Path
 import pandas as pd
 import filecmp
 
 from bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
 
+
+test_dir = Path(__file__).parent
+print(test_dir)
 
 def test_parse_row_working_example():
     columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness',
@@ -48,10 +52,10 @@ def test_df2bedrmod():
         return round(score / cov)
 
     df = pd.DataFrame(data, columns=columns)
-    df2bedRMod(df, "test_config.yaml", "test_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
+    df2bedRMod(df, f"{test_dir}/test_config.yaml", f"{test_dir}/test_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
                modi="name", modi_column=True, score=["score_column", "coverage_col"], score_function=score_func,
                strand="strandedness", coverage="coverage_col", frequency="frequency_col")
-    assert filecmp.cmp("test_static_df2bedrmod.bedrmod", "test_df2bedrmod.bedrmod")
+    assert filecmp.cmp(f"{test_dir}/test_static_df2bedrmod.bedrmod", f"{test_dir}/test_df2bedrmod.bedrmod")
 
 
 def test_csv2bedrmod():
