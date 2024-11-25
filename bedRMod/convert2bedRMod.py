@@ -1,6 +1,11 @@
 import os
 import pandas as pd
-import yaml
+# import yaml
+
+from ruamel.yaml import YAML
+
+yaml = YAML(typ='safe')
+yaml.preserve_quotes = True 
 
 from bedRMod.helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
                     check_value_range)
@@ -136,7 +141,8 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    config = yaml.safe_load(open(config_yaml, "r"))
+    #config = yaml.safe_load(open(config_yaml, "r"))
+    config = yaml.load(open(config_yaml, "r"))
 
     colnames = file.columns
     try:
@@ -196,7 +202,8 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    config = yaml.safe_load(open(config_yaml, "r"))
+    # config = yaml.safe_load(open(config_yaml, "r"))
+    config = yaml.load(open(config_yaml, "r"))
 
     colnames = df.columns
     try:
