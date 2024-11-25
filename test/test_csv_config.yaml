@@ -1,0 +1,15 @@
+options:
+  modification_type: RNA          # required, always RNA in bedRMod format
+  organism: 9606                  # required, NCBI taxid
+  assembly: GRCh38                # required, genome/transcriptome assembly note
+  annotation_source: Ensemble     # required
+  annotation_version: 93          # required
+  sequencing_platform: Illumina NovaSeq 6000
+  basecalling: test_basecalling.cfg
+  bioinformatics_workflow: https://github.com/anmabu/bedRMod
+  experiment: https://doi.org/test
+  external_source: GEO;GSETEST
+  methods: TEST
+  references:
+    pubmed_id: '12345678'
+  conversion_information: rgb value in df is ignored and calculated directly
