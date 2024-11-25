@@ -7,7 +7,6 @@ from bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
 
 
 test_dir = Path(__file__).parent
-print(test_dir)
 
 def test_parse_row_working_example():
     columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness',
@@ -77,10 +76,10 @@ def test_csv2bedrmod():
     def start_func(param):
         return param - 1
 
-    csv2bedRMod("test_csv2bedrmod.csv", "test_config.yaml", ref_seg="chrom", start="start_col",
+    csv2bedRMod(f"{test_dir}/test_csv2bedrmod.csv", f"{test_dir}/test_csv_config.yaml", ref_seg="chrom", start="start_col",
                 start_function=start_func, modi="name", modi_column=True, score="score_column",
                 strand="strandedness", coverage="coverage_col", coverage_function=cov_func,
                 frequency="frequency_col")
-    assert filecmp.cmp("test_static_csv2bedrmod.bedrmod", "test_csv2bedrmod.bedrmod")
+    assert filecmp.cmp(f"{test_dir}/test_static_csv2bedrmod.bedrmod", f"{test_dir}/test_csv2bedrmod.bedrmod")
 
 
