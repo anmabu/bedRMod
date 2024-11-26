@@ -1,12 +1,9 @@
-from itertools import dropwhile
-
 import pytest
 from pathlib import Path
 import pandas as pd
 import filecmp
 
 from bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
-
 
 test_dir = Path(__file__).parent
 
