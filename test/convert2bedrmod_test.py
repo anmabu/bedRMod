@@ -1,4 +1,3 @@
-import pytest
 from pathlib import Path
 import pandas as pd
 import filecmp
@@ -6,6 +5,7 @@ import filecmp
 from bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
 
 test_dir = Path(__file__).parent
+
 
 def test_parse_row_working_example():
     columns = ['chrom', 'start_col', 'end', 'name', 'score_column', 'strandedness',
