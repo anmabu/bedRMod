@@ -1,3 +1,5 @@
+from itertools import dropwhile
+
 import pytest
 from pathlib import Path
 import pandas as pd
@@ -68,7 +70,7 @@ def test_csv2bedrmod():
         ['chrM', 5001, 5002, 'm3C', 920, '-', 5001, 5002, '0', 23, 65]
     ]
     df = pd.DataFrame(data, columns=columns)
-    df.to_csv("test_csv2bedrmod.csv")
+    df.to_csv("test_csv2bedrmod.csv", index=False)
 
     def cov_func(param):
         return param * 2
