@@ -4,11 +4,10 @@ import pandas as pd
 import ruamel
 from ruamel.yaml import YAML
 
-
-
 yaml = YAML()  # don't enable safe mode as this erases the comments!
 yaml.default_flow_style = False
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
+
 
 EUF_VERSION = "bedRModv1.8"
 
