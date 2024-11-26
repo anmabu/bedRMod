@@ -1,7 +1,6 @@
 import csv
 import os
 import pandas as pd
-from pathlib import Path
 
 from PySide6 import QtCore
 from PySide6.QtWidgets import QFileDialog, QLabel, QApplication, QMessageBox
@@ -188,7 +187,7 @@ class Controller:
         :param file_path:
         :return:
         """
-        score_f, cov_f, func_f = read_bioinformatics_keys(file_path)
+        workflow, cov_f, func_f, score_f = read_bioinformatics_keys(file_path)
         if score_f:
             self.ui.score_function.setText(score_f)
         if cov_f:
@@ -308,9 +307,9 @@ class Controller:
         print(f"0 indexed? {self.ui.index_0_button.isChecked()}")
         print(f"1 indexed? {self.ui.index_1_button.isChecked()}")
         print(f"modification info: {self.ui.modi.currentText()}")
-        print(f"custom modificaiton? {self.ui.modi_button.isChecked()}")
-        print(f"strand column {self.ui.strand.currentText()}")
-        print(f"score column {self.ui.score.currentText()}")
+        print(f"custom modification? {self.ui.modi_button.isChecked()}")
+        print(f"strand column: {self.ui.strand.currentText()}")
+        print(f"score column: {self.ui.score.currentText()}")
         print(f"coverage column: {self.ui.coverage.currentText()}")
         print(f"frequency column: {self.ui.frequency.currentText()}")
         print(f"frequency function: {self.ui.frequency_function.toPlainText()}")
