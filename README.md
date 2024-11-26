@@ -87,7 +87,7 @@ Pandas inferes the delimiter of the file. To avoid ambiguity it can be passed as
 If the keyword-argument `output_file` is unused, the .bedrmod file will be written to the same directory as the input file. 
 ```angular2html
 # continuing the code above
-df.to_csv("test_csv2bedrmod.csv")
+df.to_csv("test_csv2bedrmod.csv", index=False)
 
 def cov_func(param):
     """ adapt values in coverage column to reflect true coverage value """
