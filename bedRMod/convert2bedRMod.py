@@ -1,14 +1,12 @@
 import os
 import pandas as pd
-# import yaml
 
 from ruamel.yaml import YAML
 
-yaml = YAML(typ='safe')
-yaml.preserve_quotes = True 
+yaml = YAML()
+yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
-from bedRMod.helper import (write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys,
-                    check_value_range)
+from bedRMod.helper import write_header, get_modification_color, check_value_range
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
