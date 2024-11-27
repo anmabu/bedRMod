@@ -1,9 +1,12 @@
-import yaml
-
 from PySide6 import QtWidgets
+from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow, QMenu
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow, QMenu, QMessageBox
+from ruamel.yaml import YAML
 
+yaml = YAML()
+yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
+yaml.default_flow_style = False
 
 class NewConfigWindow(QWidget):
     def __init__(self, file_path):
@@ -11,8 +14,8 @@ class NewConfigWindow(QWidget):
         NewConfigWindow.setWindowTitle(self, f"{file_path}")
         self.file_path = file_path
         self.text_edit = QTextEdit()
-        config = yaml.safe_load(open("../test/test_config.yaml", "r"))
-        formatted_yaml = yaml.dump(config, default_flow_style=False, sort_keys=False)
+        config = yaml.load(open("../test/test_config.yaml", "r"))
+        formatted_yaml = yaml.dump(config)
         self.text_edit.setText(formatted_yaml)
         self.initUI()
 
@@ -46,10 +49,16 @@ class MainWindow(QMainWindow):
 
     def _createMenuBar(self):
         menubar = QMenuBar(self)
-        helpMenu = QMenu('How to', self)
-        menubar.addMenu(helpMenu)
+        help_menu = QMenu('How to', self)
+        menubar.addMenu(help_menu)
+        # create popup when clicking
+        help_menu.aboutToShow.connect(self.show_help_popup)
         self.setMenuBar(menubar)
 
+    def show_help_popup(self):
+        QMessageBox.information(self, "About", "This is a simple PyQt application.\n\n"
+                                               "You can open and save files using the File menu.\n"
+                                               "For more information, check the documentation.")
 class bedRModWidget(QWidget):
     def __init__(self, controller):
         super().__init__()
@@ -92,8 +101,6 @@ class bedRModWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        # bedRModWidget.setWindowTitle(self, "Convert to bedRMod")
-
         self.info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         self.info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         font_metrics = self.info_text.fontMetrics()
@@ -109,7 +116,6 @@ class bedRModWidget(QWidget):
         self.file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.file_path.setText("inputfile.csv")
         self.file_path.setFixedHeight(line_height * 1.6)
-        # self.file_path.setStyleSheet("background-color: white")
         self.input_file = QPushButton("...")
         self.input_file.clicked.connect(self.controller.select_input_file)
 
@@ -119,7 +125,6 @@ class bedRModWidget(QWidget):
         self.config_file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.config_file_path.setText("config.yaml")
         self.config_file_path.setFixedHeight(line_height * 1.6)
-        # self.config_file_path.setStyleSheet("background-color: white")
         self.config_file = QPushButton("...")
         self.config_file.clicked.connect(self.controller.select_config_file)
         self.new_config_file = QPushButton("New Config file")
@@ -131,7 +136,6 @@ class bedRModWidget(QWidget):
         self.outfile_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.outfile_path.setText("outfile.bedrmod")
         self.outfile_path.setFixedHeight(line_height * 1.6)
-        # self.file_path.setStyleSheet("background-color: white")
         self.output_file = QPushButton("...")
         self.output_file.clicked.connect(self.controller.select_output_file)
 
@@ -160,8 +164,6 @@ class bedRModWidget(QWidget):
         ref_seg_label.setToolTip("Select column containing reference segment information. "
                                  "One reference segment per row in the file.")
         self.ref_seg = QComboBox()
-        # self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
 
         # pos
@@ -169,8 +171,7 @@ class bedRModWidget(QWidget):
         pos_label.setToolTip("Select column containing position of modification. "
                              "Only a single position per row in this column.")
         self.pos = QComboBox()
-        # self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.pos.setText('start_col')
+
         self.pos.setFixedHeight(line_height * 1.6)
         self.index_0_button = QRadioButton("0 indexed data")
         self.index_1_button = QRadioButton("1 indexed data")
@@ -178,8 +179,7 @@ class bedRModWidget(QWidget):
         self.button_group.addButton(self.index_0_button)
         self.button_group.addButton(self.index_1_button)
         self.index_0_button.setChecked(True)
-        # self.index_0_button.toggled.connect(self.onIndexButtonToggled)
-        # self.index_1_button.toggled.connect(self.onIndexButtonToggled)
+
 
         # modification type
         modi_label = QLabel("Modification type / column")
@@ -201,8 +201,6 @@ class bedRModWidget(QWidget):
                                "given values can be passed."
                                "Also a single integer can be passed as a fixed score value for the whole file.")
         self.score = QComboBox()
-        # self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.score.setText(self.controller.score)
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
@@ -231,8 +229,6 @@ class bedRModWidget(QWidget):
         coverage_label = QLabel("Coverage")
         coverage_label.setToolTip("Select the column that contains the coverage information.")
         self.coverage = QComboBox()
-        # self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.coverage.setText('coverage_col')
         self.coverage.setFixedHeight(line_height * 1.6)
         self.coverage_function = QTextEdit()
         self.coverage_function.setText("Coverage function")
@@ -248,8 +244,6 @@ class bedRModWidget(QWidget):
                                    "If the modification frequency is not stored but can be calculated, pass"
                                    "the function to calculate it in the last field. ")
         self.frequency = QComboBox()
-        # self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.frequency.setText('frequency_col')
         self.frequency.setFixedHeight(line_height * 1.6)
         self.frequency_function = QTextEdit()
         self.frequency_function.setText("Frequency function")
