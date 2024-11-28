@@ -56,9 +56,18 @@ class MainWindow(QMainWindow):
         self.setMenuBar(menubar)
 
     def show_help_popup(self):
-        QMessageBox.information(self, "About", "This is a simple PyQt application.\n\n"
-                                               "You can open and save files using the File menu.\n"
-                                               "For more information, check the documentation.")
+        QMessageBox.information(self, "How to", "This tool converts files that contain RNA modification information into bedRMod format. \n\n"
+                                                "The first step is to select the input file. The output file is automatically created in the same directory as the input file if not chosen otherwise. \n"
+                                                "Next, a configuration file is either selected or created from a template. This config file contains metainformation on the RNA modification data. \n\n"
+                                                "The first selection option is then the type (e.g. csv, xlsx, etc.) of the input file. This should be detected automatically, but can be corrected manually. \n"
+                                                "When the first row of the input file contains column names, the column names are read and can be selected in a dropdown fashion for conversion. \n"
+                                                "Some adaptions can be done to the data to fit the bedRMod specifications. "
+                                                "These includes selecting whether the position in the input file are 0- or 1-index and whether there is a column that contains the RNA modifications or whether one modification is presented in the whole file. "
+                                                "The same principle applies to the 'strand' value of the data. \n"
+                                                "For the columns of 'score', 'coverage' and 'frequency' functions can be passed into the respective fields. \n\n"
+                                                "Once all fields are filled the 'Convert!' button converts the input file into bedRMod format. "
+                                                "A popup appears, indicating whether the conversion was successful or not."  )
+
 class bedRModWidget(QWidget):
     def __init__(self, controller):
         super().__init__()
