@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bedRMod"
+version = "1.8.0-rc1"
+requires-python = ">=3.9"
+authors = [
+  { name="Anne Busch", email="anne.busch@uni-mainz.de" },
+]
+description = "Converting RNA modification data into bedRMod format."
+readme = { file = "README.md", content-type = "text/markdown" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = ["numpy>=1.24.0", "pandas>=2.2.2", "PySide6>=6.6.1", "ruamel.yaml==0.18.6"]
+
+[project.urls]
+Homepage = "https://github.com/anmabu/bedRMod"
+Issues = "https://github.com/anmabu/bedRMod/issues"
+
+[tool.hatch.build]
+debug = true
+include = [
+    "bedRMod/**", 
+    "README.md", 
+    "LICENSE",
+    "bedRModv1.8.pdf", 
+]
+
+[project.gui-scripts]
+bedRMod-gui = "bedRMod.gui.main:start_gui"

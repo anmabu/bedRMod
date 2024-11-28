@@ -1,14 +1,16 @@
-from convert2bedRMod.helper import write_bioinformatics_keys, read_bioinformatics_keys
-from convert2bedRMod.helper import funcify
+from bedRMod.helper import write_bioinformatics_keys, read_bioinformatics_keys
+from bedRMod.helper import funcify
 
 
 def test_bioinformatics_keys():
+    workflow = "https://github.com/anmabu/bedRMod"
     score_func_str = "round(-log10(score))"
     coverage_func_str = "round(coverage)"
     frequency_func_str = "round(frequency)"
-    write_bioinformatics_keys("test_config.yaml", score_function=score_func_str,
+    write_bioinformatics_keys("test_config.yaml", workflow=workflow, score_function=score_func_str,
                               coverage_function=coverage_func_str, frequency_function=frequency_func_str)
-    score_f, cov_f, freq_f = read_bioinformatics_keys("test_config.yaml")
+    workflow, cov_f, freq_f, score_f = read_bioinformatics_keys("test_config.yaml")
+    assert workflow == workflow
     assert score_f == score_func_str
     assert cov_f == coverage_func_str
     assert freq_f == frequency_func_str

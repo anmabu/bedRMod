@@ -1,8 +1,12 @@
 import os
 import pandas as pd
-import yaml
 
-from convert2bedRMod.helper import write_header, get_modification_color, parse_excel_sheetnames, write_bioinformatics_keys
+from ruamel.yaml import YAML
+
+yaml = YAML()
+yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
+
+from bedRMod.helper import write_header, get_modification_color, check_value_range
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -83,7 +87,6 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
             frequency_col = round(frequency)
     thick_start = start_col
     thick_end = end
-
     item_rgb = get_modification_color(name)
     result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
@@ -136,7 +139,8 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    config = yaml.safe_load(open(config_yaml, "r"))
+    #config = yaml.safe_load(open(config_yaml, "r"))
+    config = yaml.load(open(config_yaml, "r"))
 
     colnames = file.columns
     try:
@@ -163,7 +167,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
             
 def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A",
                modi_column=False, score=None, score_function=None, strand="strand", coverage=None,
-               coverage_function=None, frequency=None, frequency_function=None):
+               coverage_function=None, frequency=None, frequency_function=None, from_gui=False):
 
     """
     converts arbitrary pandas_dataframes into bedRMod format.
@@ -187,19 +191,17 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     :param coverage_function:
     :param frequency:
     :param frequency_function:
-
+    :param from_gui: (bool) indicates whether it was called from the GUI.
     :return:
     """
-    # file = pd.read_csv(input_file, delimiter=delimiter)
-    # file = pd.read_excel(input_file, header=3)
 
     path, ending = os.path.splitext(output_file)
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    # check_bioinformatics_keys(config_yaml, score_function, coverage_function, frequency_function)
-    config = yaml.safe_load(open(config_yaml, "r"))
+    # config = yaml.safe_load(open(config_yaml, "r"))
+    config = yaml.load(open(config_yaml, "r"))
 
     colnames = df.columns
     try:
@@ -216,8 +218,14 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
                 if not any(item is None for item in result) or (result is not None):
                     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
                         coverage_col, frequency_col = result
+                    check_value_range(result)
                     f.write(f'{chrom}\t{start_col}\t{end}\t{name}\t{score_column}\t{strandedness}\t{thick_start}'
                             f'\t{thick_end}\t{item_rgb}\t{coverage_col}\t{frequency_col}\n')
             print("Done!")
+            if from_gui:
+                return "Done"
     except TypeError:
+        print("Something went wrong! The bedrmod file was not generated!")
         os.remove(output_file)
+        if from_gui:
+            return "Error"

@@ -5,12 +5,8 @@ options:
   annotation_source: Ensemble     # required
   annotation_version: 93          # required
   sequencing_platform: Illumina NovaSeq 6000
-  basecalling: ''
-  bioinformatics_workflow:
-    workflow: https://github.com/anmabu/bedRMod
-    coverage_function: round(coverage)
-    frequency_function: round(frequency)
-    score_function: round(-log10(score))
+  basecalling: test_basecalling.cfg
+  bioinformatics_workflow: https://github.com/anmabu/bedRMod
   experiment: https://doi.org/test
   external_source: GEO;GSETEST
   methods: TEST

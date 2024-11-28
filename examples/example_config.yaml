@@ -1,9 +1,9 @@
 options:
-  modification_type: RNA          # required, always RNA in bedRMod format
-  organism: 9606                  # required, NCBI taxid
-  assembly: GRCh38                # required, genome/transcriptome assembly note
-  annotation_source: Ensemble     # required
-  annotation_version: 93          # required
+  modification_type: RNA
+  organism: 9606
+  assembly: GRCh38
+  annotation_source: Ensemble
+  annotation_version: 93
   sequencing_platform: Illumina NovaSeq 6000
   basecalling: ''
   bioinformatics_workflow:

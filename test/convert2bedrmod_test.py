@@ -1,8 +1,10 @@
-import pytest
+from pathlib import Path
 import pandas as pd
 import filecmp
 
-from convert2bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
+from bedRMod.convert2bedRMod import csv2bedRMod, df2bedRMod, parse_row
+
+test_dir = Path(__file__).parent
 
 
 def test_parse_row_working_example():
@@ -48,10 +50,10 @@ def test_df2bedrmod():
         return round(score / cov)
 
     df = pd.DataFrame(data, columns=columns)
-    df2bedRMod(df, "test_config.yaml", "test_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
+    df2bedRMod(df, f"{test_dir}/test_config.yaml", f"{test_dir}/test_df2bedrmod.bedrmod", ref_seg="chrom", start="start_col",
                modi="name", modi_column=True, score=["score_column", "coverage_col"], score_function=score_func,
                strand="strandedness", coverage="coverage_col", frequency="frequency_col")
-    assert filecmp.cmp("test_static_df2bedrmod.bedrmod", "test_df2bedrmod.bedrmod")
+    assert filecmp.cmp(f"{test_dir}/test_static_df2bedrmod.bedrmod", f"{test_dir}/test_df2bedrmod.bedrmod")
 
 
 def test_csv2bedrmod():
@@ -65,7 +67,7 @@ def test_csv2bedrmod():
         ['chrM', 5001, 5002, 'm3C', 920, '-', 5001, 5002, '0', 23, 65]
     ]
     df = pd.DataFrame(data, columns=columns)
-    df.to_csv("test_csv2bedrmod.csv")
+    df.to_csv("test_csv2bedrmod.csv", index=False)
 
     def cov_func(param):
         return param * 2
@@ -73,10 +75,10 @@ def test_csv2bedrmod():
     def start_func(param):
         return param - 1
 
-    csv2bedRMod("test_csv2bedrmod.csv", "test_config.yaml", ref_seg="chrom", start="start_col",
+    csv2bedRMod(f"{test_dir}/test_csv2bedrmod.csv", f"{test_dir}/test_csv_config.yaml", ref_seg="chrom", start="start_col",
                 start_function=start_func, modi="name", modi_column=True, score="score_column",
                 strand="strandedness", coverage="coverage_col", coverage_function=cov_func,
                 frequency="frequency_col")
-    assert filecmp.cmp("test_static_csv2bedrmod.bedrmod", "test_csv2bedrmod.bedrmod")
+    assert filecmp.cmp(f"{test_dir}/test_static_csv2bedrmod.bedrmod", f"{test_dir}/test_csv2bedrmod.bedrmod")
 
 

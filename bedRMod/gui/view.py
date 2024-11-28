@@ -1,13 +1,12 @@
-import os
-import sys
-import yaml
+from PySide6 import QtWidgets
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTextEdit, QFrame, QRadioButton, \
+    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox, QMenuBar, QMainWindow, QMenu, QMessageBox
+from ruamel.yaml import YAML
 
-from PySide6 import QtCore, QtWidgets
-from PySide6.QtWidgets import QLabel, QLineEdit, QFileDialog, QPushButton, QTextEdit, QFrame, QRadioButton, \
-    QWidget, QVBoxLayout, QButtonGroup, QComboBox, QCheckBox
-
-from controller import Controller
-
+yaml = YAML()
+yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
+yaml.default_flow_style = False
 
 class NewConfigWindow(QWidget):
     def __init__(self, file_path):
@@ -15,8 +14,8 @@ class NewConfigWindow(QWidget):
         NewConfigWindow.setWindowTitle(self, f"{file_path}")
         self.file_path = file_path
         self.text_edit = QTextEdit()
-        config = yaml.safe_load(open("../test/test_config.yaml", "r"))
-        formatted_yaml = yaml.dump(config, default_flow_style=False, sort_keys=False)
+        config = yaml.load(open("../test/test_config.yaml", "r"))
+        formatted_yaml = yaml.dump(config)
         self.text_edit.setText(formatted_yaml)
         self.initUI()
 
@@ -38,12 +37,42 @@ class NewConfigWindow(QWidget):
             new_file.write(content)
         self.close()
 
-
-class MainWindow(QWidget):
-    def __init__(self):
+class MainWindow(QMainWindow):
+    def __init__(self, bedrmodwidget):
         super().__init__()
 
-        self.controller = Controller(self)
+        self.setCentralWidget(bedrmodwidget)
+
+        self.setWindowTitle("Convert to bedRMod")
+
+        self._createMenuBar()
+
+    def _createMenuBar(self):
+        menubar = QMenuBar(self)
+        help_menu = QMenu('How to', self)
+        menubar.addMenu(help_menu)
+        # create popup when clicking
+        help_menu.aboutToShow.connect(self.show_help_popup)
+        self.setMenuBar(menubar)
+
+    def show_help_popup(self):
+        QMessageBox.information(self, "How to", "This tool converts files that contain RNA modification information into bedRMod format. \n\n"
+                                                "The first step is to select the input file. The output file is automatically created in the same directory as the input file if not chosen otherwise. \n"
+                                                "Next, a configuration file is either selected or created from a template. This config file contains metainformation on the RNA modification data. \n\n"
+                                                "The first selection option is then the type (e.g. csv, xlsx, etc.) of the input file. This should be detected automatically, but can be corrected manually. \n"
+                                                "When the first row of the input file contains column names, the column names are read and can be selected in a dropdown fashion for conversion. \n"
+                                                "Some adaptions can be done to the data to fit the bedRMod specifications. "
+                                                "These includes selecting whether the position in the input file are 0- or 1-index and whether there is a column that contains the RNA modifications or whether one modification is presented in the whole file. "
+                                                "The same principle applies to the 'strand' value of the data. \n"
+                                                "For the columns of 'score', 'coverage' and 'frequency' functions can be passed into the respective fields. \n\n"
+                                                "Once all fields are filled the 'Convert!' button converts the input file into bedRMod format. "
+                                                "A popup appears, indicating whether the conversion was successful or not."  )
+
+class bedRModWidget(QWidget):
+    def __init__(self, controller):
+        super().__init__()
+
+        self.controller = controller
 
         self.file_path = None
         self.input_file = None
@@ -81,8 +110,6 @@ class MainWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        MainWindow.setWindowTitle(self, "Convert to bedRMod")
-
         self.info_text = QTextEdit("some info what to do here, lorem ipsum dolor et amit")
         self.info_text.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         font_metrics = self.info_text.fontMetrics()
@@ -98,9 +125,8 @@ class MainWindow(QWidget):
         self.file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.file_path.setText("inputfile.csv")
         self.file_path.setFixedHeight(line_height * 1.6)
-        # self.file_path.setStyleSheet("background-color: white")
         self.input_file = QPushButton("...")
-        self.input_file.clicked.connect(self.select_input_file)
+        self.input_file.clicked.connect(self.controller.select_input_file)
 
         # config file
         config_label = QLabel("Select config file:")
@@ -108,11 +134,10 @@ class MainWindow(QWidget):
         self.config_file_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.config_file_path.setText("config.yaml")
         self.config_file_path.setFixedHeight(line_height * 1.6)
-        # self.config_file_path.setStyleSheet("background-color: white")
         self.config_file = QPushButton("...")
-        self.config_file.clicked.connect(self.select_config_file)
+        self.config_file.clicked.connect(self.controller.select_config_file)
         self.new_config_file = QPushButton("New Config file")
-        self.new_config_file.clicked.connect(self.create_new_file)
+        self.new_config_file.clicked.connect(self.controller.create_new_file)
 
         # output file
         output_label = QLabel("Select output file path:")
@@ -120,9 +145,8 @@ class MainWindow(QWidget):
         self.outfile_path.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.outfile_path.setText("outfile.bedrmod")
         self.outfile_path.setFixedHeight(line_height * 1.6)
-        # self.file_path.setStyleSheet("background-color: white")
         self.output_file = QPushButton("...")
-        self.output_file.clicked.connect(self.select_output_file)
+        self.output_file.clicked.connect(self.controller.select_output_file)
 
         # delimiter info
         delimiter_label = QLabel("Select file type / column delimiter")
@@ -133,12 +157,13 @@ class MainWindow(QWidget):
         self.custom_file_type = QRadioButton("custom delimiter")
         self.delimiter.addButton(self.custom_file_type, 2)
         self.custom_file_delimiter = QLineEdit()
-        self.custom_file_delimiter.setText("e.g ',', '\\t'")
+        self.custom_file_delimiter.setText("e.g , or \\t")
         self.custom_file_delimiter.setEnabled(False)  # only enable if custom delimiter is selected
 
         self.custom_file_type.setChecked(True)
-        self.xlsx_file.toggled.connect(self.on_delimiter_button_toggled)
-        self.custom_file_type.toggled.connect(self.on_delimiter_button_toggled)
+        self.custom_file_delimiter.setEnabled(True)
+        self.xlsx_file.toggled.connect(self.controller.on_delimiter_button_toggled)
+        self.custom_file_type.toggled.connect(self.controller.on_delimiter_button_toggled)
 
         self.sheet_selector = QComboBox()
         self.sheet_selector.currentIndexChanged.connect(self.controller.on_sheet_selection)
@@ -148,8 +173,6 @@ class MainWindow(QWidget):
         ref_seg_label.setToolTip("Select column containing reference segment information. "
                                  "One reference segment per row in the file.")
         self.ref_seg = QComboBox()
-        # self.ref_seg.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.ref_seg.setText('chrom')
         self.ref_seg.setFixedHeight(line_height * 1.6)
 
         # pos
@@ -157,8 +180,7 @@ class MainWindow(QWidget):
         pos_label.setToolTip("Select column containing position of modification. "
                              "Only a single position per row in this column.")
         self.pos = QComboBox()
-        # self.pos.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.pos.setText('start_col')
+
         self.pos.setFixedHeight(line_height * 1.6)
         self.index_0_button = QRadioButton("0 indexed data")
         self.index_1_button = QRadioButton("1 indexed data")
@@ -166,8 +188,7 @@ class MainWindow(QWidget):
         self.button_group.addButton(self.index_0_button)
         self.button_group.addButton(self.index_1_button)
         self.index_0_button.setChecked(True)
-        # self.index_0_button.toggled.connect(self.onIndexButtonToggled)
-        # self.index_1_button.toggled.connect(self.onIndexButtonToggled)
+
 
         # modification type
         modi_label = QLabel("Modification type / column")
@@ -176,7 +197,7 @@ class MainWindow(QWidget):
         self.modi = QComboBox()
         self.modi.setFixedHeight(line_height * 1.6)
         self.modi_button = QCheckBox("Custom?")
-        self.modi_button.clicked.connect(self.on_custom_modification_toggled)
+        self.modi_button.clicked.connect(self.controller.on_custom_modification_toggled)
         self.modi_custom = QTextEdit()
         self.modi_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.modi_custom.setText("modification")
@@ -189,8 +210,6 @@ class MainWindow(QWidget):
                                "given values can be passed."
                                "Also a single integer can be passed as a fixed score value for the whole file.")
         self.score = QComboBox()
-        # self.score.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.score.setText(self.controller.score)
         self.score.setFixedHeight(line_height * 1.6)
         self.score_function = QTextEdit()
         self.score_function.setText("Score function")
@@ -203,15 +222,15 @@ class MainWindow(QWidget):
         # strand
         strand_label = QLabel("Strandedness / strand column")
         strand_label.setToolTip("Select the column that contains the strand information. If strandedness is the same "
-                                "for the whole file, '+' or '-' will work, too.")
+                                "for the whole file, '+' or '-' will work, too. Use '.' for unknown.")
         self.strand = QComboBox()
         self.strand.setFixedHeight(line_height * 1.6)
         # make group for single button to act independently
 
         self.strand_button = QCheckBox("Custom?")
-        self.strand_button.clicked.connect(self.on_custom_strand_toggled)
+        self.strand_button.clicked.connect(self.controller.on_custom_strand_toggled)
         self.strand_custom = QTextEdit()
-        self.strand_custom.setText("+ or -")
+        self.strand_custom.setText("+ or - or .")
         self.strand_custom.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         self.strand_custom.setFixedHeight(line_height * 1.6)
 
@@ -219,8 +238,6 @@ class MainWindow(QWidget):
         coverage_label = QLabel("Coverage")
         coverage_label.setToolTip("Select the column that contains the coverage information.")
         self.coverage = QComboBox()
-        # self.coverage.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.coverage.setText('coverage_col')
         self.coverage.setFixedHeight(line_height * 1.6)
         self.coverage_function = QTextEdit()
         self.coverage_function.setText("Coverage function")
@@ -236,8 +253,6 @@ class MainWindow(QWidget):
                                    "If the modification frequency is not stored but can be calculated, pass"
                                    "the function to calculate it in the last field. ")
         self.frequency = QComboBox()
-        # self.frequency.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # self.frequency.setText('frequency_col')
         self.frequency.setFixedHeight(line_height * 1.6)
         self.frequency_function = QTextEdit()
         self.frequency_function.setText("Frequency function")
@@ -277,7 +292,6 @@ class MainWindow(QWidget):
 
         # delimiter stuff
         self.layout.addWidget(delimiter_label, 4, 0)
-        # layout.addWidget(self.delimiter, 4, 1)
         self.layout.addWidget(self.xlsx_file, 4, 1, 1, 1)
         self.layout.addWidget(self.custom_file_type, 4, 2, 1, 1)
         self.layout.addWidget(self.custom_file_delimiter, 4, 3, 1, 1)
@@ -324,128 +338,3 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.convert, 13, 0, 1, 4)
 
         self.setLayout(self.layout)
-
-    @QtCore.Slot()
-    def select_input_file(self):
-        pathFile, ok = QFileDialog.getOpenFileName(self,
-                                                   "Open input file",
-                                                   "",
-                                                   "All Files(*)")
-        if pathFile:
-            self.file_path.setText(pathFile)
-            file_type, file_delimiter = self.controller.detect_file_type_delimiter(pathFile)
-            file_endings = (".odf", ".ods", ".odt", ".xlsx", ".xls", ".xlsb")
-
-            if file_type in file_endings:
-                self.xlsx_file.setChecked(True)
-                self.custom_file_type.setChecked(False)
-                self.custom_file_delimiter.setEnabled(False)
-                if self.controller.sheetnames is not None:
-                    self.sheet_selector.addItems(self.controller.sheetnames)
-                    self.sheet_info = QLabel("Select sheet")
-                    self.layout.addWidget(self.sheet_info, 5, 0, 1, 1)
-                    self.layout.addWidget(self.sheet_selector, 5, 1, 1, 3)
-            else:
-                self.xlsx_file.setChecked(False)
-                self.custom_file_type.setChecked(True)
-                if file_delimiter == "\t":
-                    file_delimiter = "\\t"
-                self.custom_file_delimiter.setText(file_delimiter)
-                self.custom_file_delimiter.setEnabled(True)
-
-    @QtCore.Slot()
-    def select_output_file(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        conf_file = QFileDialog()
-        plain_file_path = self.file_path.toPlainText()
-        print(plain_file_path)
-        if plain_file_path:
-            input_dir = os.path.dirname(plain_file_path)
-            conf_file.setDirectory(input_dir)
-            # print(input_dir)
-            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", input_dir,
-                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
-                                                     options=options)
-        else:
-            file_path, _ = conf_file.getSaveFileName(self, "New .bedrmod", ".bedrmod",
-                                                     "BedRMod Files (*.bedrmod);;All Files (*)",
-                                                     options=options)
-        if file_path:
-            if not file_path.endswith(".bedrmod"):
-                self.outfile_path.setText(file_path + ".bedrmod")
-            else:
-                self.outfile_path.setText(file_path)
-
-    @QtCore.Slot()
-    def select_config_file(self):
-        pathFile, ok = QFileDialog.getOpenFileName(self,
-                                                   "Open the config file",
-                                                   "",
-                                                   "All Files(*)")
-        if pathFile:
-            self.config_file_path.setText(pathFile)
-            self.controller.update_function_selection(pathFile)
-
-    @QtCore.Slot()
-    def create_new_file(self):
-        # Ask the user to choose a location and name for the new file
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        conf_file = QFileDialog()
-        file_path, _ = conf_file.getSaveFileName(self, "New config.yaml", ".yaml",
-                                                 "Config Files (*.yaml);;All Files (*)",
-                                                 options=options)
-
-        # file_path = conf_file.exec_()
-        # If the user selected a file, create a new file
-        if file_path:
-            self.editor = NewConfigWindow(file_path)
-            self.editor.show()
-            self.controller.update_function_selection(file_path)
-
-    @QtCore.Slot()
-    def onIndexButtonToggled(self):
-        if self.index_0_button.isChecked():
-            print(f"value index 0: {self.index_0_button.isChecked()}")
-        elif self.index_1_button.isChecked():
-            print(f"value index 1: {self.index_1_button.isChecked()}")
-        pass
-
-    @QtCore.Slot()
-    def on_delimiter_button_toggled(self):
-        if self.xlsx_file.isChecked():
-            self.custom_file_delimiter.setEnabled(False)
-        elif self.custom_file_type.isChecked():
-            self.layout.removeWidget(self.sheet_info)
-            self.layout.removeWidget(self.sheet_selector)
-            self.sheet_selector.setParent(None)
-            self.sheet_info.setParent(None)
-            self.custom_file_delimiter.setEnabled(True)
-
-    @QtCore.Slot()
-    def on_custom_modification_toggled(self):
-        if self.modi_button.isChecked():
-            self.layout.addWidget(self.modi_custom, 8, 3, 1, 1)
-            self.modi_button.setChecked(True)
-        else:
-            self.modi_button.setChecked(False)
-            self.layout.removeWidget(self.modi_custom)
-            self.modi_custom.setParent(None)
-
-    @QtCore.Slot()
-    def on_custom_strand_toggled(self):
-        if self.strand_button.isChecked():
-            self.layout.addWidget(self.strand_custom, 10, 3, 1, 1)
-            self.strand_button.setChecked(True)
-        else:
-            self.strand_button.setChecked(False)
-            self.layout.removeWidget(self.strand_custom)
-            self.strand_custom.setParent(None)
-
-
-def start_gui():
-    app = QtWidgets.QApplication([])
-    widget = MainWindow()
-    widget.show()
-    sys.exit(app.exec())
