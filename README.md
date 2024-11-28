@@ -39,7 +39,7 @@ When starting the GUI, the user has to select the input file, config file and ou
 If a config file does not exist yet, a new one can be created from a template. 
 It is highly recommended for the input file to have a header aka column names in the first row, as the first row is parsed to give selectable options for the required information.
 As the columns cannot be processed further in the GUI, e.g. split a column if there are several values, all more sophisticated operations have to be done on the input file beforehand.
-Minor changes/adaptations of the values in the columnscan still be done in the GUI, though. 
+Minor changes/adaptations of the values in the columns can still be done in the GUI, though. 
 This includes selecting whether the position is 0- or 1-indexed  (counting start from 0 like birthdays or 1 like enumeration).
 If the input file does not contain information on the modification type or the strand these can be set for the whole file, in the GUI.
 Also functions can be passed to adapt score, coverage and frequency e.g. rounding for converting a float to an integer or scaling of the values. 
