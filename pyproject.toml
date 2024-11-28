@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bedRMod"
-version = "1.8.0"
+version = "1.8.0-rc1"
 requires-python = ">=3.9"
 authors = [
   { name="Anne Busch", email="anne.busch@uni-mainz.de" },
