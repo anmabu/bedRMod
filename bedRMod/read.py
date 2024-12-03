@@ -25,9 +25,3 @@ def read_data(file):
 def read_bedRMod(file):
     """reads a bedRMod file an returns a (header, data) tuple"""
     return read_header(file), read_data(file)
-
-if __name__ ==  "__main__":
-    test_file = "/home/anne/Link to Dokumente/PhD/bedRMod/test/test_df2bedrmod.bedrmod"
-    print(read_header("/home/anne/Link to Dokumente/PhD/bedRMod/test/test_df2bedrmod.bedrmod"))
-    print(read_data(test_file))
-    print(read_bedRMod(test_file))
