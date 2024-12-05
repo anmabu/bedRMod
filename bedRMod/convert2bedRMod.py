@@ -6,7 +6,7 @@ from ruamel.yaml import YAML
 yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
-from bedRMod.helper import write_header, get_modification_color, check_value_range
+from bedRMod.helper import write_config_header, get_modification_color, check_value_range
 
 
 def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
@@ -145,7 +145,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
     colnames = file.columns
     try:
         with open(output_file, 'w') as f:
-            header_written = write_header(config, f)
+            header_written = write_config_header(config, f)
             if not header_written:
                 raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
@@ -206,7 +206,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     colnames = df.columns
     try:
         with open(output_file, 'w') as f:
-            header_written = write_header(config, f)
+            header_written = write_config_header(config, f)
             if not header_written:
                 raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"

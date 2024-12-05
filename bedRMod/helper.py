@@ -12,7 +12,7 @@ yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 EUF_VERSION = "bedRModv1.8"
 
 
-def write_header(config, output_file):
+def write_config_header(config, output_file):
     """
     reads information from the config yaml and writes it to the header of the bedMod file.
     the structure of the config file is quite rigid as of now.
