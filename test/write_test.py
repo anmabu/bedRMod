@@ -1,8 +1,8 @@
 import pandas as pd
 from pathlib import Path
 
-from bedRMod.write import write_header, write_data
-from bedRMod.read import read_header, read_data
+from bedRMod import write_header, write_data
+from bedRMod import read_header, read_data
 
 test_dir = Path(__file__).parent
 
