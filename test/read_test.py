@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-from bedRMod.read import read_header, read_data, read_bedRMod
+from bedRMod import read_header, read_data, read_bedRMod
 
 test_dir = Path(__file__).parent
 
