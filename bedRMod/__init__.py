@@ -1,4 +1,4 @@
-__version__ = "1.8.0-rc2"
+__version__ = "1.8.0-rc3"
 
 from .convert2bedRMod import df2bedRMod, csv2bedRMod, parse_row
 from .read import read_header, read_data, read_bedRMod
