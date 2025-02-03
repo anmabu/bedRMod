@@ -14,6 +14,23 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
               frequency_function=None):
     """
     parses a dataframe/csv row and return the values needed for a row in the bedRMod format
+    :param row: dataframe/csv row
+    :param columnnames: list of column names
+    :param ref_seg: column name of column that contains the reference segment/chromosome
+    :param start: column name of column that contains the start position
+    :param start_function: possibility to pass a function that is applied to every element in the column. Example use: index shifting
+    :param modi: modification type if all modifications in the df/csv are the same
+    :param modi_column: Indicate whether there is a column containing the modification for each row, respectively.
+    If this is True, the "modi" parameter is set to the name of the column.
+    :param score: column name of column that contains the score
+    :param score_function: If the score cannot be taken directly from the score column,
+    e.g. in the case when the current score is a p-value, a function can be applied to the score.
+    :param strand: column name of column that contains the strand. Set to "+", "-" or "."(unknown) if the strand is the same for all data.
+    :param coverage: column name of column that contains the coverage of each position.
+    :param coverage_function: coverage function that is applied to the coverage column.
+    :param frequency: column name of column that contains the frequency of each position.
+    :param frequency_function: frequency function that is applied to the frequency column.
+    :return: A single data row in line with the specs of a data row in bedRMod format.
     """
     chrom = row[ref_seg]
     has_alpha = any(c.isalpha() for c in chrom)
