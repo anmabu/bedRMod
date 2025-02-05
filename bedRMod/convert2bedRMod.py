@@ -9,7 +9,7 @@ yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 from bedRMod.helper import write_config_header, get_modification_color, check_value_range
 
 
-def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
+def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
               score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
               frequency_function=None):
     """
@@ -42,11 +42,13 @@ def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_functio
     elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
         chrom = "MT"    
     elif has_alpha and has_digit:
-        chrom = ''.join(c for c in chrom if c.isdigit())
-    elif has_digit and not has_alpha:
+        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
+            chrom = ''.join(c for c in chrom if c.isdigit())
+    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
         chrom = chrom
     else: 
-        print(f"something is weird in chrom {chrom}") 
+        print(f"something is weird in chrom {chrom}")
+
     if start_function is not None:
         if type(start) == list:
             params = [row[col] for col in start]
