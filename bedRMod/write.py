@@ -1,13 +1,18 @@
 import pandas as pd
+from ruamel.yaml import YAML
+
+yaml = YAML()
+yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
+
 
 from helper import EUF_VERSION
 
 
-def write_header_from_config(config, output_file):
+def write_header_from_config(config_yaml, output_file):
     """
     reads information from the config yaml and writes it to the header of the bedMod file.
     the structure of the config file is quite rigid as of now.
-    :param config: the contents of the config.yaml file that contains the options to write to the header.
+    :param config_yaml: the contents of the config.yaml file that contains the options to write to the header.
     :param output_file: this is the file where the header is written into. File already has to be open for this to work!
     """
 
@@ -24,6 +29,8 @@ def write_header_from_config(config, output_file):
         "experiment",
         "external_source"
     ]
+
+    config = yaml.load(open(config_yaml, "r"))
 
     # build the header from metadata
     euf_header = dict()
