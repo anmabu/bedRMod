@@ -145,8 +145,8 @@ def read_bioinformatics_keys(config_yaml):
 def check_value_range(result):
     """
     check whether returned values are in the allowed range
-    :param result:
-    :return:
+    :param result: result is a tuple/list that contains all values that are calculated during conversion
+    :return: boolean whether values are all in allowed range
     """
     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
         coverage_col, frequency_col = result
@@ -159,6 +159,7 @@ def check_value_range(result):
         print(f"The frequency value ({frequency_col}) is not in the allowed range. Please check and try again.")
         return False
     return True
+
 
 def get_modification_color(modi):
     """
