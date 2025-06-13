@@ -1,5 +1,7 @@
+import pandas as pd
 
-def write_header(file, header_dict):
+
+def write_header_from_dict(file, header_dict):
     """
     Write header dict in correct format to new bedRMod file
     :param file: output bedrmod file
@@ -11,7 +13,7 @@ def write_header(file, header_dict):
             f.write('#' + key + '=' + value + '\n')
     return
 
-def write_data(file, data_df):
+def write_data_from_df(file, data_df):
     """
     append pandas data frame to bedRMod file, that already contains a header!
     :param file: output bedrmod file
@@ -41,6 +43,6 @@ def write_bedRMod(file, header_dict, data_df):
     :param data_df: Dataframe with values to write to bedrmod file
     :return:
     """
-    write_header(file, header_dict)
-    write_data(file, data_df)
+    write_header_from_dict(file, header_dict)
+    write_data_from_df(file, data_df)
     return
