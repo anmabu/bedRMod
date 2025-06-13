@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-from bedRMod import read_header, read_data, read_bedRMod
+from bedRMod import read_header, read_data_to_df, read_bedRMod
 
 test_dir = Path(__file__).parent
 
@@ -25,7 +25,7 @@ def test_read_data():
 
     compare_df = pd.DataFrame(data, columns=columns)
     
-    data = read_data(test_file)
+    data = read_data_to_df(test_file)
     df_diff = data.compare(compare_df)
     assert df_diff.empty
 
