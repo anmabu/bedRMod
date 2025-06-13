@@ -1,11 +1,12 @@
 import pandas as pd
+from numpy.core.multiarray import item
 from ruamel.yaml import YAML
 
 yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
 
-from helper import EUF_VERSION
+from helper import EUF_VERSION, get_modification_color
 
 
 def write_header_from_config(config_yaml, output_file):
@@ -107,6 +108,62 @@ def write_data_from_df(file, data_df):
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
         data_df.to_csv(f, sep='\t', index=False, header=False, mode='a')
+
+    return
+
+
+def write_single_data_row(file, chrom, start, name, score, strand, coverage, frequency,
+                          end=None, thickstart=None, thickend=None, itemRgb=None):
+    """
+    Appends contents of a single row to an already existing file.
+    The positional arguments of this function are required for output. The keyword arugments can be inferred using the
+    data from the positional arguments.
+    :param file: output bedrmod file
+    :param chrom: chromosome/reference segment information
+    :param start: start position (0-based)
+    :param name: modification name
+    :param score: score (0 - 1000)
+    :param strand: strand (+, -, .)
+    :param coverage: coverage
+    :param frequency: frequency
+    :param end: end position, If not passed to the function, it will be calculated from the start position.
+    :param thickstart: display start position. If not passed to the function, it will be calculated from the start position.
+    :param thickend: display end position. If not passed to the function, it will be calculated from the end position.
+    :param itemRgb: display color of the modification. If not passed, it will be calculated.
+    :return:
+    """
+
+    if end is not None and end != start + 1:
+        raise ValueError("end must be either None or start position + 1")
+    if thickstart is not None and thickstart != start:
+        raise ValueError("thickstart must be either None or start position")
+    if thickend is not None and ((thickend != end) or (thickend != thickstart + 1)):
+        raise ValueError("thickend must be either None or (thick)start position + 1")
+
+    # don't throw an error if the itemRGB is not the color from the list. This can be customized.from
+
+    if end is None:
+        end = start + 1
+    if thickstart is None:
+        thickstart = start
+    if thickend is None:
+        thickend = end
+    if itemRgb is None:
+        itemRgb = get_modification_color(name)
+
+
+    # Do checks whether last header line is written correctly
+    column_headers = True
+    with open(file, 'r') as f:
+        last = f.readlines()[-1]
+        if not last.startswith("#chrom"):
+            column_headers = False
+
+    with open(file, 'a') as f:
+        if not column_headers:
+            f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
+                    "\tfrequency\n")
+            f.write(f"{chrom}\t{start}\t{end}\t{name}\t{score}\t{strand}\t{thickstart}\t{thickend}\t{itemRgb}\t{coverage}\t{frequency}\n")
 
     return
 
