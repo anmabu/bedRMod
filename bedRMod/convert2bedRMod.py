@@ -52,10 +52,10 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
 
     colnames = file.columns
     try:
+        header_written = write_header_from_config(config_yaml, output_file)
+        if not header_written:
+            raise TypeError("Header could not be written.")
         with open(output_file, 'w') as f:
-            header_written = write_header_from_config(config_yaml, f)
-            if not header_written:
-                raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
@@ -110,10 +110,10 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
 
     colnames = df.columns
     try:
+        header_written = write_header_from_config(config_yaml, output_file)
+        if not header_written:
+            raise TypeError("Header could not be written.")
         with open(output_file, 'w') as f:
-            header_written = write_header_from_config(config_yaml, f)
-            if not header_written:
-                raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
