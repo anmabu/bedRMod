@@ -137,19 +137,20 @@ def write_single_data_row(file, chrom, start, name, score, strand, coverage, fre
 
     if end is not None and end != start + 1:
         raise ValueError("end must be either None or start position + 1")
-    if thickstart is not None and thickstart != start:
-        raise ValueError("thickstart must be either None or start position")
-    if thickend is not None and ((thickend != end) or (thickend != thickstart + 1)):
-        raise ValueError("thickend must be either None or (thick)start position + 1")
-
-    # don't throw an error if the itemRGB is not the color from the list. This can be customized.from
-
     if end is None:
         end = start + 1
+
+    if thickstart is not None and thickstart != start:
+        raise ValueError("thickstart must be either None or start position")
     if thickstart is None:
         thickstart = start
+
+    if thickend is not None and ((thickend != end) or (thickend != thickstart + 1)):
+        raise ValueError("thickend must be either None or (thick)start position + 1")
     if thickend is None:
         thickend = end
+
+    # don't throw an error if the itemRGB is not the color from the list. This can be customized.
     if itemRgb is None:
         itemRgb = get_modification_color(name)
 
