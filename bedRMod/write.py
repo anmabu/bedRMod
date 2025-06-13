@@ -1,5 +1,4 @@
 import pandas as pd
-from numpy.core.multiarray import item
 from ruamel.yaml import YAML
 
 yaml = YAML()
@@ -55,34 +54,37 @@ def write_header_from_config(config_yaml, output_file):
                 euf_header[key] = npairs
             else:
                 euf_header[key] = config["options"].get(key, "")
-    for k, v in euf_header.items():
-        if isinstance(v, dict):
-            npairs = ""
-            for ke, va in v.items():
-                npairs += f"{ke}:{va};"
-            npairs = npairs[:-1]  # remove last ;
-            output_file.write(f"#{k}={npairs}\n")
-            continue  # don't write it twice
-        if v is not None:
-            output_file.write(f"#{k}={v}\n")
-        else:
-            value = ""
-            # these are required fields in the config file
-            if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
-                     "annotation_version"]:
-                print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
-                      f"this and convert again!")
-                return False
+
+    with open(output_file, "w") as f:
+        for k, v in euf_header.items():
+            if isinstance(v, dict):
+                npairs = ""
+                for ke, va in v.items():
+                    npairs += f"{ke}:{va};"
+                npairs = npairs[:-1]  # remove last ;
+                f.write(f"#{k}={npairs}\n")
+                continue  # don't write it twice
+            if v is not None:
+                f.write(f"#{k}={v}\n")
             else:
-                output_file.write(f"#{k}={value}\n")
+                value = ""
+                # these are required fields in the config file
+                if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
+                         "annotation_version"]:
+                    print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
+                          f"this and convert again!")
+                    return False
+                else:
+                    f.write(f"#{k}={value}\n")
     return True
 
 
-def write_header_from_dict(file, header_dict):
+def write_header_from_dict(header_dict, file):
     """
     Write header dict in correct format to new bedRMod file
-    :param file: output bedrmod file
     :param header_dict: Dictionary containing the values of the header to write
+    :param file: output bedrmod file
+
     :return:
     """
     with open(file, 'w') as f:
@@ -90,11 +92,11 @@ def write_header_from_dict(file, header_dict):
             f.write('#' + key + '=' + value + '\n')
     return
 
-def write_data_from_df(file, data_df):
+def write_data_from_df(data_df, file):
     """
     append pandas data frame to bedRMod file, that already contains a header!
-    :param file: output bedrmod file
     :param data_df: Dataframe with values to write to bedrmod file
+    :param file: output bedrmod file
     :return:
     """
     column_headers = True
