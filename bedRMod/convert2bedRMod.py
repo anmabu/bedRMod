@@ -3,121 +3,12 @@ import pandas as pd
 
 from ruamel.yaml import YAML
 
+
 yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
-from bedRMod.helper import get_modification_color, check_value_range
+from bedRMod.helper import check_value_range, parse_row
 from write import write_header_from_config
-
-
-def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
-              score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-              frequency_function=None):
-    """
-    parses a dataframe/csv row and return the values needed for a row in the bedRMod format
-    :param row: dataframe/csv row
-    :param columnnames: list of column names
-    :param ref_seg: column name of column that contains the reference segment/chromosome
-    :param start: column name of column that contains the start position
-    :param start_function: possibility to pass a function that is applied to every element in the column. Example use: index shifting
-    :param modi: modification type if all modifications in the df/csv are the same
-    :param modi_column: Indicate whether there is a column containing the modification for each row, respectively.
-    If this is True, the "modi" parameter is set to the name of the column.
-    :param score: column name of column that contains the score
-    :param score_function: If the score cannot be taken directly from the score column,
-    e.g. in the case when the current score is a p-value, a function can be applied to the score.
-    :param strand: column name of column that contains the strand. Set to "+", "-" or "."(unknown) if the strand is the same for all data.
-    :param coverage: column name of column that contains the coverage of each position.
-    :param coverage_function: coverage function that is applied to the coverage column.
-    :param frequency: column name of column that contains the frequency of each position.
-    :param frequency_function: frequency function that is applied to the frequency column.
-    :return: A single data row in line with the specs of a data row in bedRMod format.
-    """
-    chrom = row[ref_seg]
-    has_alpha = any(c.isalpha() for c in chrom)
-    has_digit = any(c.isdigit() for c in chrom)
-    if chrom == "chrY" or (chrom == "Y"):
-        chrom = "Y"
-    elif chrom == "chrX" or (chrom == "X"):
-        chrom = "X"
-    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
-        chrom = "MT"    
-    elif has_alpha and has_digit:
-        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
-            chrom = ''.join(c for c in chrom if c.isdigit())
-    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
-        chrom = chrom
-    else: 
-        print(f"something is weird in chrom {chrom}")
-
-    if start_function is not None:
-        if type(start) == list:
-            params = [row[col] for col in start]
-        elif isinstance(start, str):
-            params = row[start]
-        else:
-            params = start
-        start_col = start_function(params)
-    else:
-        start_col = int(row[start])
-    if start_col is None:
-        return None
-    end = start_col + 1
-    name = row[modi] if modi_column else modi
-    if score_function is not None:
-        if type(score) == list:
-            params = [row[col] for col in score]
-        elif isinstance(score, str):
-            params = row[score]
-        else:
-            params = score
-        score_column = score_function(params)
-    else:
-        if isinstance(score, str):
-            score_column = round(row[score])
-        else:
-            score_column = score
-    if strand == "+":
-        strandedness = "+"
-    elif strand == "-":
-        strandedness = "-"
-    else:
-        strandedness = row[strand]
-    if coverage_function is not None:
-        if type(coverage) == list:
-            params = [row[col] for col in coverage]
-        elif isinstance(coverage, str):
-            params = row[coverage]
-        coverage_col = coverage_function(params)
-    else:
-        if coverage in columnnames:
-            coverage_col = round(row[coverage])
-        else:
-            coverage_col = coverage
-    if frequency_function is not None:
-        if type(frequency) == list:
-            params = [row[col] for col in frequency]
-        elif isinstance(frequency, str):
-            params = row[frequency]
-        frequency_col = frequency_function(params)
-    else:
-        if frequency in columnnames:
-            frequency_col = round(row[frequency])
-        elif isinstance(frequency, (int, float)):
-            frequency_col = round(frequency)
-    thick_start = start_col
-    thick_end = end
-    item_rgb = get_modification_color(name)
-    result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
-            frequency_col)
-    bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
-                       "itemRgb", "coverage", "frequency")
-    for index, item in enumerate(result):
-        if item is None:
-            print(f"The data has not been converted. \n"
-                  f"Please check the input value/function for the {bedrmod_columns[index]} column.")
-            result = None
-    return result
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
@@ -158,8 +49,6 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
-
-    # config = yaml.load(open(config_yaml, "r"))
 
     colnames = file.columns
     try:
@@ -218,8 +107,6 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
     if not ending == ".bedrmod":
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
-
-    # config = yaml.load(open(config_yaml, "r"))
 
     colnames = df.columns
     try:
