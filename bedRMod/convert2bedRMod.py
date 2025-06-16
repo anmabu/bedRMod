@@ -3,101 +3,12 @@ import pandas as pd
 
 from ruamel.yaml import YAML
 
+
 yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
-from bedRMod.helper import write_config_header, get_modification_color, check_value_range
-
-
-def parse_row(row, columnnames=[], ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
-              score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
-              frequency_function=None):
-    """
-    parses a dataframe/csv row and return the values needed for a row in the bedRMod format
-    """
-    chrom = row[ref_seg]
-    has_alpha = any(c.isalpha() for c in chrom)
-    has_digit = any(c.isdigit() for c in chrom)
-    if chrom == "chrY" or (chrom == "Y"):
-        chrom = "Y"
-    elif chrom == "chrX" or (chrom == "X"):
-        chrom = "X"
-    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
-        chrom = "MT"    
-    elif has_alpha and has_digit:
-        chrom = ''.join(c for c in chrom if c.isdigit())
-    elif has_digit and not has_alpha:
-        chrom = chrom
-    else: 
-        print(f"something is weird in chrom {chrom}") 
-    if start_function is not None:
-        if type(start) == list:
-            params = [row[col] for col in start]
-        elif isinstance(start, str):
-            params = row[start]
-        else:
-            params = start
-        start_col = start_function(params)
-    else:
-        start_col = int(row[start])
-    if start_col is None:
-        return None
-    end = start_col + 1
-    name = row[modi] if modi_column else modi
-    if score_function is not None:
-        if type(score) == list:
-            params = [row[col] for col in score]
-        elif isinstance(score, str):
-            params = row[score]
-        else:
-            params = score
-        score_column = score_function(params)
-    else:
-        if isinstance(score, str):
-            score_column = round(row[score])
-        else:
-            score_column = score
-    if strand == "+":
-        strandedness = "+"
-    elif strand == "-":
-        strandedness = "-"
-    else:
-        strandedness = row[strand]
-    if coverage_function is not None:
-        if type(coverage) == list:
-            params = [row[col] for col in coverage]
-        elif isinstance(coverage, str):
-            params = row[coverage]
-        coverage_col = coverage_function(params)
-    else:
-        if coverage in columnnames:
-            coverage_col = round(row[coverage])
-        else:
-            coverage_col = coverage
-    if frequency_function is not None:
-        if type(frequency) == list:
-            params = [row[col] for col in frequency]
-        elif isinstance(frequency, str):
-            params = row[frequency]
-        frequency_col = frequency_function(params)
-    else:
-        if frequency in columnnames:
-            frequency_col = round(row[frequency])
-        elif isinstance(frequency, (int, float)):
-            frequency_col = round(frequency)
-    thick_start = start_col
-    thick_end = end
-    item_rgb = get_modification_color(name)
-    result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
-            frequency_col)
-    bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
-                       "itemRgb", "coverage", "frequency")
-    for index, item in enumerate(result):
-        if item is None:
-            print(f"The data has not been converted. \n"
-                  f"Please check the input value/function for the {bedrmod_columns[index]} column.")
-            result = None
-    return result
+from bedRMod.helper import check_value_range, parse_row
+from write import write_header_from_config
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
@@ -139,15 +50,12 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    #config = yaml.safe_load(open(config_yaml, "r"))
-    config = yaml.load(open(config_yaml, "r"))
-
     colnames = file.columns
     try:
+        header_written = write_header_from_config(config_yaml, output_file)
+        if not header_written:
+            raise TypeError("Header could not be written.")
         with open(output_file, 'w') as f:
-            header_written = write_config_header(config, f)
-            if not header_written:
-                raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
@@ -200,15 +108,12 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         output_file = path + ".bedrmod"
         print(f"output file: {output_file}")
 
-    # config = yaml.safe_load(open(config_yaml, "r"))
-    config = yaml.load(open(config_yaml, "r"))
-
     colnames = df.columns
     try:
+        header_written = write_header_from_config(config_yaml, output_file)
+        if not header_written:
+            raise TypeError("Header could not be written.")
         with open(output_file, 'w') as f:
-            header_written = write_config_header(config, f)
-            if not header_written:
-                raise TypeError("Header could not be written.")
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 

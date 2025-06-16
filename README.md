@@ -50,7 +50,8 @@ Using the GUI is recommended for converting already existing, single files into 
 Once installed, the 
 Creating bedRMod files can be achived using the `df2bedrmod` function. 
 This takes a pandas.DataFrame as well as a config.yaml file as input and creates a bedRMod file. 
-For this, the data needs to be manipulated beforehand to comply with the specifications as defined in [bedRModv1.8.pdf](bedRModv1.8.pdf).
+For this, the data needs to be manipulated beforehand to comply with the specifications as defined in [bedRModv1.8.pdf](bedRModv1.8.pdf). 
+For now, these specifications are in accordance with the [bedRMod specs](https://github.com/dieterich-lab/euf-specs) related with [Sci-ModoM](https://scimodom.dieterichlab.org/). 
 Then, the dataframe and the config.yaml can be given to the `df2bedrmod` function in a similar way as follows:
 ```angular2html
 import pandas as pd

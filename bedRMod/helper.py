@@ -12,73 +12,6 @@ yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 EUF_VERSION = "bedRModv1.8"
 
 
-def write_config_header(config, output_file):
-    """
-    reads information from the config yaml and writes it to the header of the bedMod file.
-    the structure of the config file is quite rigid as of now.
-    :param config: the contents of the config.yaml file that contains the options to write to the header.
-    :param output_file: this is the file where the header is written into. File already has to be open for this to work! 
-    """
-
-    euf_header_keys = [
-        "fileformat",
-        "organism",
-        "modification_type",
-        "assembly",
-        "annotation_source",
-        "annotation_version",
-        "sequencing_platform",
-        "basecalling",
-        "bioinformatics_workflow",
-        "experiment",
-        "external_source" 
-    ]
-
-    # build the header from metadata
-    euf_header = dict()
-    for key in euf_header_keys:
-        euf_header[key] = config["options"].get(key, "")
-    euf_header["fileformat"] = EUF_VERSION
-    # check for additional keys and append them to the header
-    additional_keys = []
-    for key in config["options"].keys():
-        if key not in euf_header_keys:
-            additional_keys.append(key)
-    # append additional keys
-    if len(additional_keys) > 0:
-        for key in additional_keys:
-            # if there are nested dictionaries, they get appended here
-            if isinstance(config["options"].get(key, ""), dict):
-                npairs = ""
-                for nkey, nvalue in config["options"].get(key, "").items():
-                    npairs += f"{nkey}:{nvalue};"
-                npairs = npairs[:-1]  # remove last ;
-                euf_header[key] = npairs
-            else:
-                euf_header[key] = config["options"].get(key, "")
-    for k, v in euf_header.items():
-        if isinstance(v, dict):
-            npairs = ""
-            for ke, va in v.items():
-                npairs += f"{ke}:{va};"
-            npairs = npairs[:-1]  # remove last ;
-            output_file.write(f"#{k}={npairs}\n")
-            continue  # don't write it twice
-        if v is not None:
-            output_file.write(f"#{k}={v}\n")
-        else:
-            value = ""
-            # these are required fields in the config file
-            if k in ["fileformat", "organism", "modification_type", "assembly", "annotation_source",
-                     "annotation_version"]:
-                print(f"There is a problem with the config.yaml file. {k} is required to have a value. Please correct "
-                      f"this and convert again!")
-                return False
-            else:
-                output_file.write(f"#{k}={value}\n")
-    return True
-
-
 def funcify(expression):
     """
     Takes a string of an expression as an input and converts it into a python function.
@@ -212,8 +145,8 @@ def read_bioinformatics_keys(config_yaml):
 def check_value_range(result):
     """
     check whether returned values are in the allowed range
-    :param result:
-    :return:
+    :param result: result is a tuple/list that contains all values that are calculated during conversion
+    :return: boolean whether values are all in allowed range
     """
     chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
         coverage_col, frequency_col = result
@@ -226,6 +159,7 @@ def check_value_range(result):
         print(f"The frequency value ({frequency_col}) is not in the allowed range. Please check and try again.")
         return False
     return True
+
 
 def get_modification_color(modi):
     """
@@ -583,3 +517,113 @@ def parse_excel_sheetnames(input_file):
     """
     file = pd.read_excel(input_file, None)
     return file.keys()
+
+
+def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
+              score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
+              frequency_function=None):
+    """
+    parses a dataframe/csv row and return the values needed for a row in the bedRMod format
+    :param row: dataframe/csv row
+    :param columnnames: list of column names
+    :param ref_seg: column name of column that contains the reference segment/chromosome
+    :param start: column name of column that contains the start position
+    :param start_function: possibility to pass a function that is applied to every element in the column. Example use: index shifting
+    :param modi: modification type if all modifications in the df/csv are the same
+    :param modi_column: Indicate whether there is a column containing the modification for each row, respectively.
+    If this is True, the "modi" parameter is set to the name of the column.
+    :param score: column name of column that contains the score
+    :param score_function: If the score cannot be taken directly from the score column,
+    e.g. in the case when the current score is a p-value, a function can be applied to the score.
+    :param strand: column name of column that contains the strand. Set to "+", "-" or "."(unknown) if the strand is the same for all data.
+    :param coverage: column name of column that contains the coverage of each position.
+    :param coverage_function: coverage function that is applied to the coverage column.
+    :param frequency: column name of column that contains the frequency of each position.
+    :param frequency_function: frequency function that is applied to the frequency column.
+    :return: A single data row in line with the specs of a data row in bedRMod format.
+    """
+    chrom = row[ref_seg]
+    has_alpha = any(c.isalpha() for c in chrom)
+    has_digit = any(c.isdigit() for c in chrom)
+    if chrom == "chrY" or (chrom == "Y"):
+        chrom = "Y"
+    elif chrom == "chrX" or (chrom == "X"):
+        chrom = "X"
+    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+        chrom = "MT"
+    elif has_alpha and has_digit:
+        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
+            chrom = ''.join(c for c in chrom if c.isdigit())
+    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
+        chrom = chrom
+    else:
+        print(f"something is weird in chrom {chrom}")
+
+    if start_function is not None:
+        if type(start) == list:
+            params = [row[col] for col in start]
+        elif isinstance(start, str):
+            params = row[start]
+        else:
+            params = start
+        start_col = start_function(params)
+    else:
+        start_col = int(row[start])
+    if start_col is None:
+        return None
+    end = start_col + 1
+    name = row[modi] if modi_column else modi
+    if score_function is not None:
+        if type(score) == list:
+            params = [row[col] for col in score]
+        elif isinstance(score, str):
+            params = row[score]
+        else:
+            params = score
+        score_column = score_function(params)
+    else:
+        if isinstance(score, str):
+            score_column = round(row[score])
+        else:
+            score_column = score
+    if strand == "+":
+        strandedness = "+"
+    elif strand == "-":
+        strandedness = "-"
+    else:
+        strandedness = row[strand]
+    if coverage_function is not None:
+        if type(coverage) == list:
+            params = [row[col] for col in coverage]
+        elif isinstance(coverage, str):
+            params = row[coverage]
+        coverage_col = coverage_function(params)
+    else:
+        if coverage in columnnames:
+            coverage_col = round(row[coverage])
+        else:
+            coverage_col = coverage
+    if frequency_function is not None:
+        if type(frequency) == list:
+            params = [row[col] for col in frequency]
+        elif isinstance(frequency, str):
+            params = row[frequency]
+        frequency_col = frequency_function(params)
+    else:
+        if frequency in columnnames:
+            frequency_col = round(row[frequency])
+        elif isinstance(frequency, (int, float)):
+            frequency_col = round(frequency)
+    thick_start = start_col
+    thick_end = end
+    item_rgb = get_modification_color(name)
+    result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
+            frequency_col)
+    bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
+                       "itemRgb", "coverage", "frequency")
+    for index, item in enumerate(result):
+        if item is None:
+            print(f"The data has not been converted. \n"
+                  f"Please check the input value/function for the {bedrmod_columns[index]} column.")
+            result = None
+    return result
