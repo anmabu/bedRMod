@@ -518,6 +518,24 @@ def parse_excel_sheetnames(input_file):
     file = pd.read_excel(input_file, None)
     return file.keys()
 
+def parse_ref_seg(ref_seg):
+    chrom = row[ref_seg]
+    has_alpha = any(c.isalpha() for c in chrom)
+    has_digit = any(c.isdigit() for c in chrom)
+    if chrom == "chrY" or (chrom == "Y"):
+        return "Y"
+    elif chrom == "chrX" or (chrom == "X"):
+        return "X"
+    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
+        return "MT"
+    elif has_alpha and has_digit:
+        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
+            return ''.join(c for c in chrom if c.isdigit())
+    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
+        return chrom
+    else:
+        ValueError(f"something is weird in chromosome/reference segment {chrom}")
+
 
 def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
               score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
@@ -542,22 +560,8 @@ def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_funct
     :param frequency_function: frequency function that is applied to the frequency column.
     :return: A single data row in line with the specs of a data row in bedRMod format.
     """
-    chrom = row[ref_seg]
-    has_alpha = any(c.isalpha() for c in chrom)
-    has_digit = any(c.isdigit() for c in chrom)
-    if chrom == "chrY" or (chrom == "Y"):
-        chrom = "Y"
-    elif chrom == "chrX" or (chrom == "X"):
-        chrom = "X"
-    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
-        chrom = "MT"
-    elif has_alpha and has_digit:
-        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
-            chrom = ''.join(c for c in chrom if c.isdigit())
-    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
-        chrom = chrom
-    else:
-        print(f"something is weird in chrom {chrom}")
+    
+    chrom = parse_ref_seg(ref_seg)    
 
     if start_function is not None:
         if type(start) == list:
