@@ -1,5 +1,6 @@
 import math
 import pandas as pd
+import re
 
 import ruamel
 from ruamel.yaml import YAML
@@ -148,7 +149,7 @@ def check_value_range(result):
     :param result: result is a tuple/list that contains all values that are calculated during conversion
     :return: boolean whether values are all in allowed range
     """
-    chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
+    ref_seg, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, \
         coverage_col, frequency_col = result
 
     if not 0 <= score_column <= 1000:
@@ -518,6 +519,32 @@ def parse_excel_sheetnames(input_file):
     file = pd.read_excel(input_file, None)
     return file.keys()
 
+def parse_ref_seg(ref_seg):
+    """
+    parses the reference segment information for one row and returns it in the correct format
+    :param ref_seg: 
+    """
+    roman_pattern = r'chr([IVXLCD]+)' 
+    mitochondrial_pattern = r'^chrM$|^mt$'  # Matches 'chrM' or 'mt'
+    
+    has_alpha = any(c.isalpha() for c in ref_seg)
+    has_digit = any(c.isdigit() for c in ref_seg)
+    if ref_seg == "chrY" or (ref_seg == "Y"):
+        return "Y"
+    elif re.match(roman_pattern, ref_seg, re.IGNORECASE):  
+        # returns the roman number. This is also valid for the X chromosome on organisms that have it
+        # otherwise this is inclusive for yeast chromosomes as well 
+        return re.match(roman_pattern, ref_seg, re.IGNORECASE).group(1).upper() 
+    elif re.match(mitochondrial_pattern, ref_seg):
+        return "MT"
+    elif has_alpha and has_digit:
+        if not ref_seg.startswith("tdbR"):  # if it does, it can just stay what it is
+            return ''.join(c for c in ref_seg if c.isdigit())
+    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
+        return ref_seg
+    else:
+        ValueError(f"something is weird in chromosome/reference segment {ref_seg}")
+
 
 def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_function=None, modi="m1A", modi_column=False,
               score=None, score_function=None, strand="strand", coverage=None, coverage_function=None, frequency=None,
@@ -542,22 +569,8 @@ def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_funct
     :param frequency_function: frequency function that is applied to the frequency column.
     :return: A single data row in line with the specs of a data row in bedRMod format.
     """
-    chrom = row[ref_seg]
-    has_alpha = any(c.isalpha() for c in chrom)
-    has_digit = any(c.isdigit() for c in chrom)
-    if chrom == "chrY" or (chrom == "Y"):
-        chrom = "Y"
-    elif chrom == "chrX" or (chrom == "X"):
-        chrom = "X"
-    elif chrom == "chrMT" or (chrom == "MT") or (chrom == "M") or (chrom == "chrM"):
-        chrom = "MT"
-    elif has_alpha and has_digit:
-        if not chrom.startswith("tdbR"):  # if it does, it can just stay what it is
-            chrom = ''.join(c for c in chrom if c.isdigit())
-    elif has_digit and not has_alpha:  # this is not necessary, but good to remember
-        chrom = chrom
-    else:
-        print(f"something is weird in chrom {chrom}")
+
+    ref_seg = parse_ref_seg(row[ref_seg])    
 
     if start_function is not None:
         if type(start) == list:
@@ -617,9 +630,9 @@ def parse_row(row, columnnames=None, ref_seg="ref_seg", start="pos", start_funct
     thick_start = start_col
     thick_end = end
     item_rgb = get_modification_color(name)
-    result = (chrom, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
+    result = (ref_seg, start_col, end, name, score_column, strandedness, thick_start, thick_end, item_rgb, coverage_col,
             frequency_col)
-    bedrmod_columns = ("chrom", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
+    bedrmod_columns = ("ref_seg", "chromStart", "chromEnd", "name", "score", "strand", "thickStart", "thickEnd",
                        "itemRgb", "coverage", "frequency")
     for index, item in enumerate(result):
         if item is None:

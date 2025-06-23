@@ -1,0 +1,6 @@
+chrom,start_col,end,name,score_column,strandedness,thick_start,thick_end,item_rgb,coverage_col,frequency_col
+chr1,1000,1001,m1A,900,+,1000,1001,0,30,90
+2,1001,1002,m5C,850,-,1001,1002,0,45,83
+chrX,3001,3002,m1A,700,+,3001,3002,0,6,79
+chrY,4001,4002,m3C,920,-,4001,4002,0,50,37
+chrM,5001,5002,m3C,920,-,5001,5002,0,23,65

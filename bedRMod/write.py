@@ -5,7 +5,7 @@ yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
 
-from helper import EUF_VERSION, get_modification_color
+from bedRMod.helper import EUF_VERSION, get_modification_color
 
 
 def write_header_from_config(config_yaml, output_file):

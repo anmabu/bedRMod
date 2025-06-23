@@ -8,7 +8,7 @@ yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
 from bedRMod.helper import check_value_range, parse_row
-from write import write_header_from_config
+from bedRMod.write import write_header_from_config
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
@@ -55,7 +55,7 @@ def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_s
         header_written = write_header_from_config(config_yaml, output_file)
         if not header_written:
             raise TypeError("Header could not be written.")
-        with open(output_file, 'w') as f:
+        with open(output_file, 'a') as f:
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
@@ -113,7 +113,7 @@ def df2bedRMod(df, config_yaml, output_file, ref_seg="ref_seg", start="pos", sta
         header_written = write_header_from_config(config_yaml, output_file)
         if not header_written:
             raise TypeError("Header could not be written.")
-        with open(output_file, 'w') as f:
+        with open(output_file, 'a') as f:
             f.write("#chrom\tchromStart\tchromEnd\tname\tscore\tstrand\tthickStart\tthickEnd\titemRgb\tcoverage"
                     "\tfrequency\n")
 
