@@ -524,7 +524,7 @@ def parse_ref_seg(ref_seg):
     parses the reference segment information for one row and returns it in the correct format
     :param ref_seg: 
     """
-    roman_pattern = r'chr([IVXLCDM]+)' 
+    roman_pattern = r'chr([IVXLCD]+)' 
     mitochondrial_pattern = r'^chrM$|^mt$'  # Matches 'chrM' or 'mt'
     
     has_alpha = any(c.isalpha() for c in ref_seg)
