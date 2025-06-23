@@ -8,7 +8,7 @@ yaml = YAML()
 yaml.sort_base_mapping_type_on_output = False  # disable sorting of keys
 
 from bedRMod.helper import check_value_range, parse_row
-from write import write_header_from_config
+from bedRMod.write import write_header_from_config
 
 
 def csv2bedRMod(input_file, config_yaml, output_file=None, delimiter=None, ref_seg="ref_seg", start="pos",
