@@ -12,12 +12,12 @@ from bedRMod import read_header, read_data_to_df
 test_dir = Path(__file__).parent
 
 def test_write_header_from_dict():
-    header_dict = read_header(f"{test_dir}/test_df2bedrmod.bedrmod")
+    header_dict = read_header(f"{test_dir}/test_static_df2bedrmod.bedrmod")
     write_header_from_dict(header_dict, f"{test_dir}/test_write2bedrmod.bedrmod")
     assert header_dict == read_header(f"{test_dir}/test_write2bedrmod.bedrmod")
 
 def test_write_data_from_df():
-    data_df = read_data_to_df(f"{test_dir}/test_df2bedrmod.bedrmod")
+    data_df = read_data_to_df(f"{test_dir}/test_static_df2bedrmod.bedrmod")
     write_data_from_df(data_df, f"{test_dir}/test_write2bedrmod.bedrmod")
     diff_df = data_df.compare(read_data_to_df(f"{test_dir}/test_write2bedrmod.bedrmod"))
     assert diff_df.empty
